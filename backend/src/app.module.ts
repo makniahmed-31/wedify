@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './modules/auth/auth.module';
@@ -16,6 +17,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { MarketplaceModule } from './modules/marketplace/marketplace.module';
 
 @Module({
+  controllers: [AppController],
   imports: [
     // Config
     ConfigModule.forRoot({ isGlobal: true }),
