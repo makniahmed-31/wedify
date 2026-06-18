@@ -14,7 +14,6 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { MarketplaceModule } from './modules/marketplace/marketplace.module';
-import { PaymentsModule } from './modules/payments/payments.module';
 
 @Module({
   imports: [
@@ -38,7 +37,6 @@ import { PaymentsModule } from './modules/payments/payments.module';
     AdminModule,
     NotificationsModule,
     MarketplaceModule,
-    PaymentsModule,
   ],
 })
 export class AppModule {}
