@@ -18,7 +18,6 @@ export class VendorsService {
       description: dto.description,
       city: dto.city,
       website: dto.website,
-      tags: dto.tags?.join(','),
       startingPrice: dto.startingPrice,
       status: 'PENDING',
       plan: 'BASIC',
