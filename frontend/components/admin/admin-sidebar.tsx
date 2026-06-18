@@ -69,7 +69,13 @@ export function AdminSidebar({ onClose }: Props) {
         >
           <Heart className="h-4 w-4" /> Voir le site
         </Link>
-        <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-400 hover:bg-red-500/10 hover:text-red-400">
+        <button
+          onClick={() => {
+            document.cookie = "wedify_admin_auth=; path=/; max-age=0";
+            window.location.href = "/admin/login";
+          }}
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-400 hover:bg-red-500/10 hover:text-red-400"
+        >
           <LogOut className="h-4 w-4" /> Se déconnecter
         </button>
       </div>
