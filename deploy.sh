@@ -5,6 +5,7 @@ REPO=/var/www/wedify/repo
 PROD_FRONTEND=/var/www/wedify/frontend
 PROD_BACKEND=/var/www/wedify/backend
 ROOT_BINS=$REPO/node_modules/.bin
+FRONTEND_BINS=$REPO/frontend/node_modules/.bin
 
 echo "==> Pulling latest from git..."
 cd $REPO
@@ -15,7 +16,7 @@ npm install
 
 echo "==> Building frontend..."
 cd $REPO/frontend
-$ROOT_BINS/next build
+$FRONTEND_BINS/next build
 cd $REPO
 
 echo "==> Staging frontend..."
