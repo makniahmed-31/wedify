@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Search, Filter, CheckCircle2, XCircle, Eye, ChevronDown, Crown, Gem } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Search, Filter, CheckCircle2, XCircle, Eye, ChevronDown, Crown, Gem, Loader2 } from "lucide-react";
 
 type Status = "ACTIVE" | "PENDING" | "SUSPENDED";
 type Plan = "BASIC" | "PRO" | "PREMIUM";
@@ -16,17 +16,6 @@ interface Vendor {
   joined: string;
   revenue: number;
 }
-
-const INITIAL_VENDORS: Vendor[] = [
-  { id: "v1", name: "Elegance Hall Tunis", category: "Salles de mariage", city: "Tunis", plan: "PREMIUM", status: "ACTIVE", joined: "12 jan. 2026", revenue: 149 },
-  { id: "v2", name: "Photo Elite Studio", category: "Photographes", city: "Tunis", plan: "PRO", status: "PENDING", joined: "14 jan. 2026", revenue: 79 },
-  { id: "v3", name: "Cake Paradise", category: "Gâteaux", city: "Sfax", plan: "PRO", status: "ACTIVE", joined: "10 jan. 2026", revenue: 79 },
-  { id: "v4", name: "DJ Maestro", category: "DJs", city: "Nabeul", plan: "BASIC", status: "ACTIVE", joined: "8 jan. 2026", revenue: 29 },
-  { id: "v5", name: "Décor Rêve", category: "Décorateurs", city: "Sousse", plan: "PRO", status: "PENDING", joined: "15 jan. 2026", revenue: 79 },
-  { id: "v6", name: "Le Jardin Royal", category: "Lieux de réception", city: "Sousse", plan: "PREMIUM", status: "ACTIVE", joined: "5 jan. 2026", revenue: 149 },
-  { id: "v7", name: "Henna & Art", category: "Artistes henné", city: "Monastir", plan: "BASIC", status: "SUSPENDED", joined: "1 jan. 2026", revenue: 0 },
-  { id: "v8", name: "Orchestre Carthage", category: "Groupes musicaux", city: "Bizerte", plan: "PRO", status: "ACTIVE", joined: "3 jan. 2026", revenue: 79 },
-];
 
 const STATUS_STYLES: Record<Status, string> = {
   ACTIVE: "bg-green-500/10 text-green-600",
@@ -45,23 +34,62 @@ const PLAN_STYLES: Record<Plan, string> = {
 };
 
 export default function AdminVendorsPage() {
-  const [vendors, setVendors] = useState<Vendor[]>(INITIAL_VENDORS);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<Status | "ALL">("ALL");
   const [filterPlan, setFilterPlan] = useState<Plan | "ALL">("ALL");
 
-  function updateStatus(id: string, status: Status) {
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/admin/vendors");
+      if (!res.ok) throw new Error("Erreur serveur");
+      const json = await res.json();
+      const mapped: Vendor[] = (json.data ?? []).map((v: any) => ({
+        id: v.id,
+        name: v.name ?? "",
+        category: v.category ?? "",
+        city: v.city ?? "",
+        plan: (v.plan ?? "BASIC") as Plan,
+        status: (v.status ?? "PENDING") as Status,
+        joined: v.joined ? new Date(v.joined).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }) : "",
+        revenue: v.revenue ?? 0,
+      }));
+      setVendors(mapped);
+    } catch {
+      setError("Impossible de charger les prestataires.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function updateStatus(id: string, status: Status) {
+    const prev = vendors.find((v) => v.id === id)?.status;
     setVendors((v) => v.map((x) => (x.id === id ? { ...x, status } : x)));
+    const res = await fetch(`/api/admin/vendors/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    if (!res.ok && prev) {
+      setVendors((v) => v.map((x) => (x.id === id ? { ...x, status: prev } : x)));
+    }
   }
 
   const filtered = vendors.filter((v) => {
-    const matchSearch = v.name.toLowerCase().includes(search.toLowerCase()) || v.city.toLowerCase().includes(search.toLowerCase());
+    const q = search.toLowerCase();
+    const matchSearch = !search || v.name.toLowerCase().includes(q) || v.city.toLowerCase().includes(q);
     const matchStatus = filterStatus === "ALL" || v.status === filterStatus;
     const matchPlan = filterPlan === "ALL" || v.plan === filterPlan;
     return matchSearch && matchStatus && matchPlan;
   });
 
-  const pending = vendors.filter((v) => v.status === "PENDING").length;
+  const pending = vendors.filter((v) => v.status === "PENDING");
 
   return (
     <div className="space-y-6 max-w-7xl">
@@ -69,15 +97,29 @@ export default function AdminVendorsPage() {
         <div>
           <h1 className="text-2xl font-bold">Prestataires</h1>
           <p className="text-muted-foreground mt-1">
-            {vendors.length} prestataires inscrits
-            {pending > 0 && (
+            {loading ? "Chargement..." : `${vendors.length} prestataires inscrits`}
+            {!loading && pending.length > 0 && (
               <span className="ml-2 rounded-full bg-yellow-500/10 px-2 py-0.5 text-xs font-semibold text-yellow-600">
-                {pending} en attente
+                {pending.length} en attente
               </span>
             )}
           </p>
         </div>
+        <button
+          onClick={load}
+          disabled={loading}
+          className="flex items-center gap-2 rounded-xl border px-4 py-2 text-sm hover:bg-muted transition-colors disabled:opacity-50"
+        >
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          Actualiser
+        </button>
       </div>
+
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
@@ -121,13 +163,13 @@ export default function AdminVendorsPage() {
       </div>
 
       {/* Pending approvals banner */}
-      {vendors.filter((v) => v.status === "PENDING").length > 0 && filterStatus === "ALL" && (
+      {pending.length > 0 && filterStatus === "ALL" && (
         <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4">
           <p className="text-sm font-semibold text-yellow-800 mb-3">
-            {vendors.filter((v) => v.status === "PENDING").length} prestataire(s) en attente d&apos;approbation
+            {pending.length} prestataire(s) en attente d&apos;approbation
           </p>
           <div className="space-y-2">
-            {vendors.filter((v) => v.status === "PENDING").map((v) => (
+            {pending.map((v) => (
               <div key={v.id} className="flex items-center justify-between gap-4 rounded-lg bg-white border border-yellow-100 px-4 py-2.5">
                 <div>
                   <p className="text-sm font-medium">{v.name}</p>
@@ -155,81 +197,87 @@ export default function AdminVendorsPage() {
 
       {/* Table */}
       <div className="rounded-2xl border bg-card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/30">
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Prestataire</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Catégorie</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Ville</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Plan</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Statut</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Inscrit le</th>
-                <th className="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((v) => (
-                <tr key={v.id} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
-                  <td className="px-4 py-3 font-medium">{v.name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{v.category}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{v.city}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${PLAN_STYLES[v.plan]}`}>
-                      {v.plan === "PREMIUM" && <Crown className="h-3 w-3" />}
-                      {v.plan === "PRO" && <Gem className="h-3 w-3" />}
-                      {v.plan}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[v.status]}`}>
-                      {STATUS_LABELS[v.status]}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">{v.joined}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button className="p-1.5 rounded-lg hover:bg-muted transition-colors" title="Voir le profil">
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                      </button>
-                      {v.status === "PENDING" && (
-                        <button
-                          onClick={() => updateStatus(v.id, "ACTIVE")}
-                          className="rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-500/20 transition-colors"
-                        >
-                          Approuver
-                        </button>
-                      )}
-                      {v.status === "ACTIVE" && (
-                        <button
-                          onClick={() => updateStatus(v.id, "SUSPENDED")}
-                          className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-500 hover:bg-red-500/20 transition-colors"
-                        >
-                          Suspendre
-                        </button>
-                      )}
-                      {v.status === "SUSPENDED" && (
-                        <button
-                          onClick={() => updateStatus(v.id, "ACTIVE")}
-                          className="rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-500/20 transition-colors"
-                        >
-                          Réactiver
-                        </button>
-                      )}
-                    </div>
-                  </td>
+        {loading ? (
+          <div className="flex items-center justify-center py-16 text-muted-foreground">
+            <Loader2 className="h-6 w-6 animate-spin mr-2" /> Chargement...
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/30">
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Prestataire</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Catégorie</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Ville</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Plan</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Statut</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Inscrit le</th>
+                  <th className="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
                 </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground text-sm">
-                    Aucun prestataire trouvé.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filtered.map((v) => (
+                  <tr key={v.id} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
+                    <td className="px-4 py-3 font-medium">{v.name}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{v.category}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{v.city}</td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${PLAN_STYLES[v.plan]}`}>
+                        {v.plan === "PREMIUM" && <Crown className="h-3 w-3" />}
+                        {v.plan === "PRO" && <Gem className="h-3 w-3" />}
+                        {v.plan}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[v.status]}`}>
+                        {STATUS_LABELS[v.status]}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">{v.joined}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button className="p-1.5 rounded-lg hover:bg-muted transition-colors" title="Voir le profil">
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        </button>
+                        {v.status === "PENDING" && (
+                          <button
+                            onClick={() => updateStatus(v.id, "ACTIVE")}
+                            className="rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-500/20 transition-colors"
+                          >
+                            Approuver
+                          </button>
+                        )}
+                        {v.status === "ACTIVE" && (
+                          <button
+                            onClick={() => updateStatus(v.id, "SUSPENDED")}
+                            className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-500 hover:bg-red-500/20 transition-colors"
+                          >
+                            Suspendre
+                          </button>
+                        )}
+                        {v.status === "SUSPENDED" && (
+                          <button
+                            onClick={() => updateStatus(v.id, "ACTIVE")}
+                            className="rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-500/20 transition-colors"
+                          >
+                            Réactiver
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground text-sm">
+                      Aucun prestataire trouvé.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

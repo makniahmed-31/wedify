@@ -55,6 +55,11 @@ export class AdminQueryDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  plan?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsDateString()
   from?: string;
 

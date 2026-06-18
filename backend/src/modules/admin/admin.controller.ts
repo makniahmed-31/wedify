@@ -1,17 +1,13 @@
 import {
-  Controller, Get, Put, Delete, Post, Body, Param, Query, UseGuards,
+  Controller, Get, Put, Post, Body, Param, Query, UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import { AdminVendorActionDto, AdminQueryDto } from './dto/admin.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { Roles } from '../../common/decorators/roles.decorator';
+import { AdminSecretGuard } from '../../common/guards/admin-secret.guard';
 
 @ApiTags('admin')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@UseGuards(AdminSecretGuard)
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
@@ -34,28 +30,16 @@ export class AdminController {
     return this.adminService.actionOnVendor(id, dto);
   }
 
+  @Post('seed')
+  @ApiOperation({ summary: '[Admin] Seed demo vendors (skips if DB already has data)' })
+  seed() {
+    return this.adminService.seed();
+  }
+
   @Get('users')
   @ApiOperation({ summary: '[Admin] List all users' })
   listUsers(@Query() query: AdminQueryDto) {
     return this.adminService.listUsers(query);
-  }
-
-  @Put('users/:id/ban')
-  @ApiOperation({ summary: '[Admin] Ban a user account' })
-  banUser(@Param('id') id: string, @Body('reason') reason: string) {
-    return this.adminService.banUser(id, reason);
-  }
-
-  @Get('bookings')
-  @ApiOperation({ summary: '[Admin] List all bookings' })
-  listBookings(@Query() query: AdminQueryDto) {
-    return this.adminService.listBookings(query);
-  }
-
-  @Post('bookings/:id/refund')
-  @ApiOperation({ summary: '[Admin] Process a refund for a booking' })
-  refund(@Param('id') id: string, @Body('amount') amount?: number) {
-    return this.adminService.processRefund(id, amount);
   }
 
   @Get('audit-log')
