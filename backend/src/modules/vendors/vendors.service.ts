@@ -42,10 +42,18 @@ export class VendorsService {
 
   async findAll(filters: Record<string, any>, page: number, limit: number) {
     const qb = this.repo.createQueryBuilder('v').where('v.status = :status', { status: 'ACTIVE' });
-    if (filters.category) qb.andWhere('v.category ILIKE :cat', { cat: `%${filters.category}%` });
-    if (filters.city) qb.andWhere('v.city ILIKE :city', { city: `%${filters.city}%` });
+    if (filters.category) qb.andWhere('v.categorySlug = :cat', { cat: filters.category });
+    if (filters.city) qb.andWhere('v.citySlug = :city', { city: filters.city });
+    if (filters.minPrice) qb.andWhere('v.minPrice >= :min', { min: filters.minPrice });
+    if (filters.maxPrice) qb.andWhere('v.maxPrice <= :max', { max: filters.maxPrice });
+    qb.orderBy('v.rankScore', 'DESC');
     const [data, total] = await qb.skip((+page - 1) * +limit).take(+limit).getManyAndCount();
-    return { data: data.map((v) => this.toDto(v)), total, page, limit };
+    return {
+      data: data.map((v) => this.toPublic(v)),
+      total,
+      page,
+      limit,
+    };
   }
 
   async updateStatus(vendorId: string, status: string): Promise<VendorResponseDto> {
@@ -61,6 +69,36 @@ export class VendorsService {
 
   async getVendorStats(vendorId: string) {
     throw new Error('Not implemented');
+  }
+
+  toPublic(v: Vendor) {
+    return {
+      id: v.id,
+      slug: v.slug,
+      businessName: v.businessName,
+      tagline: v.tagline,
+      category: v.category,
+      categorySlug: v.categorySlug,
+      city: v.city,
+      citySlug: v.citySlug,
+      coverImage: v.coverImage,
+      plan: v.plan,
+      status: v.status,
+      rating: v.averageRating,
+      reviewCount: v.reviewCount,
+      isVerified: v.isVerified,
+      isFeatured: v.isFeatured,
+      rankScore: v.rankScore,
+      minPrice: Number(v.minPrice) || 0,
+      maxPrice: Number(v.maxPrice) || 0,
+      responseTime: v.responseTime,
+      phone: v.phone,
+      whatsapp: v.whatsapp,
+      email: v.email,
+      website: v.website,
+      yearsInBusiness: v.yearsInBusiness,
+      createdAt: v.createdAt,
+    };
   }
 
   private toDto(vendor: Vendor, userId = ''): VendorResponseDto {
