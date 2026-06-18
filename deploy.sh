@@ -32,7 +32,8 @@ if [ -f "$STANDALONE/frontend/server.js" ]; then
   cp -r $STANDALONE $PROD_FRONTEND/.next/standalone
   # Update PM2 to use nested path
   pm2 delete wedify-frontend 2>/dev/null || true
-  PORT=4000 pm2 start $PROD_FRONTEND/.next/standalone/frontend/server.js \
+  PORT=4000 BACKEND_INTERNAL_URL=http://localhost:4001 ADMIN_SECRET=wedify_admin_2026_secret \
+    pm2 start $PROD_FRONTEND/.next/standalone/frontend/server.js \
     --name wedify-frontend \
     --cwd $PROD_FRONTEND/.next/standalone
 else
@@ -41,8 +42,10 @@ else
   cp -r $REPO/frontend/public $STANDALONE/public 2>/dev/null || true
   rm -rf $PROD_FRONTEND/.next/standalone
   cp -r $STANDALONE $PROD_FRONTEND/.next/standalone
-  PORT=4000 pm2 restart wedify-frontend --update-env 2>/dev/null || \
-    PORT=4000 pm2 start $PROD_FRONTEND/.next/standalone/server.js \
+  PORT=4000 BACKEND_INTERNAL_URL=http://localhost:4001 ADMIN_SECRET=wedify_admin_2026_secret \
+    pm2 restart wedify-frontend --update-env 2>/dev/null || \
+    PORT=4000 BACKEND_INTERNAL_URL=http://localhost:4001 ADMIN_SECRET=wedify_admin_2026_secret \
+    pm2 start $PROD_FRONTEND/.next/standalone/server.js \
       --name wedify-frontend \
       --cwd $PROD_FRONTEND/.next/standalone
 fi
