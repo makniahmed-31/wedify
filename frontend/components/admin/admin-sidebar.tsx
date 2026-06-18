@@ -5,31 +5,44 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, Store, Tag, CreditCard,
   BarChart3, FileText, Search, Settings, Heart,
-  LogOut, Star, Home, Sliders,
+  LogOut, Star, Home, Sliders, X, ShieldCheck,
 } from "lucide-react";
 
 const NAV = [
-  { label: "Overview", href: "/admin", icon: LayoutDashboard },
-  { label: "Vendors", href: "/admin/vendors", icon: Store },
-  { label: "Users", href: "/admin/users", icon: Users },
-  { label: "Categories", href: "/admin/categories", icon: Tag },
-  { label: "Subscriptions", href: "/admin/subscriptions", icon: CreditCard },
-  { label: "Revenue", href: "/admin/revenue", icon: BarChart3 },
-  { label: "Content", href: "/admin/content", icon: FileText },
-  { label: "Reviews", href: "/admin/reviews", icon: Star },
-  { label: "SEO Monitor", href: "/admin/seo", icon: Search },
-  { label: "Homepage", href: "/admin/homepage", icon: Home },
-  { label: "Ranking", href: "/admin/ranking", icon: Sliders },
-  { label: "Settings", href: "/admin/settings", icon: Settings },
+  { label: "Vue d'ensemble", href: "/admin", icon: LayoutDashboard },
+  { label: "Prestataires", href: "/admin/vendors", icon: Store },
+  { label: "Utilisateurs", href: "/admin/users", icon: Users },
+  { label: "Catégories", href: "/admin/categories", icon: Tag },
+  { label: "Abonnements", href: "/admin/subscriptions", icon: CreditCard },
+  { label: "Revenus", href: "/admin/revenue", icon: BarChart3 },
+  { label: "Contenu", href: "/admin/content", icon: FileText },
+  { label: "Avis clients", href: "/admin/reviews", icon: Star },
+  { label: "SEO", href: "/admin/seo", icon: Search },
+  { label: "Page d'accueil", href: "/admin/homepage", icon: Home },
+  { label: "Classement", href: "/admin/ranking", icon: Sliders },
+  { label: "Paramètres", href: "/admin/settings", icon: Settings },
 ];
 
-export function AdminSidebar() {
+interface Props {
+  onClose?: () => void;
+}
+
+export function AdminSidebar({ onClose }: Props) {
   const pathname = usePathname();
   return (
-    <aside className="flex w-64 shrink-0 flex-col bg-gray-950 text-gray-100 min-h-screen">
-      <div className="flex h-16 items-center gap-2 px-5 border-b border-white/10">
-        <Heart className="h-5 w-5 fill-primary text-primary" />
-        <span className="font-bold">Wedify Admin</span>
+    <aside className="flex w-64 shrink-0 flex-col bg-gray-950 text-gray-100 min-h-screen h-full">
+      <div className="flex h-16 items-center gap-2 px-5 border-b border-white/10 shrink-0">
+        <ShieldCheck className="h-5 w-5 text-primary" />
+        <span className="font-bold">Super Admin</span>
+        <span className="ml-auto text-xs text-gray-500">Wedify</span>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="lg:hidden ml-1 p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+          >
+            <X className="h-4 w-4 text-gray-400" />
+          </button>
+        )}
       </div>
       <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
         {NAV.map(({ label, href, icon: Icon }) => {
@@ -38,6 +51,7 @@ export function AdminSidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onClose}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
                 active ? "bg-white/10 text-white" : "text-gray-400 hover:bg-white/5 hover:text-white"
               }`}
@@ -48,9 +62,15 @@ export function AdminSidebar() {
           );
         })}
       </nav>
-      <div className="border-t border-white/10 p-3">
+      <div className="border-t border-white/10 p-3 shrink-0">
+        <Link
+          href="/"
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white mb-0.5"
+        >
+          <Heart className="h-4 w-4" /> Voir le site
+        </Link>
         <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-400 hover:bg-red-500/10 hover:text-red-400">
-          <LogOut className="h-4 w-4" /> Sign Out
+          <LogOut className="h-4 w-4" /> Se déconnecter
         </button>
       </div>
     </aside>
