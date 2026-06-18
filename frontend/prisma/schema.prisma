@@ -1,0 +1,587 @@
+// ─── Wedify Database Schema ─────────────────────────────────────────────────
+// PostgreSQL via Prisma ORM
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  CUSTOMER
+  VENDOR
+  ADMIN
+}
+
+enum VendorStatus {
+  ACTIVE
+  PENDING
+  SUSPENDED
+  INACTIVE
+}
+
+enum SubscriptionPlan {
+  BASIC
+  PRO
+  PREMIUM
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  TRIALING
+  EXPIRED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  WHATSAPP
+  IN_APP
+}
+
+enum PriceUnit {
+  FIXED
+  PER_PERSON
+  PER_HOUR
+  STARTING_FROM
+}
+
+enum BlockType {
+  HERO
+  ABOUT
+  SERVICES
+  GALLERY
+  PRICING
+  TESTIMONIALS
+  FAQ
+  CONTACT
+  CTA
+  VIDEO
+}
+
+// ─── User ─────────────────────────────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  passwordHash  String
+  name          String
+  avatar        String?
+  phone         String?
+  role          UserRole @default(CUSTOMER)
+  isActive      Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vendor        Vendor?
+  bookings      Booking[]
+  reviews       Review[]
+  notifications Notification[]
+  sessions      Session[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+// ─── Vendor ───────────────────────────────────────────────────────────────────
+
+model Vendor {
+  id              String       @id @default(cuid())
+  userId          String       @unique
+  slug            String       @unique
+  businessName    String
+  tagline         String?
+  description     String       @db.Text
+  phone           String
+  email           String
+  website         String?
+  whatsapp        String?
+  address         String?
+  status          VendorStatus @default(PENDING)
+  isVerified      Boolean      @default(false)
+  isFeatured      Boolean      @default(false)
+  rankScore       Float        @default(0)
+  yearsInBusiness Int?
+  coverImage      String?
+  logoImage       String?
+  minPrice        Float?
+  maxPrice        Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id])
+  categoryId String
+  category   Category    @relation(fields: [categoryId], references: [id])
+  cityId     String
+  city       City        @relation(fields: [cityId], references: [id])
+  themeId    String?
+  theme      VendorTheme? @relation(fields: [themeId], references: [id])
+
+  services     Service[]
+  packages     Package[]
+  gallery      VendorMedia[]
+  bookings     Booking[]
+  reviews      Review[]
+  subscription Subscription?
+  seo          VendorSEO?
+  analytics    VendorAnalytics?
+  pageBlocks   PageBlock[]
+  languages    VendorLanguage[]
+  notifications Notification[]
+  rankHistory  RankHistory[]
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([cityId])
+  @@index([status])
+  @@index([rankScore(sort: Desc)])
+  @@index([isFeatured])
+}
+
+model VendorLanguage {
+  id       String @id @default(cuid())
+  vendorId String
+  language String
+
+  vendor Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@unique([vendorId, language])
+  @@index([vendorId])
+}
+
+// ─── Category ─────────────────────────────────────────────────────────────────
+
+model Category {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  nameAr      String?
+  icon        String
+  description String?
+  image       String?
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  vendors Vendor[]
+
+  @@index([slug])
+  @@index([isActive])
+}
+
+// ─── City ─────────────────────────────────────────────────────────────────────
+
+model City {
+  id       String  @id @default(cuid())
+  slug     String  @unique
+  name     String
+  nameAr   String?
+  region   String?
+  image    String?
+  isActive Boolean @default(true)
+
+  vendors Vendor[]
+
+  @@index([slug])
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
+
+model Service {
+  id          String    @id @default(cuid())
+  vendorId    String
+  name        String
+  description String    @db.Text
+  price       Float
+  priceUnit   PriceUnit @default(FIXED)
+  duration    String?
+  image       String?
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vendor   Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+
+  @@index([vendorId])
+  @@index([isActive])
+}
+
+// ─── Package ──────────────────────────────────────────────────────────────────
+
+model Package {
+  id          String    @id @default(cuid())
+  vendorId    String
+  name        String
+  description String    @db.Text
+  price       Float
+  priceUnit   PriceUnit @default(FIXED)
+  isPopular   Boolean   @default(false)
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vendor   Vendor           @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  features PackageFeature[]
+  bookings Booking[]
+
+  @@index([vendorId])
+}
+
+model PackageFeature {
+  id        String @id @default(cuid())
+  packageId String
+  feature   String
+  sortOrder Int    @default(0)
+
+  package Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@index([packageId])
+}
+
+// ─── Booking ──────────────────────────────────────────────────────────────────
+
+model Booking {
+  id                 String        @id @default(cuid())
+  vendorId           String
+  customerId         String
+  serviceId          String?
+  packageId          String?
+  eventDate          DateTime
+  eventTime          String?
+  guestCount         Int?
+  status             BookingStatus @default(PENDING)
+  totalAmount        Float?
+  notes              String?       @db.Text
+  confirmedAt        DateTime?
+  cancelledAt        DateTime?
+  completedAt        DateTime?
+  cancellationReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vendor   Vendor   @relation(fields: [vendorId], references: [id])
+  customer User     @relation(fields: [customerId], references: [id])
+  service  Service? @relation(fields: [serviceId], references: [id])
+  package  Package? @relation(fields: [packageId], references: [id])
+  payment  Payment?
+  review   Review?
+
+  @@index([vendorId])
+  @@index([customerId])
+  @@index([status])
+  @@index([eventDate])
+}
+
+// ─── Payment ──────────────────────────────────────────────────────────────────
+
+model Payment {
+  id              String        @id @default(cuid())
+  bookingId       String        @unique
+  amount          Float
+  currency        String        @default("TND")
+  status          PaymentStatus @default(PENDING)
+  method          String?
+  transactionId   String?       @unique
+  gatewayResponse Json?
+  paidAt          DateTime?
+  refundedAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+
+  @@index([status])
+}
+
+// ─── Review ───────────────────────────────────────────────────────────────────
+
+model Review {
+  id          String   @id @default(cuid())
+  vendorId    String
+  customerId  String
+  bookingId   String?  @unique
+  rating      Int
+  title       String?
+  body        String   @db.Text
+  isVerified  Boolean  @default(false)
+  isApproved  Boolean  @default(false)
+  vendorReply String?  @db.Text
+  repliedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vendor   Vendor       @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  customer User         @relation(fields: [customerId], references: [id])
+  booking  Booking?     @relation(fields: [bookingId], references: [id])
+  photos   ReviewPhoto[]
+
+  @@index([vendorId])
+  @@index([customerId])
+  @@index([isApproved])
+  @@index([rating])
+}
+
+model ReviewPhoto {
+  id       String @id @default(cuid())
+  reviewId String
+  url      String
+
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([reviewId])
+}
+
+// ─── Subscription ─────────────────────────────────────────────────────────────
+
+model Subscription {
+  id                 String             @id @default(cuid())
+  vendorId           String             @unique
+  plan               SubscriptionPlan   @default(BASIC)
+  status             SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean            @default(false)
+  gatewayId          String?            @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vendor   Vendor                @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  payments SubscriptionPayment[]
+
+  @@index([status])
+  @@index([plan])
+}
+
+model SubscriptionPayment {
+  id             String        @id @default(cuid())
+  subscriptionId String
+  amount         Float
+  currency       String        @default("TND")
+  status         PaymentStatus
+  paidAt         DateTime?
+  invoiceUrl     String?
+
+  createdAt DateTime @default(now())
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@index([subscriptionId])
+}
+
+// ─── Media ────────────────────────────────────────────────────────────────────
+
+model VendorMedia {
+  id        String  @id @default(cuid())
+  vendorId  String
+  url       String
+  alt       String?
+  type      String  @default("IMAGE")
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+
+  vendor Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+}
+
+// ─── Theme ────────────────────────────────────────────────────────────────────
+
+model VendorTheme {
+  id             String  @id @default(cuid())
+  name           String  @unique
+  primaryColor   String
+  secondaryColor String
+  accentColor    String
+  fontHeading    String
+  fontBody       String
+  isBuiltIn      Boolean @default(true)
+
+  vendors Vendor[]
+}
+
+// ─── SEO ──────────────────────────────────────────────────────────────────────
+
+model VendorSEO {
+  id              String   @id @default(cuid())
+  vendorId        String   @unique
+  metaTitle       String?
+  metaDescription String?
+  keywords        String[] @default([])
+  score           Int      @default(0)
+  ogImage         String?
+  canonicalUrl    String?
+
+  updatedAt DateTime @updatedAt
+
+  vendor Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+}
+
+// ─── Analytics ────────────────────────────────────────────────────────────────
+
+model VendorAnalytics {
+  id             String    @id @default(cuid())
+  vendorId       String    @unique
+  totalViews     Int       @default(0)
+  totalClicks    Int       @default(0)
+  totalLeads     Int       @default(0)
+  totalBookings  Int       @default(0)
+  totalRevenue   Float     @default(0)
+  lastActivityAt DateTime?
+
+  vendor     Vendor                @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  dailyStats AnalyticsDailyStat[]
+}
+
+model AnalyticsDailyStat {
+  id          String   @id @default(cuid())
+  analyticsId String
+  date        DateTime @db.Date
+  views       Int      @default(0)
+  clicks      Int      @default(0)
+  leads       Int      @default(0)
+  bookings    Int      @default(0)
+
+  analytics VendorAnalytics @relation(fields: [analyticsId], references: [id], onDelete: Cascade)
+
+  @@unique([analyticsId, date])
+  @@index([analyticsId])
+  @@index([date])
+}
+
+// ─── Rank History ─────────────────────────────────────────────────────────────
+
+model RankHistory {
+  id         String   @id @default(cuid())
+  vendorId   String
+  score      Float
+  breakdown  Json
+  recordedAt DateTime @default(now())
+
+  vendor Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@index([recordedAt])
+}
+
+// ─── Notification ─────────────────────────────────────────────────────────────
+
+model Notification {
+  id       String              @id @default(cuid())
+  userId   String?
+  vendorId String?
+  channel  NotificationChannel @default(IN_APP)
+  type     String
+  title    String
+  body     String              @db.Text
+  isRead   Boolean             @default(false)
+  link     String?
+  metadata Json?
+  sentAt   DateTime?
+  readAt   DateTime?
+  createdAt DateTime           @default(now())
+
+  user   User?   @relation(fields: [userId], references: [id])
+  vendor Vendor? @relation(fields: [vendorId], references: [id])
+
+  @@index([userId])
+  @@index([vendorId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// ─── Page Builder ─────────────────────────────────────────────────────────────
+
+model PageBlock {
+  id        String    @id @default(cuid())
+  vendorId  String
+  type      BlockType
+  sortOrder Int       @default(0)
+  isVisible Boolean   @default(true)
+  config    Json
+
+  vendor Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+}
+
+// ─── Blog ─────────────────────────────────────────────────────────────────────
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  excerpt     String
+  body        String    @db.Text
+  coverImage  String?
+  authorId    String
+  tags        String[]  @default([])
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  readingTime Int       @default(5)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([isPublished])
+  @@index([publishedAt])
+}
+
+// ─── Platform Config ──────────────────────────────────────────────────────────
+
+model PlatformConfig {
+  id    String @id @default(cuid())
+  key   String @unique
+  value Json
+
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+}

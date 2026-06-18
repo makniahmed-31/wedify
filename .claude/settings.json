@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx prisma *)",
+      "Bash(npx tsc *)",
+      "Bash(mkdir frontend *)",
+      "Bash(cp -r app components lib public prisma next.config.ts package.json package-lock.json tsconfig.json eslint.config.mjs postcss.config.mjs components.json next-env.d.ts .gitignore Dockerfile.frontend frontend/)",
+      "Bash(mv frontend/Dockerfile.frontend frontend/Dockerfile)",
+      "Bash(rm -rf app components lib prisma Dockerfile.frontend)",
+      "Bash(rm -f next.config.ts package.json package-lock.json tsconfig.json eslint.config.mjs postcss.config.mjs components.json next-env.d.ts)",
+      "Bash(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@187.124.39.154 \"uname -a && cat /etc/os-release | head -4\")",
+      "Bash(ssh -o StrictHostKeyChecking=no root@187.124.39.154 \"apt-get update -qq && apt-get install -y postgresql postgresql-contrib 2>&1 | tail -5\")",
+      "Bash(ssh -o StrictHostKeyChecking=no root@187.124.39.154 \"psql --version && systemctl is-active postgresql\")",
+      "Bash(ssh -o StrictHostKeyChecking=no root@187.124.39.154 \"sudo -u postgres psql -c \\\\\"CREATE USER wedify WITH PASSWORD 'Wedify2025!Secure' CREATEDB;\\\\\" 2>&1 && sudo -u postgres psql -c \\\\\"CREATE DATABASE wedify OWNER wedify;\\\\\" 2>&1 && sudo -u postgres psql -c \\\\\"GRANT ALL PRIVILEGES ON DATABASE wedify TO wedify;\\\\\" 2>&1\")",
+      "Bash(ssh -o StrictHostKeyChecking=no root@187.124.39.154 \"find /etc/postgresql -name pg_hba.conf && find /var/lib/postgresql -name pg_hba.conf 2>/dev/null\")",
+      "Bash(ssh -o StrictHostKeyChecking=no root@187.124.39.154 ' *)",
+      "Bash(ssh -o StrictHostKeyChecking=no root@187.124.39.154 \"PGPASSWORD='Wedify2025!Secure' psql -U wedify -d wedify -h 127.0.0.1 -c '\\\\conninfo'\")",
+      "Bash(ssh -o StrictHostKeyChecking=no root@187.124.39.154 \"mkdir -p /var/www/wedify/frontend/{standalone,static,public} && echo ready\")",
+      "Bash(tar czf *)",
+      "Bash(ssh -o StrictHostKeyChecking=no root@187.124.39.154 \"cd /var/www/wedify/frontend && tar xzf - && echo 'standalone done'\")",
+      "Bash(ssh -o StrictHostKeyChecking=no root@187.124.39.154 \"cd /var/www/wedify/frontend && tar xzf - && echo 'static+public done'\")",
+      "Bash(ssh -o *)",
+      "Bash(ssh root@187.124.39.154 \"ls /etc/nginx/sites-enabled/ && echo '---' && nginx -T 2>/dev/null | grep -E 'server_name|listen|default_server' | head -40\")",
+      "Bash(ssh root@187.124.39.154 \"curl -s -o /dev/null -w '%{http_code}' http://187.124.39.154/ && echo '' && curl -s -o /dev/null -w '%{http_code}' http://187.124.39.154/api/v1/health\")",
+      "Bash(ssh root@187.124.39.154 \"curl -s http://127.0.0.1:4001/api/v1/health && echo '' && pm2 list\")",
+      "Bash(ssh root@187.124.39.154 \"ls /var/www/wedify/backend/src/ && cat /var/www/wedify/backend/src/main.ts\")",
+      "Bash(ssh root@187.124.39.154 \"cat /var/www/wedify/backend/src/app.module.ts\")",
+      "Bash(ssh root@187.124.39.154 *)",
+      "Read(//mnt/c/Users/user/Desktop/widget-consulting/**)",
+      "Bash(tar -czf /tmp/wedify-frontend.tar.gz --exclude='frontend/node_modules' --exclude='frontend/.next' --exclude='frontend/dist' frontend/)",
+      "Bash(scp -o StrictHostKeyChecking=no /tmp/wedify-frontend.tar.gz root@187.124.39.154:/tmp/)",
+      "Bash(tar -czf /tmp/wedify-components.tar.gz frontend/components/layout/header.tsx frontend/components/homepage/hero.tsx)",
+      "Bash(scp -o StrictHostKeyChecking=no /tmp/wedify-components.tar.gz root@187.124.39.154:/tmp/)"
+    ]
+  }
+}
