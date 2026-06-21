@@ -59,7 +59,7 @@ export function DashboardSidebar({ onClose }: Props) {
         {onClose && (
           <button
             onClick={onClose}
-            className="lg:hidden ml-1 p-1.5 rounded-lg hover:bg-sidebar-accent/50 transition-colors"
+            className="lg:hidden ml-1 p-1.5 rounded-sm hover:bg-sidebar-accent/50 transition-colors"
             aria-label="Fermer le menu"
           >
             <X className="h-4 w-4 text-sidebar-foreground/70" />
@@ -70,19 +70,24 @@ export function DashboardSidebar({ onClose }: Props) {
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
         {NAV.map(({ label, href, icon: Icon }) => {
-          const active = href === "/dashboard" ? pathname === href : pathname.startsWith(href);
+          const active =
+            href === "/dashboard"
+              ? pathname === href
+              : pathname.startsWith(href);
           return (
             <Link
               key={href}
               href={href}
               onClick={onClose}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
                 active
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
                   : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
               }`}
             >
-              <Icon className={`h-4 w-4 shrink-0 ${active ? "text-sidebar-primary" : ""}`} />
+              <Icon
+                className={`h-4 w-4 shrink-0 ${active ? "text-sidebar-primary" : ""}`}
+              />
               {label}
             </Link>
           );
@@ -94,11 +99,11 @@ export function DashboardSidebar({ onClose }: Props) {
         <Link
           href="/dashboard/notifications"
           onClick={onClose}
-          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+          className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
         >
           <Bell className="h-4 w-4" /> Notifications
         </Link>
-        <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-red-500/10 hover:text-red-400">
+        <button className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-red-500/10 hover:text-red-400">
           <LogOut className="h-4 w-4" /> Se déconnecter
         </button>
       </div>

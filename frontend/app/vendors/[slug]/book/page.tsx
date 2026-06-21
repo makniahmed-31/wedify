@@ -4,14 +4,27 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-import { Calendar, Clock, Users, MessageSquare, CheckCircle } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Users,
+  MessageSquare,
+  CheckCircle,
+} from "lucide-react";
 import { getVendorBySlug } from "@/lib/mock-data";
 
 export default function BookingPage() {
   const params = useParams();
   const vendor = getVendorBySlug(params.slug as string);
   const [step, setStep] = useState<"form" | "success">("form");
-  const [form, setForm] = useState({ name: "", email: "", phone: "", date: "", guests: "", notes: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    date: "",
+    guests: "",
+    notes: "",
+  });
 
   if (!vendor) return null;
 
@@ -30,43 +43,56 @@ export default function BookingPage() {
               <div className="mb-8">
                 <h1 className="text-2xl font-bold">Request a Quote</h1>
                 <p className="text-muted-foreground mt-1">
-                  Send a booking request to <strong>{vendor.businessName}</strong>
+                  Send a booking request to{" "}
+                  <strong>{vendor.businessName}</strong>
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1.5">Full Name *</label>
+                    <label className="block text-sm font-medium mb-1.5">
+                      Full Name *
+                    </label>
                     <input
                       required
                       value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      className="w-full rounded-xl border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
+                      onChange={(e) =>
+                        setForm({ ...form, name: e.target.value })
+                      }
+                      className="w-full rounded-md border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
                       placeholder="Your name"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1.5">Phone Number *</label>
+                    <label className="block text-sm font-medium mb-1.5">
+                      Phone Number *
+                    </label>
                     <input
                       required
                       type="tel"
                       value={form.phone}
-                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                      className="w-full rounded-xl border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
+                      onChange={(e) =>
+                        setForm({ ...form, phone: e.target.value })
+                      }
+                      className="w-full rounded-md border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
                       placeholder="+216 xx xxx xxx"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1.5">Email *</label>
+                  <label className="block text-sm font-medium mb-1.5">
+                    Email *
+                  </label>
                   <input
                     required
                     type="email"
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full rounded-xl border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
+                    className="w-full rounded-md border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
                     placeholder="your@email.com"
                   />
                 </div>
@@ -80,8 +106,10 @@ export default function BookingPage() {
                       required
                       type="date"
                       value={form.date}
-                      onChange={(e) => setForm({ ...form, date: e.target.value })}
-                      className="w-full rounded-xl border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
+                      onChange={(e) =>
+                        setForm({ ...form, date: e.target.value })
+                      }
+                      className="w-full rounded-md border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
                     />
                   </div>
                   <div>
@@ -91,8 +119,10 @@ export default function BookingPage() {
                     <input
                       type="number"
                       value={form.guests}
-                      onChange={(e) => setForm({ ...form, guests: e.target.value })}
-                      className="w-full rounded-xl border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
+                      onChange={(e) =>
+                        setForm({ ...form, guests: e.target.value })
+                      }
+                      className="w-full rounded-md border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
                       placeholder="e.g. 200"
                       min="1"
                     />
@@ -101,13 +131,16 @@ export default function BookingPage() {
 
                 <div>
                   <label className="block text-sm font-medium mb-1.5 flex items-center gap-1.5">
-                    <MessageSquare className="h-4 w-4" /> Notes / Special Requests
+                    <MessageSquare className="h-4 w-4" /> Notes / Special
+                    Requests
                   </label>
                   <textarea
                     value={form.notes}
-                    onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, notes: e.target.value })
+                    }
                     rows={4}
-                    className="w-full rounded-xl border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary resize-none"
+                    className="w-full rounded-md border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary resize-none"
                     placeholder="Tell the vendor about your wedding vision..."
                   />
                 </div>
@@ -120,7 +153,8 @@ export default function BookingPage() {
                 </button>
 
                 <p className="text-xs text-center text-muted-foreground">
-                  By submitting, you agree to our Terms of Service. The vendor will respond within {vendor.responseTime ?? "24 hours"}.
+                  By submitting, you agree to our Terms of Service. The vendor
+                  will respond within {vendor.responseTime ?? "24 hours"}.
                 </p>
               </form>
             </>
@@ -129,8 +163,9 @@ export default function BookingPage() {
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold mb-2">Request Sent!</h2>
               <p className="text-muted-foreground max-w-sm mx-auto mb-6">
-                Your booking request has been sent to <strong>{vendor.businessName}</strong>.
-                They will contact you within {vendor.responseTime ?? "24 hours"}.
+                Your booking request has been sent to{" "}
+                <strong>{vendor.businessName}</strong>. They will contact you
+                within {vendor.responseTime ?? "24 hours"}.
               </p>
               <a
                 href={`/vendors/${vendor.slug}`}

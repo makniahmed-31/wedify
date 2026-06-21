@@ -72,8 +72,8 @@ export function SearchFilters() {
         className="rounded-full border bg-background px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-primary"
       >
         <option value="">All Plans</option>
-        <option value="PREMIUM">Premium Only</option>
-        <option value="PRO">Pro & Premium</option>
+        <option value="GOLD">Premium Only</option>
+        <option value="SILVER">Pro & Premium</option>
       </select>
 
       {/* Sort */}

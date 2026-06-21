@@ -3,11 +3,56 @@ import type { Metadata } from "next";
 export const metadata: Metadata = { title: "Bookings" };
 
 const BOOKINGS = [
-  { id: "b1", name: "Sarah & Ahmed", phone: "+216 55 123 456", date: "2025-02-14", status: "PENDING", amount: 8000, service: "Gold Package", notes: "300 guests, outdoor ceremony" },
-  { id: "b2", name: "Fatima & Khalil", phone: "+216 55 234 567", date: "2025-03-22", status: "CONFIRMED", amount: 15000, service: "Diamond Package", notes: "500 guests" },
-  { id: "b3", name: "Leila & Omar", phone: "+216 55 345 678", date: "2025-04-05", status: "CONFIRMED", amount: 8000, service: "Gold Package", notes: "" },
-  { id: "b4", name: "Rim & Yassine", phone: "+216 55 456 789", date: "2024-12-20", status: "COMPLETED", amount: 8000, service: "Silver Package", notes: "" },
-  { id: "b5", name: "Imen & Chedi", phone: "+216 55 567 890", date: "2025-01-12", status: "CANCELLED", amount: 0, service: "Gold Package", notes: "Cancelled by couple" },
+  {
+    id: "b1",
+    name: "Sarah & Ahmed",
+    phone: "+216 55 123 456",
+    date: "2025-02-14",
+    status: "PENDING",
+    amount: 8000,
+    service: "Gold Package",
+    notes: "300 guests, outdoor ceremony",
+  },
+  {
+    id: "b2",
+    name: "Fatima & Khalil",
+    phone: "+216 55 234 567",
+    date: "2025-03-22",
+    status: "CONFIRMED",
+    amount: 15000,
+    service: "Diamond Package",
+    notes: "500 guests",
+  },
+  {
+    id: "b3",
+    name: "Leila & Omar",
+    phone: "+216 55 345 678",
+    date: "2025-04-05",
+    status: "CONFIRMED",
+    amount: 8000,
+    service: "Gold Package",
+    notes: "",
+  },
+  {
+    id: "b4",
+    name: "Rim & Yassine",
+    phone: "+216 55 456 789",
+    date: "2024-12-20",
+    status: "COMPLETED",
+    amount: 8000,
+    service: "Silver Package",
+    notes: "",
+  },
+  {
+    id: "b5",
+    name: "Imen & Chedi",
+    phone: "+216 55 567 890",
+    date: "2025-01-12",
+    status: "CANCELLED",
+    amount: 0,
+    service: "Gold Package",
+    notes: "Cancelled by couple",
+  },
 ];
 
 const STATUS_STYLES: Record<string, string> = {
@@ -23,7 +68,9 @@ export default function BookingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Bookings</h1>
-          <p className="text-muted-foreground mt-1">Manage all your booking requests</p>
+          <p className="text-muted-foreground mt-1">
+            Manage all your booking requests
+          </p>
         </div>
       </div>
 
@@ -35,7 +82,7 @@ export default function BookingsPage() {
           { label: "Completed", count: 1, color: "text-blue-600" },
           { label: "Cancelled", count: 1, color: "text-red-500" },
         ].map((s) => (
-          <div key={s.label} className="rounded-2xl border bg-card p-4">
+          <div key={s.label} className="rounded-lg border bg-card p-4">
             <p className={`text-2xl font-bold ${s.color}`}>{s.count}</p>
             <p className="text-sm text-muted-foreground mt-0.5">{s.label}</p>
           </div>
@@ -43,32 +90,53 @@ export default function BookingsPage() {
       </div>
 
       {/* Bookings table */}
-      <div className="rounded-2xl border bg-card overflow-hidden">
+      <div className="rounded-lg border bg-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Couple</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Event Date</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Service</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
-                <th className="px-4 py-3 text-right font-medium text-muted-foreground">Amount</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Actions</th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                  Couple
+                </th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                  Event Date
+                </th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                  Service
+                </th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                  Status
+                </th>
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">
+                  Amount
+                </th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
               {BOOKINGS.map((b) => (
-                <tr key={b.id} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
+                <tr
+                  key={b.id}
+                  className="border-b last:border-0 hover:bg-muted/20 transition-colors"
+                >
                   <td className="px-4 py-3">
                     <p className="font-medium">{b.name}</p>
                     <p className="text-xs text-muted-foreground">{b.phone}</p>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    {new Date(b.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    {new Date(b.date).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
                   </td>
                   <td className="px-4 py-3">{b.service}</td>
                   <td className="px-4 py-3">
-                    <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[b.status]}`}>
+                    <span
+                      className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[b.status]}`}
+                    >
                       {b.status}
                     </span>
                   </td>
@@ -79,12 +147,19 @@ export default function BookingsPage() {
                     <div className="flex gap-2">
                       {b.status === "PENDING" && (
                         <>
-                          <button className="rounded-lg bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600 hover:bg-green-500/20">Confirm</button>
-                          <button className="rounded-lg bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-500 hover:bg-red-500/20">Decline</button>
+                          <button className="rounded-sm bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600 hover:bg-green-500/20">
+                            Confirm
+                          </button>
+                          <button className="rounded-sm bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-500 hover:bg-red-500/20">
+                            Decline
+                          </button>
                         </>
                       )}
-                      {(b.status === "CONFIRMED" || b.status === "COMPLETED") && (
-                        <button className="rounded-lg bg-muted px-2.5 py-1 text-xs font-medium hover:bg-muted/80">View</button>
+                      {(b.status === "CONFIRMED" ||
+                        b.status === "COMPLETED") && (
+                        <button className="rounded-sm bg-muted px-2.5 py-1 text-xs font-medium hover:bg-muted/80">
+                          View
+                        </button>
                       )}
                     </div>
                   </td>

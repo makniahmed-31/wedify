@@ -1,0 +1,140 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "vendors": "مزودو الخدمات",
+    "promotions": "العروض",
+    "blog": "المدونة",
+    "cities": "المدن",
+    "contact": "اتصل بنا",
+    "login": "تسجيل الدخول",
+    "becomeVendor": "أصبح مزود خدمة"
+  },
+  "hero": {
+    "title": "ابحث عن أفضل مزودي الخدمات لـ",
+    "highlight": "زفافك في تونس",
+    "subtitle": "قاعات أفراح، مصورون، طاهون، مزينون وأكثر من ذلك.",
+    "findVendor": "ابحث عن مزود خدمة",
+    "postRequest": "نشر طلب"
+  },
+  "search": {
+    "category": "الفئة",
+    "allCategories": "جميع الفئات",
+    "city": "المدينة",
+    "allCities": "جميع المدن",
+    "budget": "الميزانية",
+    "allBudgets": "جميع الميزانيات",
+    "weddingDate": "تاريخ الزفاف",
+    "selectDate": "اختر تاريخاً",
+    "search": "بحث"
+  },
+  "categories": {
+    "title": "جميع فئات الزفاف",
+    "viewAll": "عرض الكل"
+  },
+  "vendors": {
+    "certifiedTitle": "مزودو الخدمات المعتمدون والموصى بهم",
+    "viewAll": "عرض جميع مزودي الخدمات",
+    "newTitle": "مزودو الخدمات الجدد",
+    "verified": "موثق",
+    "from": "ابتداءً من",
+    "quote": "بناءً على عرض",
+    "reviews": "تقييمات",
+    "addedOn": "أضيف في",
+    "discover": "اكتشف"
+  },
+  "promotions": {
+    "title": "عروض الزفاف الحالية",
+    "viewAll": "عرض جميع العروض",
+    "expires": "تنتهي في"
+  },
+  "services": {
+    "newTitle": "خدمات جديدة متاحة",
+    "viewAll": "عرض الكل"
+  },
+  "ads": {
+    "premium": "إعلان مميز",
+    "premiumSub": "إعلانك هنا (2/3)",
+    "classic": "إعلان كلاسيكي",
+    "classicSub": "إعلانك هنا (1/3)",
+    "adSpace": "مساحة إعلانية",
+    "learnMore": "اعرف المزيد"
+  },
+  "blog": {
+    "title": "نصائح وإلهام للزفاف",
+    "viewAll": "عرض جميع المقالات"
+  },
+  "cta": {
+    "title": "هل أنت محترف في مجال الأعراس؟",
+    "subtitle": "انضم إلى BonPlanMariage.tn وطور ظهورك أمام آلاف العرسان المقبلين.",
+    "becomeVendor": "أصبح مزود خدمة",
+    "viewPlans": "عرض الباقات ←"
+  },
+  "footer": {
+    "description": "BonPlanMariage.tn هي المنصة التونسية التي تربط العرسان بأفضل المحترفين في مجال الزفاف.",
+    "vendors": "مزودو الخدمات",
+    "popularCities": "المدن الشهيرة",
+    "allCities": "جميع المدن ←",
+    "actions": "إجراءات",
+    "becomeVendor": "♥ أصبح مزود خدمة",
+    "contactUs": "اتصل بنا",
+    "copyright": "جميع الحقوق محفوظة",
+    "legal": "الإشعارات القانونية",
+    "terms": "شروط الاستخدام",
+    "privacy": "سياسة الخصوصية"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "loginTitle": "سجّل دخولك إلى حسابك",
+    "loginSub": "ادخل إلى مساحتك الشخصية",
+    "withGoogle": "المتابعة مع Google",
+    "or": "أو",
+    "byEmail": "بالبريد الإلكتروني",
+    "byPhone": "بالهاتف",
+    "byPassword": "بكلمة المرور",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "password": "كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "rememberMe": "تذكرني",
+    "loginBtn": "تسجيل الدخول",
+    "noAccount": "ليس لديك حساب؟",
+    "createAccount": "إنشاء حساب",
+    "registerTitle": "إنشاء حساب",
+    "registerSub": "انضم إلى مجتمع العرسان المقبلين",
+    "lastName": "اللقب",
+    "firstName": "الاسم",
+    "registerBtn": "التسجيل",
+    "agreeTerms": "بإنشاء حساب، أنت توافق على",
+    "terms": "شروط الاستخدام",
+    "and": "و",
+    "privacy": "سياسة الخصوصية",
+    "alreadyAccount": "هل لديك حساب؟",
+    "loginSpace": "سجّل دخولك للوصول إلى مساحتك",
+    "loginLink": "تسجيل الدخول",
+    "trustedVendors": "مزودو خدمات موثوقون",
+    "trustedSub": "محترفون تثق بهم",
+    "reviews": "تقييمات حقيقية",
+    "reviewsSub": "آراء موثوقة من تجارب حقيقية",
+    "support": "دعم مخصص",
+    "supportSub": "في خدمتك في كل خطوة"
+  },
+  "plans": {
+    "title": "اختر الباقة المناسبة لك",
+    "subtitle": "عزز ظهورك وطور نشاطك مع باقاتنا الاحترافية",
+    "popular": "الأكثر شعبية",
+    "monthly": "/شهر",
+    "annual": "أو {price} دينار /سنة",
+    "save": "وفّر شهرين!",
+    "choosePlan": "اختر باقة {name}",
+    "compare": "قارن الباقات",
+    "secure": "دفع آمن 100%",
+    "secureSub": "معاملاتك محمية",
+    "cancel": "إلغاء في أي وقت",
+    "cancelSub": "بدون التزام",
+    "visibility": "مزيد من الظهور",
+    "visibilitySub": "استقطب المزيد من العملاء",
+    "support": "دعم على مدار الساعة",
+    "supportSub": "نحن هنا لمساعدتك"
+  }
+}

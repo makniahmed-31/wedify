@@ -4,7 +4,11 @@ import { useState } from "react";
 import { Menu, Heart } from "lucide-react";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -28,7 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex lg:hidden items-center h-14 px-4 border-b bg-background gap-3 shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg hover:bg-muted transition-colors"
+            className="p-2 rounded-sm hover:bg-muted transition-colors"
           >
             <Menu className="h-5 w-5" />
           </button>

@@ -31,7 +31,22 @@
       "Bash(tar -czf /tmp/wedify-frontend.tar.gz --exclude='frontend/node_modules' --exclude='frontend/.next' --exclude='frontend/dist' frontend/)",
       "Bash(scp -o StrictHostKeyChecking=no /tmp/wedify-frontend.tar.gz root@187.124.39.154:/tmp/)",
       "Bash(tar -czf /tmp/wedify-components.tar.gz frontend/components/layout/header.tsx frontend/components/homepage/hero.tsx)",
-      "Bash(scp -o StrictHostKeyChecking=no /tmp/wedify-components.tar.gz root@187.124.39.154:/tmp/)"
+      "Bash(scp -o StrictHostKeyChecking=no /tmp/wedify-components.tar.gz root@187.124.39.154:/tmp/)",
+      "Bash(git status *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git commit *)",
+      "Read(//c/Users/user/.claude/projects/c--Users-user-Desktop-widget-consulting-wedify/memory/**)",
+      "Bash(mkdir -p \"c:/Users/user/Desktop/widget-consulting/wedify/frontend/app/api/admin/vendors\" && mkdir -p \"c:/Users/user/Desktop/widget-consulting/wedify/frontend/app/api/admin/vendors/[id]\")",
+      "PowerShell(Get-Command psql -ErrorAction SilentlyContinue)",
+      "Bash(node -e \"const l = require\\('c:/Users/user/Desktop/widget-consulting/wedify/frontend/node_modules/lucide-react'\\); console.log\\(Object.keys\\(l\\).filter\\(k => /drone|candy|firework|sparkle|zap|wind/i.test\\(k\\)\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(node -e \"const icons = require\\('lucide-react'\\); const social = Object.keys\\(icons\\).filter\\(k => /facebook|instagram|youtube|twitter|tiktok/i.test\\(k\\)\\); console.log\\(social\\);\")",
+      "Bash(node -e \"const icons = require\\('lucide-react'\\); console.log\\(Object.keys\\(icons\\).filter\\(k => /social|share|link|web|globe/i.test\\(k\\)\\).slice\\(0,20\\)\\);\")",
+      "Read(//c/Program Files/PostgreSQL/**)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\user\\Desktop\\widget-consulting\\wedify\\frontend\\app\\api\\admin\\vendors"
     ]
   }
 }

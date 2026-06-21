@@ -1,38 +1,33 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowRight, Heart } from "lucide-react";
+import { Heart, ArrowRight, Gem } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
 export function CTASection() {
-  return (
-    <section className="py-16 lg:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl gradient-gold p-10 lg:p-16 text-center">
-          {/* Decorative circles */}
-          <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/10" />
-          <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-white/10" />
+  const t = useT();
 
-          <div className="relative z-10">
-            <Heart className="h-10 w-10 fill-white text-white mx-auto mb-4 opacity-80" />
-            <h2 className="text-3xl lg:text-5xl font-bold text-white mb-4">
-              Ready to List Your Business?
-            </h2>
-            <p className="text-white/80 text-lg max-w-2xl mx-auto mb-8">
-              Join 1,850+ wedding vendors already growing their business on Wedify. Get discovered by thousands of couples every month.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="/register/vendor"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-primary shadow-lg hover:shadow-xl transition-shadow"
-              >
-                Start Free Trial <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/pricing"
-                className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition-colors"
-              >
-                View Pricing
-              </Link>
+  return (
+    <section className="py-14 lg:py-16" style={{ background: "oklch(0.18 0.02 255)" }}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div className="flex items-start gap-5">
+            <div className="w-12 h-12 rounded-full border-2 border-amber-400/60 flex items-center justify-center shrink-0">
+              <Gem className="h-5 w-5 text-amber-400" />
             </div>
-            <p className="mt-4 text-sm text-white/60">No credit card required · Cancel anytime</p>
+            <div>
+              <h2 className="text-xl lg:text-2xl font-bold text-white mb-1">{t("cta.title")}</h2>
+              <p className="text-white/60 text-sm max-w-lg">{t("cta.subtitle")}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <Link href="/register/vendor" className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-coral hover:opacity-90 transition-opacity">
+              <Heart className="h-4 w-4 fill-white" />
+              {t("cta.becomeVendor")}
+            </Link>
+            <Link href="/dashboard/subscription" className="flex items-center gap-2 rounded-lg border border-white/20 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
+              {t("cta.viewPlans")} <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </div>

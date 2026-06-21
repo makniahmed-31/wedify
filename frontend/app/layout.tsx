@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Playfair_Display } from "next/font/google";
+import { Poppins, Playfair_Display, Noto_Sans_Arabic } from "next/font/google";
+import { I18nProvider } from "@/lib/i18n";
 import "./globals.css";
 
-const geistSans = Geist({
+const poppins = Poppins({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const playfair = Playfair_Display({
@@ -13,25 +15,31 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
+const notoArabic = Noto_Sans_Arabic({
+  variable: "--font-arabic",
+  subsets: ["arabic"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: {
-    default: "Wedify — La marketplace N°1 des mariages en Tunisie",
-    template: "%s | Wedify",
+    default: "BonPlanMariage.tn — La marketplace N°1 des mariages en Tunisie",
+    template: "%s | BonPlanMariage.tn",
   },
-  description: "Découvrez les meilleurs prestataires de mariage en Tunisie. Réservez photographes, salles, décorateurs et plus sur Wedify.",
-  keywords: ["mariage", "wedding", "Tunisie", "Tunis", "prestataires mariage", "salle de mariage"],
-  authors: [{ name: "Wedify" }],
-  creator: "Wedify",
-  metadataBase: new URL("https://wedify.tn"),
+  description: "Découvrez les meilleurs prestataires de mariage en Tunisie. Salles de fêtes, photographes, traiteurs, décorateurs et bien plus sur BonPlanMariage.tn.",
+  keywords: ["mariage", "tunisie", "prestataires mariage", "salle de mariage tunis", "photographe mariage", "traiteur mariage"],
+  authors: [{ name: "BonPlanMariage.tn" }],
+  creator: "BonPlanMariage.tn",
+  metadataBase: new URL("https://bonplanmariage.tn"),
   openGraph: {
     type: "website",
-    locale: "fr_FR",
-    url: "https://wedify.tn",
-    siteName: "Wedify",
+    locale: "fr_TN",
+    url: "https://bonplanmariage.tn",
+    siteName: "BonPlanMariage.tn",
   },
   twitter: {
     card: "summary_large_image",
-    creator: "@wedify_tn",
+    creator: "@bonplanmariage",
   },
   robots: {
     index: true,
@@ -48,9 +56,11 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${geistSans.variable} ${playfair.variable} h-full antialiased`}
+      className={`${poppins.variable} ${playfair.variable} ${notoArabic.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <I18nProvider>{children}</I18nProvider>
+      </body>
     </html>
   );
 }

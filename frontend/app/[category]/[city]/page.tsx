@@ -46,7 +46,7 @@ export default async function CategoryCityPage({ params }: Props) {
   if (!category || !city) notFound();
 
   const vendors = MOCK_VENDORS.filter(
-    (v) => v.category.slug === catSlug && v.city.slug === citySlug
+    (v) => v.category.slug === catSlug && v.city.slug === citySlug,
   );
 
   return (
@@ -57,9 +57,13 @@ export default async function CategoryCityPage({ params }: Props) {
         <div className="bg-secondary/50 border-b py-10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <nav className="text-sm text-muted-foreground mb-3">
-              <a href="/" className="hover:text-foreground">Home</a>
+              <a href="/" className="hover:text-foreground">
+                Home
+              </a>
               {" / "}
-              <a href={`/${catSlug}`} className="hover:text-foreground">{category.name}</a>
+              <a href={`/${catSlug}`} className="hover:text-foreground">
+                {category.name}
+              </a>
               {" / "}
               <span>{city.name}</span>
             </nav>
@@ -76,12 +80,16 @@ export default async function CategoryCityPage({ params }: Props) {
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           {/* SEO text block */}
-          <div className="bg-card border rounded-2xl p-6 mb-6">
-            <h2 className="font-semibold mb-2">About {category.name} in {city.name}</h2>
+          <div className="bg-card border rounded-lg p-6 mb-6">
+            <h2 className="font-semibold mb-2">
+              About {category.name} in {city.name}
+            </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Looking for the perfect {category.name.toLowerCase()} for your wedding in {city.name}?
-              Wedify connects you with {category.vendorCount}+ verified {category.name.toLowerCase()} across Tunisia.
-              Read genuine reviews, compare prices, and book directly — all in one place.
+              Looking for the perfect {category.name.toLowerCase()} for your
+              wedding in {city.name}? Wedify connects you with{" "}
+              {category.vendorCount}+ verified {category.name.toLowerCase()}{" "}
+              across Tunisia. Read genuine reviews, compare prices, and book
+              directly — all in one place.
             </p>
           </div>
 
@@ -92,11 +100,16 @@ export default async function CategoryCityPage({ params }: Props) {
           {vendors.length === 0 ? (
             <div className="py-20 text-center">
               <p className="text-5xl mb-4">{category.icon}</p>
-              <h2 className="text-xl font-semibold">No {category.name.toLowerCase()} in {city.name} yet</h2>
+              <h2 className="text-xl font-semibold">
+                No {category.name.toLowerCase()} in {city.name} yet
+              </h2>
               <p className="text-muted-foreground mt-2 mb-6">
                 Browse {category.name.toLowerCase()} in other cities.
               </p>
-              <a href={`/${catSlug}`} className="rounded-full border px-5 py-2.5 text-sm font-medium hover:bg-muted">
+              <a
+                href={`/${catSlug}`}
+                className="rounded-full border px-5 py-2.5 text-sm font-medium hover:bg-muted"
+              >
                 View all {category.name}
               </a>
             </div>

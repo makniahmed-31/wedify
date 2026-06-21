@@ -3,9 +3,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Users, Store, Tag, CreditCard,
-  BarChart3, FileText, Search, Settings, Heart,
-  LogOut, Star, Home, Sliders, X, ShieldCheck,
+  LayoutDashboard,
+  Users,
+  Store,
+  Tag,
+  CreditCard,
+  BarChart3,
+  FileText,
+  Search,
+  Settings,
+  Heart,
+  LogOut,
+  Star,
+  Home,
+  Sliders,
+  X,
+  ShieldCheck,
 } from "lucide-react";
 
 const NAV = [
@@ -38,7 +51,7 @@ export function AdminSidebar({ onClose }: Props) {
         {onClose && (
           <button
             onClick={onClose}
-            className="lg:hidden ml-1 p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+            className="lg:hidden ml-1 p-1.5 rounded-sm hover:bg-white/10 transition-colors"
           >
             <X className="h-4 w-4 text-gray-400" />
           </button>
@@ -46,17 +59,22 @@ export function AdminSidebar({ onClose }: Props) {
       </div>
       <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
         {NAV.map(({ label, href, icon: Icon }) => {
-          const active = href === "/admin" ? pathname === href : pathname.startsWith(href);
+          const active =
+            href === "/admin" ? pathname === href : pathname.startsWith(href);
           return (
             <Link
               key={href}
               href={href}
               onClick={onClose}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                active ? "bg-white/10 text-white" : "text-gray-400 hover:bg-white/5 hover:text-white"
+              className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+                active
+                  ? "bg-white/10 text-white"
+                  : "text-gray-400 hover:bg-white/5 hover:text-white"
               }`}
             >
-              <Icon className={`h-4 w-4 shrink-0 ${active ? "text-primary" : ""}`} />
+              <Icon
+                className={`h-4 w-4 shrink-0 ${active ? "text-primary" : ""}`}
+              />
               {label}
             </Link>
           );
@@ -65,7 +83,7 @@ export function AdminSidebar({ onClose }: Props) {
       <div className="border-t border-white/10 p-3 shrink-0">
         <Link
           href="/"
-          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white mb-0.5"
+          className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white mb-0.5"
         >
           <Heart className="h-4 w-4" /> Voir le site
         </Link>
@@ -74,7 +92,7 @@ export function AdminSidebar({ onClose }: Props) {
             document.cookie = "wedify_admin_auth=; path=/; max-age=0";
             window.location.href = "/admin/login";
           }}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-400 hover:bg-red-500/10 hover:text-red-400"
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-gray-400 hover:bg-red-500/10 hover:text-red-400"
         >
           <LogOut className="h-4 w-4" /> Se déconnecter
         </button>

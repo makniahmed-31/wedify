@@ -1,8 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Star, MapPin, MessageCircle, Crown, Gem, Shield } from "lucide-react";
+import { Star, MapPin, MessageCircle, Shield } from "lucide-react";
 import type { Vendor } from "@/lib/types";
-import { CURRENCY_SYMBOL } from "@/lib/constants";
 
 interface VendorCardProps {
   vendor: Vendor;
@@ -10,16 +9,18 @@ interface VendorCardProps {
 }
 
 const PlanBadge = ({ plan }: { plan: Vendor["plan"] }) => {
-  if (plan === "PREMIUM") return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-      <Crown className="h-3 w-3" /> Premium
-    </span>
-  );
-  if (plan === "PRO") return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-600">
-      <Gem className="h-3 w-3" /> Pro
-    </span>
-  );
+  if (plan === "GOLD")
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-700">
+        ★ Gold
+      </span>
+    );
+  if (plan === "SILVER")
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-slate-400/20 px-2 py-0.5 text-xs font-medium text-slate-600">
+        ★ Silver
+      </span>
+    );
   return null;
 };
 
@@ -27,77 +28,87 @@ export function VendorCard({ vendor, featured = false }: VendorCardProps) {
   return (
     <Link
       href={`/vendors/${vendor.slug}`}
-      className={`group block rounded-2xl bg-card border overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${featured ? "ring-1 ring-primary/30 shadow-gold" : ""}`}
+      className={`group block rounded-lg bg-white border overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${featured ? "ring-1 ring-primary/20 shadow-md" : ""}`}
     >
       {/* Cover Image */}
-      <div className="relative h-52 overflow-hidden">
+      <div className="relative h-48 overflow-hidden">
         <Image
           src={vendor.coverImage}
           alt={vendor.businessName}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
         />
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-        {/* Top badges */}
-        <div className="absolute top-3 left-3 flex gap-2">
-          <PlanBadge plan={vendor.plan} />
-          {vendor.isVerified && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-0.5 text-xs font-medium text-green-400">
-              <Shield className="h-3 w-3" /> Verified
+        {/* Vérifié badge */}
+        {vendor.isVerified && (
+          <div className="absolute top-3 left-3">
+            <span className="inline-flex items-center gap-1 rounded-full bg-secondary/90 backdrop-blur-sm px-2.5 py-1 text-xs font-medium text-white">
+              <Shield className="h-3 w-3" /> Vérifié
             </span>
-          )}
+          </div>
+        )}
+
+        {/* Plan badge */}
+        <div className="absolute top-3 right-3">
+          <PlanBadge plan={vendor.plan} />
         </div>
 
-        {/* Category */}
-        <div className="absolute bottom-3 left-3">
-          <span className="inline-flex items-center gap-1 rounded-full bg-black/50 backdrop-blur-sm px-2.5 py-1 text-xs text-white">
-            {vendor.category.icon} {vendor.category.name}
-          </span>
-        </div>
+        {/* Logo */}
+        {vendor.logoImage && (
+          <div className="absolute bottom-3 left-3 w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-white">
+            <Image
+              src={vendor.logoImage}
+              alt=""
+              fill
+              className="object-cover"
+            />
+          </div>
+        )}
       </div>
 
       {/* Content */}
       <div className="p-4">
-        {/* Name + City */}
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="font-semibold text-foreground leading-snug group-hover:text-primary transition-colors">
-            {vendor.businessName}
-          </h3>
-        </div>
+        <h3 className="font-semibold text-foreground leading-snug group-hover:text-primary transition-colors mb-1">
+          {vendor.businessName}
+        </h3>
 
-        {vendor.tagline && (
-          <p className="text-xs text-muted-foreground mb-2 line-clamp-1">{vendor.tagline}</p>
-        )}
-
-        <div className="flex items-center gap-1 text-sm text-muted-foreground mb-3">
-          <MapPin className="h-3.5 w-3.5 shrink-0" />
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+          <MapPin className="h-3 w-3 shrink-0" />
           {vendor.city.name}
         </div>
 
         {/* Rating */}
-        <div className="flex items-center gap-2 mb-3">
-          <div className="flex items-center gap-1">
-            <Star className="h-4 w-4 fill-primary text-primary" />
-            <span className="text-sm font-semibold">{vendor.rating.toFixed(1)}</span>
+        <div className="flex items-center gap-1.5">
+          <div className="flex gap-0.5">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                className={`h-3.5 w-3.5 ${star <= Math.round(vendor.rating) ? "fill-amber-400 text-amber-400" : "fill-muted text-muted"}`}
+              />
+            ))}
           </div>
-          <span className="text-sm text-muted-foreground">({vendor.reviewCount} reviews)</span>
+          <span className="text-xs font-semibold">
+            {vendor.rating.toFixed(1)}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            ({vendor.reviewCount} avis)
+          </span>
         </div>
 
-        {/* Price & Response */}
-        <div className="flex items-center justify-between pt-3 border-t">
-          <div className="text-sm">
-            {vendor.minPrice ? (
-              <>
-                <span className="text-muted-foreground">From </span>
-                <span className="font-semibold">{vendor.minPrice.toLocaleString()} {CURRENCY_SYMBOL}</span>
-              </>
-            ) : (
-              <span className="text-muted-foreground">Contact for pricing</span>
-            )}
-          </div>
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-3 mt-2 border-t border-border/60">
+          {vendor.minPrice ? (
+            <p className="text-xs text-muted-foreground">
+              À partir de{" "}
+              <span className="font-semibold text-foreground">
+                {vendor.minPrice.toLocaleString()} DT
+              </span>
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground">Sur devis</p>
+          )}
           {vendor.responseTime && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <MessageCircle className="h-3 w-3" />

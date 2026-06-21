@@ -1,0 +1,140 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "vendors": "Prestataires",
+    "promotions": "Promotions",
+    "blog": "Blog",
+    "cities": "Villes",
+    "contact": "Contact",
+    "login": "Se connecter",
+    "becomeVendor": "Devenir prestataire"
+  },
+  "hero": {
+    "title": "Trouvez les meilleurs prestataires pour votre",
+    "highlight": "mariage en Tunisie",
+    "subtitle": "Salles de fêtes, photographes, traiteurs, décorateurs et bien plus.",
+    "findVendor": "Trouver un prestataire",
+    "postRequest": "Publier une demande"
+  },
+  "search": {
+    "category": "Catégorie",
+    "allCategories": "Toutes les catégories",
+    "city": "Ville",
+    "allCities": "Toutes les villes",
+    "budget": "Budget",
+    "allBudgets": "Tous les budgets",
+    "weddingDate": "Date du mariage",
+    "selectDate": "Sélectionner une date",
+    "search": "Rechercher"
+  },
+  "categories": {
+    "title": "Toutes les catégories mariage",
+    "viewAll": "Voir tout"
+  },
+  "vendors": {
+    "certifiedTitle": "Prestataires certifiés et recommandés",
+    "viewAll": "Voir tous les prestataires",
+    "newTitle": "Nouveaux prestataires",
+    "verified": "Vérifié",
+    "from": "À partir de",
+    "quote": "Sur devis",
+    "reviews": "avis",
+    "addedOn": "Ajouté le",
+    "discover": "Découvrir"
+  },
+  "promotions": {
+    "title": "Promotions mariage du moment",
+    "viewAll": "Voir toutes les promotions",
+    "expires": "Expire le"
+  },
+  "services": {
+    "newTitle": "Nouveaux services disponibles",
+    "viewAll": "Voir tout"
+  },
+  "ads": {
+    "premium": "Publicité Premium",
+    "premiumSub": "Votre publicité ici (2/3)",
+    "classic": "Publicité Classique",
+    "classicSub": "Votre publicité ici (1/3)",
+    "adSpace": "Espace publicitaire",
+    "learnMore": "En savoir plus"
+  },
+  "blog": {
+    "title": "Conseils et inspirations mariage",
+    "viewAll": "Voir tous les articles"
+  },
+  "cta": {
+    "title": "Vous êtes un professionnel du mariage ?",
+    "subtitle": "Rejoignez BonPlanMariage.tn et développez votre visibilité auprès de milliers de futurs mariés.",
+    "becomeVendor": "Devenir prestataire",
+    "viewPlans": "Voir les packs →"
+  },
+  "footer": {
+    "description": "BonPlanMariage.tn est la plateforme tunisienne qui connecte les futurs mariés aux meilleurs professionnels du mariage.",
+    "vendors": "Prestataires",
+    "popularCities": "Villes populaires",
+    "allCities": "Toutes les villes →",
+    "actions": "Actions",
+    "becomeVendor": "♥ Devenir prestataire",
+    "contactUs": "Contactez-nous",
+    "copyright": "Tous droits réservés",
+    "legal": "Mentions légales",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité"
+  },
+  "auth": {
+    "login": "Se connecter",
+    "register": "Créer un compte",
+    "loginTitle": "Connectez-vous à votre compte",
+    "loginSub": "Accédez à votre espace personnel",
+    "withGoogle": "Continuer avec Google",
+    "or": "ou",
+    "byEmail": "Par email",
+    "byPhone": "Par téléphone",
+    "byPassword": "Par mot de passe",
+    "email": "Email",
+    "phone": "Téléphone",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "rememberMe": "Se souvenir de moi",
+    "loginBtn": "Se connecter",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "createAccount": "Créer un compte",
+    "registerTitle": "Créer un compte",
+    "registerSub": "Rejoignez la communauté des futurs mariés",
+    "lastName": "Nom",
+    "firstName": "Prénom",
+    "registerBtn": "S'inscrire",
+    "agreeTerms": "En créant un compte, vous acceptez nos",
+    "terms": "CGU",
+    "and": "et notre",
+    "privacy": "Politique de confidentialité",
+    "alreadyAccount": "Déjà un compte ?",
+    "loginSpace": "Connectez-vous pour accéder à votre espace",
+    "loginLink": "Se connecter",
+    "trustedVendors": "Prestataires vérifiés",
+    "trustedSub": "Des professionnels de confiance",
+    "reviews": "Avis authentiques",
+    "reviewsSub": "Des retours d'expérience fiables",
+    "support": "Support dédié",
+    "supportSub": "À votre écoute à chaque étape"
+  },
+  "plans": {
+    "title": "Choisissez le pack qui vous convient",
+    "subtitle": "Boostez votre visibilité et développez votre activité avec nos packs professionnels",
+    "popular": "Le plus populaire",
+    "monthly": "/mois",
+    "annual": "ou {price} DT /an",
+    "save": "Économisez 2 mois !",
+    "choosePlan": "Choisir le pack {name}",
+    "compare": "Comparez les packs",
+    "secure": "Paiement 100% sécurisé",
+    "secureSub": "Vos transactions sont protégées",
+    "cancel": "Annulation à tout moment",
+    "cancelSub": "Sans engagement",
+    "visibility": "Plus de visibilité",
+    "visibilitySub": "Attirez plus de clients",
+    "support": "Support à votre écoute",
+    "supportSub": "Nous sommes là pour vous aider"
+  }
+}

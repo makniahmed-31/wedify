@@ -1,10 +1,20 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Search, Filter, CheckCircle2, XCircle, Eye, ChevronDown, Crown, Gem, Loader2 } from "lucide-react";
+import {
+  Search,
+  Filter,
+  CheckCircle2,
+  XCircle,
+  Eye,
+  ChevronDown,
+  Crown,
+  Gem,
+  Loader2,
+} from "lucide-react";
 
 type Status = "ACTIVE" | "PENDING" | "SUSPENDED";
-type Plan = "BASIC" | "PRO" | "PREMIUM";
+type Plan = "BRONZE" | "SILVER" | "GOLD";
 
 interface Vendor {
   id: string;
@@ -28,9 +38,9 @@ const STATUS_LABELS: Record<Status, string> = {
   SUSPENDED: "Suspendu",
 };
 const PLAN_STYLES: Record<Plan, string> = {
-  PREMIUM: "bg-primary/10 text-primary",
-  PRO: "bg-blue-500/10 text-blue-600",
-  BASIC: "bg-muted text-muted-foreground",
+  GOLD: "bg-primary/10 text-primary",
+  SILVER: "bg-blue-500/10 text-blue-600",
+  BRONZE: "bg-muted text-muted-foreground",
 };
 
 export default function AdminVendorsPage() {
@@ -53,9 +63,15 @@ export default function AdminVendorsPage() {
         name: v.name ?? "",
         category: v.category ?? "",
         city: v.city ?? "",
-        plan: (v.plan ?? "BASIC") as Plan,
+        plan: (v.plan ?? "BRONZE") as Plan,
         status: (v.status ?? "PENDING") as Status,
-        joined: v.joined ? new Date(v.joined).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }) : "",
+        joined: v.joined
+          ? new Date(v.joined).toLocaleDateString("fr-FR", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })
+          : "",
         revenue: v.revenue ?? 0,
       }));
       setVendors(mapped);
@@ -66,7 +82,9 @@ export default function AdminVendorsPage() {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   async function updateStatus(id: string, status: Status) {
     const prev = vendors.find((v) => v.id === id)?.status;
@@ -77,13 +95,18 @@ export default function AdminVendorsPage() {
       body: JSON.stringify({ status }),
     });
     if (!res.ok && prev) {
-      setVendors((v) => v.map((x) => (x.id === id ? { ...x, status: prev } : x)));
+      setVendors((v) =>
+        v.map((x) => (x.id === id ? { ...x, status: prev } : x)),
+      );
     }
   }
 
   const filtered = vendors.filter((v) => {
     const q = search.toLowerCase();
-    const matchSearch = !search || v.name.toLowerCase().includes(q) || v.city.toLowerCase().includes(q);
+    const matchSearch =
+      !search ||
+      v.name.toLowerCase().includes(q) ||
+      v.city.toLowerCase().includes(q);
     const matchStatus = filterStatus === "ALL" || v.status === filterStatus;
     const matchPlan = filterPlan === "ALL" || v.plan === filterPlan;
     return matchSearch && matchStatus && matchPlan;
@@ -97,7 +120,9 @@ export default function AdminVendorsPage() {
         <div>
           <h1 className="text-2xl font-bold">Prestataires</h1>
           <p className="text-muted-foreground mt-1">
-            {loading ? "Chargement..." : `${vendors.length} prestataires inscrits`}
+            {loading
+              ? "Chargement..."
+              : `${vendors.length} prestataires inscrits`}
             {!loading && pending.length > 0 && (
               <span className="ml-2 rounded-full bg-yellow-500/10 px-2 py-0.5 text-xs font-semibold text-yellow-600">
                 {pending.length} en attente
@@ -108,7 +133,7 @@ export default function AdminVendorsPage() {
         <button
           onClick={load}
           disabled={loading}
-          className="flex items-center gap-2 rounded-xl border px-4 py-2 text-sm hover:bg-muted transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 rounded-md border px-4 py-2 text-sm hover:bg-muted transition-colors disabled:opacity-50"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           Actualiser
@@ -116,7 +141,7 @@ export default function AdminVendorsPage() {
       </div>
 
       {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
         </div>
       )}
@@ -130,7 +155,7 @@ export default function AdminVendorsPage() {
             placeholder="Rechercher un prestataire..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl border bg-card text-sm outline-none focus:ring-2 focus:ring-primary/30"
+            className="w-full pl-9 pr-4 py-2 rounded-md border bg-card text-sm outline-none focus:ring-2 focus:ring-primary/30"
           />
         </div>
         <div className="relative">
@@ -138,7 +163,7 @@ export default function AdminVendorsPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as Status | "ALL")}
-            className="pl-9 pr-8 py-2 rounded-xl border bg-card text-sm outline-none appearance-none focus:ring-2 focus:ring-primary/30"
+            className="pl-9 pr-8 py-2 rounded-md border bg-card text-sm outline-none appearance-none focus:ring-2 focus:ring-primary/30"
           >
             <option value="ALL">Tous les statuts</option>
             <option value="ACTIVE">Actif</option>
@@ -151,12 +176,12 @@ export default function AdminVendorsPage() {
           <select
             value={filterPlan}
             onChange={(e) => setFilterPlan(e.target.value as Plan | "ALL")}
-            className="px-4 py-2 rounded-xl border bg-card text-sm outline-none appearance-none focus:ring-2 focus:ring-primary/30"
+            className="px-4 py-2 rounded-md border bg-card text-sm outline-none appearance-none focus:ring-2 focus:ring-primary/30"
           >
             <option value="ALL">Tous les plans</option>
-            <option value="PREMIUM">Premium</option>
-            <option value="PRO">Pro</option>
-            <option value="BASIC">Basic</option>
+            <option value="GOLD">Premium</option>
+            <option value="SILVER">Pro</option>
+            <option value="BRONZE">Basic</option>
           </select>
           <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
         </div>
@@ -164,16 +189,21 @@ export default function AdminVendorsPage() {
 
       {/* Pending approvals banner */}
       {pending.length > 0 && filterStatus === "ALL" && (
-        <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4">
+        <div className="rounded-md border border-yellow-200 bg-yellow-50 p-4">
           <p className="text-sm font-semibold text-yellow-800 mb-3">
             {pending.length} prestataire(s) en attente d&apos;approbation
           </p>
           <div className="space-y-2">
             {pending.map((v) => (
-              <div key={v.id} className="flex items-center justify-between gap-4 rounded-lg bg-white border border-yellow-100 px-4 py-2.5">
+              <div
+                key={v.id}
+                className="flex items-center justify-between gap-4 rounded-sm bg-white border border-yellow-100 px-4 py-2.5"
+              >
                 <div>
                   <p className="text-sm font-medium">{v.name}</p>
-                  <p className="text-xs text-muted-foreground">{v.category} · {v.city} · Plan {v.plan}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {v.category} · {v.city} · Plan {v.plan}
+                  </p>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <button
@@ -196,7 +226,7 @@ export default function AdminVendorsPage() {
       )}
 
       {/* Table */}
-      <div className="rounded-2xl border bg-card overflow-hidden">
+      <div className="rounded-lg border bg-card overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16 text-muted-foreground">
             <Loader2 className="h-6 w-6 animate-spin mr-2" /> Chargement...
@@ -206,37 +236,67 @@ export default function AdminVendorsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/30">
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Prestataire</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Catégorie</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Ville</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Plan</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Statut</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Inscrit le</th>
-                  <th className="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    Prestataire
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    Catégorie
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    Ville
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    Plan
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    Statut
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    Inscrit le
+                  </th>
+                  <th className="px-4 py-3 text-right font-medium text-muted-foreground">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((v) => (
-                  <tr key={v.id} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
+                  <tr
+                    key={v.id}
+                    className="border-b last:border-0 hover:bg-muted/20 transition-colors"
+                  >
                     <td className="px-4 py-3 font-medium">{v.name}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{v.category}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{v.city}</td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {v.category}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {v.city}
+                    </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${PLAN_STYLES[v.plan]}`}>
-                        {v.plan === "PREMIUM" && <Crown className="h-3 w-3" />}
-                        {v.plan === "PRO" && <Gem className="h-3 w-3" />}
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${PLAN_STYLES[v.plan]}`}
+                      >
+                        {v.plan === "GOLD" && <Crown className="h-3 w-3" />}
+                        {v.plan === "SILVER" && <Gem className="h-3 w-3" />}
                         {v.plan}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[v.status]}`}>
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[v.status]}`}
+                      >
                         {STATUS_LABELS[v.status]}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{v.joined}</td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {v.joined}
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1.5">
-                        <button className="p-1.5 rounded-lg hover:bg-muted transition-colors" title="Voir le profil">
+                        <button
+                          className="p-1.5 rounded-sm hover:bg-muted transition-colors"
+                          title="Voir le profil"
+                        >
                           <Eye className="h-4 w-4 text-muted-foreground" />
                         </button>
                         {v.status === "PENDING" && (
@@ -269,7 +329,10 @@ export default function AdminVendorsPage() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground text-sm">
+                    <td
+                      colSpan={7}
+                      className="px-4 py-12 text-center text-muted-foreground text-sm"
+                    >
                       Aucun prestataire trouvé.
                     </td>
                   </tr>

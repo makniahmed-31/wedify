@@ -1,146 +1,139 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useRef } from "react";
-import { Menu, X, Heart, ChevronDown, Bell, User } from "lucide-react";
-import { CATEGORIES } from "@/lib/constants";
+import { useState } from "react";
+import { Menu, X, User, Crown } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [categoriesOpen, setCategoriesOpen] = useState(false);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { t, locale, setLocale } = useI18n();
 
-  function openCategories() {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    setCategoriesOpen(true);
-  }
-
-  function delayCloseCategories() {
-    closeTimer.current = setTimeout(() => setCategoriesOpen(false), 200);
-  }
+  const navLinks: [string, string][] = [
+    [t("nav.home"), "/"],
+    [t("nav.vendors"), "/vendors"],
+    [t("nav.promotions"), "/promotions"],
+    [t("nav.blog"), "/blog"],
+    [t("nav.cities"), "/villes"],
+    [t("nav.contact"), "/contact"],
+  ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-md">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/95 backdrop-blur-md shadow-sm">
+      <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <Heart className="h-6 w-6 fill-primary text-primary" />
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 28 28"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14 24s-10-6.5-10-13a6 6 0 0 1 10-4.47A6 6 0 0 1 24 11c0 6.5-10 13-10 13z"
+                fill="#D88C70"
+                stroke="#D88C70"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
+              />
+              <circle cx="14" cy="11" r="3" fill="white" fillOpacity="0.6" />
+            </svg>
             <span className="text-xl font-bold tracking-tight">
-              <span className="text-gradient-gold">Wedify</span>
+              <span className="text-foreground">BonPlanMariage</span>
+              <span className="text-primary">.tn</span>
             </span>
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-6">
-            {/* Categories dropdown */}
-            <div
-              className="relative"
-              onMouseEnter={openCategories}
-              onMouseLeave={delayCloseCategories}
-            >
-              <button className="flex items-center gap-1 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
-                Catégories
-                <ChevronDown className="h-4 w-4" />
-              </button>
-              {categoriesOpen && (
-                <div
-                  className="absolute top-full left-0 mt-2 w-72 rounded-xl border bg-card shadow-lg p-3 grid grid-cols-2 gap-1"
-                  onMouseEnter={openCategories}
-                  onMouseLeave={delayCloseCategories}
-                >
-                  {CATEGORIES.slice(0, 12).map((cat) => (
-                    <Link
-                      key={cat.id}
-                      href={`/${cat.slug}`}
-                      className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-muted transition-colors"
-                    >
-                      <span>{cat.icon}</span>
-                      <span>{cat.name}</span>
-                    </Link>
-                  ))}
-                  <Link
-                    href="/categories"
-                    className="col-span-2 rounded-lg px-3 py-2 text-sm text-primary font-medium hover:bg-muted text-center transition-colors"
-                  >
-                    Voir toutes les catégories →
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            <Link href="/vendors" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
-              Prestataires
-            </Link>
-            <Link href="/pricing" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
-              Pour les prestataires
-            </Link>
-            <Link href="/blog" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
-              Inspiration
-            </Link>
+          <nav className="hidden lg:flex items-center gap-7">
+            {navLinks.map(([label, href], i) => (
+              <Link
+                key={href}
+                href={href}
+                className={`text-sm font-medium transition-colors ${i === 0 ? "text-foreground border-b-2 border-primary pb-0.5" : "text-foreground/70 hover:text-foreground"}`}
+              >
+                {label}
+              </Link>
+            ))}
           </nav>
 
-          {/* Desktop CTA */}
-          <div className="hidden lg:flex items-center gap-3">
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-1.5 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+          {/* Desktop CTA + Language switcher */}
+          <div className="hidden lg:flex items-center gap-2">
+            <button
+              onClick={() => setLocale(locale === "fr" ? "ar" : "fr")}
+              className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-foreground/70 hover:bg-muted transition-colors"
+              title={locale === "fr" ? "عربي" : "Français"}
             >
-              <Bell className="h-4 w-4" />
-            </Link>
+              {locale === "fr" ? "🇹🇳 عربي" : "🇫🇷 FR"}
+            </button>
             <Link
               href="/login"
-              className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+              className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground/80 hover:bg-muted transition-colors"
             >
-              Se connecter
+              <User className="h-4 w-4" />
+              {t("nav.login")}
             </Link>
             <Link
               href="/register/vendor"
-              className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-gold hover:opacity-90 transition-opacity"
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-coral hover:opacity-90 transition-opacity"
             >
-              Référencer mon entreprise
+              <Crown className="h-4 w-4" />
+              {t("nav.becomeVendor")}
             </Link>
           </div>
 
-          {/* Mobile menu toggle */}
+          {/* Mobile toggle */}
           <button
             className="lg:hidden p-2 rounded-lg hover:bg-muted transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="lg:hidden border-t bg-background px-4 py-4 space-y-3">
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-3 py-1">Catégories</p>
-            {CATEGORIES.slice(0, 8).map((cat) => (
+        <div className="lg:hidden border-t bg-white px-4 py-4 space-y-3">
+          <nav className="space-y-1">
+            {navLinks.map(([label, href]) => (
               <Link
-                key={cat.id}
-                href={`/${cat.slug}`}
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-muted transition-colors"
+                key={href}
+                href={href}
+                className="block rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
-                <span>{cat.icon}</span>
-                <span>{cat.name}</span>
+                {label}
               </Link>
             ))}
-          </div>
-          <div className="border-t pt-3 space-y-1">
-            <Link href="/vendors" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-muted" onClick={() => setMobileOpen(false)}>Prestataires</Link>
-            <Link href="/pricing" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-muted" onClick={() => setMobileOpen(false)}>Pour les prestataires</Link>
-            <Link href="/blog" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-muted" onClick={() => setMobileOpen(false)}>Inspiration</Link>
-          </div>
-          <div className="border-t pt-3 flex flex-col gap-2">
-            <Link href="/login" className="flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium hover:bg-muted" onClick={() => setMobileOpen(false)}>
-              <User className="h-4 w-4" /> Se connecter
+          </nav>
+          <div className="border-t pt-3 space-y-2">
+            <button
+              onClick={() => setLocale(locale === "fr" ? "ar" : "fr")}
+              className="w-full flex items-center justify-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium"
+            >
+              {locale === "fr" ? "🇹🇳 عربي" : "🇫🇷 Français"}
+            </button>
+            <Link
+              href="/login"
+              className="flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium"
+              onClick={() => setMobileOpen(false)}
+            >
+              <User className="h-4 w-4" /> {t("nav.login")}
             </Link>
-            <Link href="/register/vendor" className="flex items-center justify-center rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground" onClick={() => setMobileOpen(false)}>
-              Référencer mon entreprise
+            <Link
+              href="/register/vendor"
+              className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white"
+              onClick={() => setMobileOpen(false)}
+            >
+              <Crown className="h-4 w-4" /> {t("nav.becomeVendor")}
             </Link>
           </div>
         </div>

@@ -4,15 +4,26 @@ import { useState } from "react";
 import { Check, Crown, CheckCircle2, AlertTriangle } from "lucide-react";
 import { SUBSCRIPTION_PLANS } from "@/lib/constants";
 
-type PlanName = "BASIC" | "PRO" | "PREMIUM";
+type PlanName = "BRONZE" | "SILVER" | "GOLD";
 
-const PLAN_PRICES: Record<PlanName, number> = { BASIC: 29, PRO: 79, PREMIUM: 149 };
-const PLAN_LABELS: Record<PlanName, string> = { BASIC: "Basic", PRO: "Pro", PREMIUM: "Premium" };
+const PLAN_PRICES: Record<PlanName, number> = {
+  BRONZE: 29,
+  SILVER: 79,
+  GOLD: 149,
+};
+const PLAN_LABELS: Record<PlanName, string> = {
+  BRONZE: "Basic",
+  SILVER: "Pro",
+  GOLD: "Premium",
+};
 
 export default function SubscriptionPage() {
-  const [currentPlan, setCurrentPlan] = useState<PlanName>("PRO");
+  const [currentPlan, setCurrentPlan] = useState<PlanName>("SILVER");
   const [confirming, setConfirming] = useState<PlanName | null>(null);
-  const [toast, setToast] = useState<{ type: "success" | "info"; msg: string } | null>(null);
+  const [toast, setToast] = useState<{
+    type: "success" | "info";
+    msg: string;
+  } | null>(null);
 
   function requestChange(planName: PlanName) {
     setConfirming(planName);
@@ -23,12 +34,15 @@ export default function SubscriptionPage() {
     const label = PLAN_LABELS[confirming];
     setCurrentPlan(confirming);
     setConfirming(null);
-    setToast({ type: "success", msg: `Plan changé vers ${label} avec succès.` });
+    setToast({
+      type: "success",
+      msg: `Plan changé vers ${label} avec succès.`,
+    });
     setTimeout(() => setToast(null), 4000);
   }
 
   const isDowngrade = (planName: PlanName) => {
-    const order: PlanName[] = ["BASIC", "PRO", "PREMIUM"];
+    const order: PlanName[] = ["BRONZE", "SILVER", "GOLD"];
     return order.indexOf(planName) < order.indexOf(currentPlan);
   };
 
@@ -36,7 +50,7 @@ export default function SubscriptionPage() {
     <div className="space-y-8 max-w-4xl">
       {/* Toast */}
       {toast && (
-        <div className="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+        <div className="flex items-center gap-3 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
           <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600" />
           {toast.msg}
         </div>
@@ -44,18 +58,22 @@ export default function SubscriptionPage() {
 
       <div>
         <h1 className="text-2xl font-bold">Abonnement</h1>
-        <p className="text-muted-foreground mt-1">Gérez votre abonnement Wedify.</p>
+        <p className="text-muted-foreground mt-1">
+          Gérez votre abonnement Wedify.
+        </p>
       </div>
 
       {/* Current plan */}
-      <div className="rounded-2xl border bg-card p-6">
+      <div className="rounded-lg border bg-card p-6">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
             <p className="text-sm text-muted-foreground">Plan actuel</p>
             <p className="text-xl font-bold mt-0.5">
               {PLAN_LABELS[currentPlan]} — {PLAN_PRICES[currentPlan]} TND/mois
             </p>
-            <p className="text-sm text-muted-foreground mt-1">Prochaine facturation : 18 janvier 2026</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Prochaine facturation : 18 janvier 2026
+            </p>
           </div>
           <span className="rounded-full bg-blue-500/10 px-4 py-1.5 text-sm font-semibold text-blue-600">
             Actif
@@ -65,7 +83,7 @@ export default function SubscriptionPage() {
 
       {/* Confirm banner */}
       {confirming && (
-        <div className="flex items-start gap-4 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
+        <div className="flex items-start gap-4 rounded-md border border-amber-200 bg-amber-50 px-5 py-4">
           <AlertTriangle className="h-5 w-5 shrink-0 text-amber-500 mt-0.5" />
           <div className="flex-1">
             <p className="text-sm font-semibold text-amber-900">
@@ -107,8 +125,10 @@ export default function SubscriptionPage() {
             return (
               <div
                 key={plan.id}
-                className={`rounded-2xl border p-5 relative transition-shadow ${
-                  plan.isPopular && !isCurrent ? "border-primary ring-1 ring-primary/30 shadow-gold" : ""
+                className={`rounded-lg border p-5 relative transition-shadow ${
+                  plan.isPopular && !isCurrent
+                    ? "border-primary ring-1 ring-primary/30 shadow-gold"
+                    : ""
                 } ${isCurrent ? "border-blue-500/40 bg-blue-50/30" : ""}`}
               >
                 {plan.isPopular && !isCurrent && (
@@ -123,12 +143,19 @@ export default function SubscriptionPage() {
                 )}
 
                 <div className="flex items-center gap-2 mb-2">
-                  {plan.name === "PREMIUM" && <Crown className="h-4 w-4 text-primary" />}
+                  {plan.name === "GOLD" && (
+                    <Crown className="h-4 w-4 text-primary" />
+                  )}
                   <h3 className="font-bold">{plan.label}</h3>
                 </div>
                 <div className="mb-4">
-                  <span className="text-3xl font-bold">{plan.priceMonthly}</span>
-                  <span className="text-muted-foreground text-sm"> TND/mois</span>
+                  <span className="text-3xl font-bold">
+                    {plan.priceMonthly}
+                  </span>
+                  <span className="text-muted-foreground text-sm">
+                    {" "}
+                    TND/mois
+                  </span>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     ou {plan.priceAnnual} TND/an (économisez 17%)
                   </p>
@@ -169,15 +196,23 @@ export default function SubscriptionPage() {
       </div>
 
       {/* Billing history */}
-      <div className="rounded-2xl border bg-card p-6">
+      <div className="rounded-lg border bg-card p-6">
         <h2 className="font-semibold mb-4">Historique de facturation</h2>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b">
-              <th className="pb-2 text-left font-medium text-muted-foreground">Date</th>
-              <th className="pb-2 text-left font-medium text-muted-foreground">Plan</th>
-              <th className="pb-2 text-right font-medium text-muted-foreground">Montant</th>
-              <th className="pb-2 text-left font-medium text-muted-foreground pl-4">Facture</th>
+              <th className="pb-2 text-left font-medium text-muted-foreground">
+                Date
+              </th>
+              <th className="pb-2 text-left font-medium text-muted-foreground">
+                Plan
+              </th>
+              <th className="pb-2 text-right font-medium text-muted-foreground">
+                Montant
+              </th>
+              <th className="pb-2 text-left font-medium text-muted-foreground pl-4">
+                Facture
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -187,7 +222,9 @@ export default function SubscriptionPage() {
                 <td className="py-3">Pro</td>
                 <td className="py-3 text-right font-medium">79 TND</td>
                 <td className="py-3 pl-4">
-                  <button className="text-primary text-xs hover:underline">Télécharger</button>
+                  <button className="text-primary text-xs hover:underline">
+                    Télécharger
+                  </button>
                 </td>
               </tr>
             ))}

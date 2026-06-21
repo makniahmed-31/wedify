@@ -2,145 +2,213 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Grid3X3 } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  LayoutGrid,
+  Wallet,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { CATEGORIES, CITIES } from "@/lib/constants";
+import { useI18n } from "@/lib/i18n";
+
+const HERO_SLIDES = [
+  {
+    image:
+      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1920&q=85",
+  },
+  {
+    image:
+      "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=1920&q=85",
+  },
+  {
+    image:
+      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1920&q=85",
+  },
+];
 
 export function HeroSection() {
   const router = useRouter();
-  const [query, setQuery] = useState("");
-  const [city, setCity] = useState("");
+  const { t } = useI18n();
+  const [slide, setSlide] = useState(0);
   const [category, setCategory] = useState("");
+  const [city, setCity] = useState("");
+  const [budget, setBudget] = useState("");
+  const [date, setDate] = useState("");
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (query) params.set("q", query);
     if (category) params.set("category", category);
     if (city) params.set("city", city);
+    if (budget) params.set("budget", budget);
+    if (date) params.set("date", date);
     router.push(`/search?${params.toString()}`);
   }
 
-  return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1920&q=90')",
-        }}
-      />
-      {/* Overlay */}
-      <div className="absolute inset-0 gradient-hero" />
+  function prev() {
+    setSlide((s) => (s - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+  }
+  function next() {
+    setSlide((s) => (s + 1) % HERO_SLIDES.length);
+  }
 
-      {/* Content */}
-      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-1.5 text-sm text-white/90 mb-6">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-          La marketplace N°1 des mariages en Tunisie
+  return (
+    <div>
+      <section className="relative h-[520px] sm:h-[580px] lg:h-[640px] overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700"
+          style={{ backgroundImage: `url('${HERO_SLIDES[slide].image}')` }}
+        />
+        <div className="absolute inset-0 gradient-hero" />
+
+        <div className="relative z-10 h-full mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 flex items-center">
+          <div className="max-w-xl">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl text-white leading-tight mb-4">
+              {t("hero.title")}{" "}
+              <span className="text-primary">{t("hero.highlight")}</span>
+            </h1>
+            <p className="text-white/80 text-base sm:text-lg mb-8">
+              {t("hero.subtitle")}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => router.push("/search")}
+                className="flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white shadow-coral hover:opacity-90 transition-opacity"
+              >
+                <Search className="h-4 w-4" />
+                {t("hero.findVendor")}
+              </button>
+              <button
+                onClick={() => router.push("/devis")}
+                className="flex items-center gap-2 rounded-lg border border-white/50 bg-white/10 backdrop-blur-sm px-5 py-3 text-sm font-semibold text-white hover:bg-white/20 transition-colors"
+              >
+                {t("hero.postRequest")}
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Headline */}
-        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight mb-6">
-          Planifiez Votre{" "}
-          <span className="text-gradient-gold">Mariage</span>
-          <br />
-          de Rêve
-        </h1>
-
-        <p className="text-lg sm:text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-          Découvrez 1 850+ prestataires de mariage de confiance à travers la Tunisie. Comparez, consultez les avis et réservez — tout en un seul endroit.
-        </p>
-
-        {/* Search Form */}
-        <form
-          onSubmit={handleSearch}
-          className="bg-white/95 backdrop-blur-sm rounded-2xl p-2 shadow-2xl flex flex-col sm:flex-row gap-2 max-w-3xl mx-auto"
+        <button
+          onClick={prev}
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
         >
-          {/* Search input */}
-          <div className="flex-1 flex items-center gap-3 px-4 py-2">
-            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-            <input
-              type="text"
-              placeholder="Photographers, halls, decorators..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-            />
-          </div>
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <button
+          onClick={next}
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </button>
 
-          <div className="hidden sm:block w-px bg-border" />
-
-          {/* Category select */}
-          <div className="flex items-center gap-3 px-4 py-2">
-            <Grid3X3 className="h-4 w-4 text-muted-foreground shrink-0" />
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="bg-transparent text-sm outline-none text-foreground min-w-[140px]"
-            >
-              <option value="">Toutes les catégories</option>
-              {CATEGORIES.map((cat) => (
-                <option key={cat.id} value={cat.slug}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="hidden sm:block w-px bg-border" />
-
-          {/* City select */}
-          <div className="flex items-center gap-3 px-4 py-2">
-            <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
-            <select
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className="bg-transparent text-sm outline-none text-foreground min-w-[120px]"
-            >
-              <option value="">Toutes les villes</option>
-              {CITIES.map((c) => (
-                <option key={c.id} value={c.slug}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            className="flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-gold hover:opacity-90 active:scale-95 transition-all"
-          >
-            <Search className="h-4 w-4" />
-            Rechercher
-          </button>
-        </form>
-
-        {/* Popular searches */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-          <span className="text-sm text-white/60">Populaire :</span>
-          {["Salle de mariage Tunis", "Photographe Sousse", "Décorateur Sfax", "Gâteau de mariage"].map((term) => (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+          {HERO_SLIDES.map((_, i) => (
             <button
-              key={term}
-              onClick={() => {
-                setQuery(term);
-                router.push(`/search?q=${encodeURIComponent(term)}`);
-              }}
-              className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm text-white/80 hover:bg-white/20 transition-colors"
-            >
-              {term}
-            </button>
+              key={i}
+              onClick={() => setSlide(i)}
+              className={`rounded-full transition-all ${i === slide ? "w-6 h-2 bg-primary" : "w-2 h-2 bg-white/50"}`}
+            />
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-9 rounded-full border-2 border-white/40 flex items-start justify-center pt-1.5">
-          <div className="w-1 h-2 rounded-full bg-white/60" />
-        </div>
+      {/* Search bar */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
+        <form
+          onSubmit={handleSearch}
+          className="bg-white rounded-2xl shadow-xl border border-border/40 p-4"
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2.5">
+              <LayoutGrid className="h-4 w-4 text-muted-foreground shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground leading-none mb-0.5">
+                  {t("search.category")}
+                </p>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full bg-transparent text-sm outline-none text-foreground"
+                >
+                  <option value="">{t("search.allCategories")}</option>
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat.id} value={cat.slug}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2.5">
+              <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground leading-none mb-0.5">
+                  {t("search.city")}
+                </p>
+                <select
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="w-full bg-transparent text-sm outline-none text-foreground"
+                >
+                  <option value="">{t("search.allCities")}</option>
+                  {CITIES.map((c) => (
+                    <option key={c.id} value={c.slug}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2.5">
+              <Wallet className="h-4 w-4 text-muted-foreground shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground leading-none mb-0.5">
+                  {t("search.budget")}
+                </p>
+                <select
+                  value={budget}
+                  onChange={(e) => setBudget(e.target.value)}
+                  className="w-full bg-transparent text-sm outline-none text-foreground"
+                >
+                  <option value="">{t("search.allBudgets")}</option>
+                  <option value="0-500">{"< 500 DT"}</option>
+                  <option value="500-1000">500 – 1 000 DT</option>
+                  <option value="1000-3000">1 000 – 3 000 DT</option>
+                  <option value="3000+">{"+ 3 000 DT"}</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2.5">
+              <CalendarDays className="h-4 w-4 text-muted-foreground shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground leading-none mb-0.5">
+                  {t("search.weddingDate")}
+                </p>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full bg-transparent text-sm outline-none text-foreground"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white shadow-coral hover:opacity-90 transition-opacity"
+            >
+              <Search className="h-4 w-4" />
+              {t("search.search")}
+            </button>
+          </div>
+        </form>
       </div>
-    </section>
+    </div>
   );
 }

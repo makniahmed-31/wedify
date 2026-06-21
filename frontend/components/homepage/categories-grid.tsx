@@ -1,46 +1,69 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { Building2, Camera, Video, UtensilsCrossed, Sparkles, Shirt, Car, Music2, Music, ClipboardList, Wand2, Flower2, User, Armchair, Cake, Gift, Plus } from "lucide-react";
 import { CATEGORIES } from "@/lib/constants";
+import { useT } from "@/lib/i18n";
+
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  "salles-de-fete": <Building2 className="h-6 w-6" />,
+  "photographes": <Camera className="h-6 w-6" />,
+  "videastes": <Video className="h-6 w-6" />,
+  "traiteurs": <UtensilsCrossed className="h-6 w-6" />,
+  "decoration": <Sparkles className="h-6 w-6" />,
+  "robes-de-mariee": <Shirt className="h-6 w-6" />,
+  "location-voiture": <Car className="h-6 w-6" />,
+  "dj-animation": <Music2 className="h-6 w-6" />,
+  "troupes-musicales": <Music className="h-6 w-6" />,
+  "wedding-planners": <ClipboardList className="h-6 w-6" />,
+  "maquillage-coiffure": <Wand2 className="h-6 w-6" />,
+  "fleurs": <Flower2 className="h-6 w-6" />,
+  "costumes": <User className="h-6 w-6" />,
+  "meubles": <Armchair className="h-6 w-6" />,
+  "patisserie": <Cake className="h-6 w-6" />,
+  "cadeaux": <Gift className="h-6 w-6" />,
+};
 
 export function CategoriesGrid() {
-  const featured = CATEGORIES.slice(0, 8);
+  const t = useT();
+  const featured = CATEGORIES.slice(0, 9);
 
   return (
-    <section className="py-16 lg:py-20 bg-secondary/50">
+    <section className="py-14 lg:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-3">
-            Browse by <span className="text-gradient-gold">Category</span>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl lg:text-3xl font-bold text-foreground mb-1">
+            {t("categories.title")}
           </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            From stunning venues to expert photographers — find every service you need.
-          </p>
+          <div className="divider-heart" />
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 lg:gap-4">
           {featured.map((cat) => (
             <Link
               key={cat.id}
               href={`/${cat.slug}`}
-              className="group flex flex-col items-center gap-3 rounded-2xl border bg-card p-5 hover:shadow-lg hover:border-primary/30 transition-all duration-200 hover:-translate-y-0.5"
+              className="group flex flex-col items-center gap-2.5 rounded-xl border border-border bg-white p-4 hover:shadow-md hover:border-primary/30 transition-all duration-200"
             >
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl group-hover:bg-primary/20 transition-colors">
-                {cat.icon}
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors">
+                {CATEGORY_ICONS[cat.slug] ?? <Building2 className="h-6 w-6" />}
               </div>
-              <div className="text-center">
-                <p className="font-medium text-sm leading-snug">{cat.name}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{cat.vendorCount} vendors</p>
-              </div>
+              <p className="text-xs font-medium text-center text-foreground/80 leading-snug">
+                {cat.name}
+              </p>
             </Link>
           ))}
-        </div>
 
-        <div className="text-center mt-8">
           <Link
             href="/categories"
-            className="inline-flex items-center gap-2 rounded-full border border-primary/30 px-5 py-2.5 text-sm font-medium text-primary hover:bg-primary/5 transition-colors"
+            className="group flex flex-col items-center gap-2.5 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-4 hover:bg-primary/10 transition-colors"
           >
-            View all {CATEGORIES.length} categories <ArrowRight className="h-4 w-4" />
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+              <Plus className="h-6 w-6" />
+            </div>
+            <p className="text-xs font-medium text-center text-primary leading-snug">
+              {t("categories.viewAll")}
+            </p>
           </Link>
         </div>
       </div>

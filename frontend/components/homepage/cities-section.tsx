@@ -11,7 +11,8 @@ export function CitiesSection() {
             <MapPin className="h-4 w-4" /> By Location
           </div>
           <h2 className="text-3xl lg:text-4xl font-bold">
-            Find Vendors in Your <span className="text-gradient-gold">City</span>
+            Find Vendors in Your{" "}
+            <span className="text-gradient-gold">City</span>
           </h2>
         </div>
 
@@ -20,7 +21,7 @@ export function CitiesSection() {
             <Link
               key={city.id}
               href={`/vendors?city=${city.slug}`}
-              className="group relative overflow-hidden rounded-2xl border bg-card aspect-[4/3] flex items-end hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+              className="group relative overflow-hidden rounded-lg border bg-card aspect-[4/3] flex items-end hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
             >
               {/* Gradient bg */}
               <div className="absolute inset-0 gradient-gold opacity-10 group-hover:opacity-20 transition-opacity" />
@@ -30,7 +31,9 @@ export function CitiesSection() {
 
               <div className="relative p-4 w-full">
                 <p className="font-semibold text-foreground">{city.name}</p>
-                <p className="text-xs text-muted-foreground">{city.vendorCount} vendors</p>
+                <p className="text-xs text-muted-foreground">
+                  {city.vendorCount} vendors
+                </p>
               </div>
             </Link>
           ))}

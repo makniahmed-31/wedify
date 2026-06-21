@@ -47,7 +47,7 @@ function toVendor(raw: any): Vendor {
     rating: raw.rating ?? 0,
     reviewCount: raw.reviewCount ?? 0,
     responseTime: raw.responseTime,
-    plan: raw.plan ?? "BASIC",
+    plan: raw.plan ?? "BRONZE",
     status: raw.status ?? "ACTIVE",
     rankScore: raw.rankScore ?? 0,
     isVerified: raw.isVerified ?? false,
@@ -100,8 +100,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   if (filters.rating) {
     vendors = vendors.filter((v) => v.rating >= parseFloat(filters.rating!));
   }
-  if (filters.plan === "PREMIUM") {
-    vendors = vendors.filter((v) => v.plan === "PREMIUM");
+  if (filters.plan === "GOLD") {
+    vendors = vendors.filter((v) => v.plan === "GOLD");
   }
 
   const category = filters.category ? CATEGORIES.find((c) => c.slug === filters.category) : null;

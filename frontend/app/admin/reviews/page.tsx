@@ -17,12 +17,72 @@ interface Review {
 }
 
 const INITIAL_REVIEWS: Review[] = [
-  { id: "rv1", vendor: "Elegance Hall Tunis", reviewer: "Sarah & Ahmed Boughanmi", rating: 5, comment: "Une salle magnifique, un service impeccable. Le personnel était aux petits soins. Nous recommandons vivement pour un mariage inoubliable.", date: "Il y a 1h", status: "PENDING", category: "Salles de mariage" },
-  { id: "rv2", vendor: "Dream Photography", reviewer: "Fatima & Khalil Mansouri", rating: 4, comment: "Très bon photographe, photos de qualité professionnelle. Quelques petits retards mais le résultat final est excellent.", date: "Il y a 3h", status: "PENDING", category: "Photographes" },
-  { id: "rv3", vendor: "Sweet Moments", reviewer: "Rim & Yassine Trabelsi", rating: 5, comment: "Le gâteau de mariage était absolument délicieux et magnifiquement décoré. Exactement comme nous l'avions demandé.", date: "Il y a 5h", status: "PENDING", category: "Gâteaux" },
-  { id: "rv4", vendor: "Orchestre Carthage", reviewer: "Nour & Sami Gharbi", rating: 2, comment: "Déçus par la prestation. L'orchestre est arrivé en retard et le son n'était pas au niveau. À éviter.", date: "Il y a 8h", status: "FLAGGED", category: "Groupes musicaux" },
-  { id: "rv5", vendor: "DJ Maestro", reviewer: "Lina & Omar Hamdi", rating: 5, comment: "DJ exceptionnel ! Toute la soirée était électrique, les invités ont adoré. On recommande les yeux fermés !", date: "Hier", status: "APPROVED", category: "DJs" },
-  { id: "rv6", vendor: "Décor Rêve", reviewer: "Amira & Walid Zouari", rating: 1, comment: "ARNAQUE ! Ne pas faire confiance à ce prestataire. Pris l'argent et n'est pas venu le jour J.", date: "Hier", status: "FLAGGED", category: "Décorateurs" },
+  {
+    id: "rv1",
+    vendor: "Elegance Hall Tunis",
+    reviewer: "Sarah & Ahmed Boughanmi",
+    rating: 5,
+    comment:
+      "Une salle magnifique, un service impeccable. Le personnel était aux petits soins. Nous recommandons vivement pour un mariage inoubliable.",
+    date: "Il y a 1h",
+    status: "PENDING",
+    category: "Salles de mariage",
+  },
+  {
+    id: "rv2",
+    vendor: "Dream Photography",
+    reviewer: "Fatima & Khalil Mansouri",
+    rating: 4,
+    comment:
+      "Très bon photographe, photos de qualité professionnelle. Quelques petits retards mais le résultat final est excellent.",
+    date: "Il y a 3h",
+    status: "PENDING",
+    category: "Photographes",
+  },
+  {
+    id: "rv3",
+    vendor: "Sweet Moments",
+    reviewer: "Rim & Yassine Trabelsi",
+    rating: 5,
+    comment:
+      "Le gâteau de mariage était absolument délicieux et magnifiquement décoré. Exactement comme nous l'avions demandé.",
+    date: "Il y a 5h",
+    status: "PENDING",
+    category: "Gâteaux",
+  },
+  {
+    id: "rv4",
+    vendor: "Orchestre Carthage",
+    reviewer: "Nour & Sami Gharbi",
+    rating: 2,
+    comment:
+      "Déçus par la prestation. L'orchestre est arrivé en retard et le son n'était pas au niveau. À éviter.",
+    date: "Il y a 8h",
+    status: "FLAGGED",
+    category: "Groupes musicaux",
+  },
+  {
+    id: "rv5",
+    vendor: "DJ Maestro",
+    reviewer: "Lina & Omar Hamdi",
+    rating: 5,
+    comment:
+      "DJ exceptionnel ! Toute la soirée était électrique, les invités ont adoré. On recommande les yeux fermés !",
+    date: "Hier",
+    status: "APPROVED",
+    category: "DJs",
+  },
+  {
+    id: "rv6",
+    vendor: "Décor Rêve",
+    reviewer: "Amira & Walid Zouari",
+    rating: 1,
+    comment:
+      "ARNAQUE ! Ne pas faire confiance à ce prestataire. Pris l'argent et n'est pas venu le jour J.",
+    date: "Hier",
+    status: "FLAGGED",
+    category: "Décorateurs",
+  },
 ];
 
 const STATUS_STYLES: Record<ReviewStatus, string> = {
@@ -63,7 +123,9 @@ export default function AdminReviewsPage() {
 
   const filtered = reviews.filter((r) => {
     const matchFilter = filter === "ALL" || r.status === filter;
-    const matchSearch = r.vendor.toLowerCase().includes(search.toLowerCase()) || r.reviewer.toLowerCase().includes(search.toLowerCase());
+    const matchSearch =
+      r.vendor.toLowerCase().includes(search.toLowerCase()) ||
+      r.reviewer.toLowerCase().includes(search.toLowerCase());
     return matchFilter && matchSearch;
   });
 
@@ -85,10 +147,21 @@ export default function AdminReviewsPage() {
           { label: "Total avis", value: reviews.length },
           { label: "En attente", value: pending, urgent: pending > 0 },
           { label: "Signalés", value: flagged, urgent: flagged > 0 },
-          { label: "Approuvés", value: reviews.filter((r) => r.status === "APPROVED").length, urgent: false },
+          {
+            label: "Approuvés",
+            value: reviews.filter((r) => r.status === "APPROVED").length,
+            urgent: false,
+          },
         ].map((s) => (
-          <div key={s.label} className={`rounded-2xl border bg-card p-5 ${s.urgent ? "border-amber-200" : ""}`}>
-            <p className={`text-2xl font-bold ${s.urgent ? "text-amber-600" : ""}`}>{s.value}</p>
+          <div
+            key={s.label}
+            className={`rounded-lg border bg-card p-5 ${s.urgent ? "border-amber-200" : ""}`}
+          >
+            <p
+              className={`text-2xl font-bold ${s.urgent ? "text-amber-600" : ""}`}
+            >
+              {s.value}
+            </p>
             <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
           </div>
         ))}
@@ -103,23 +176,31 @@ export default function AdminReviewsPage() {
             placeholder="Rechercher par prestataire ou auteur..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl border bg-card text-sm outline-none focus:ring-2 focus:ring-primary/30"
+            className="w-full pl-9 pr-4 py-2 rounded-md border bg-card text-sm outline-none focus:ring-2 focus:ring-primary/30"
           />
         </div>
         <div className="flex gap-1.5 flex-wrap">
-          {(["ALL", "PENDING", "FLAGGED", "APPROVED", "REJECTED"] as const).map((s) => (
-            <button
-              key={s}
-              onClick={() => setFilter(s)}
-              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                filter === s ? "bg-foreground text-background" : "border hover:bg-muted"
-              }`}
-            >
-              {s === "ALL" ? "Tous" : STATUS_LABELS[s]}
-              {s === "PENDING" && pending > 0 && <span className="ml-1">({pending})</span>}
-              {s === "FLAGGED" && flagged > 0 && <span className="ml-1">({flagged})</span>}
-            </button>
-          ))}
+          {(["ALL", "PENDING", "FLAGGED", "APPROVED", "REJECTED"] as const).map(
+            (s) => (
+              <button
+                key={s}
+                onClick={() => setFilter(s)}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                  filter === s
+                    ? "bg-foreground text-background"
+                    : "border hover:bg-muted"
+                }`}
+              >
+                {s === "ALL" ? "Tous" : STATUS_LABELS[s]}
+                {s === "PENDING" && pending > 0 && (
+                  <span className="ml-1">({pending})</span>
+                )}
+                {s === "FLAGGED" && flagged > 0 && (
+                  <span className="ml-1">({flagged})</span>
+                )}
+              </button>
+            ),
+          )}
         </div>
       </div>
 
@@ -128,9 +209,12 @@ export default function AdminReviewsPage() {
         {filtered.map((review) => (
           <div
             key={review.id}
-            className={`rounded-2xl border bg-card p-4 ${
-              review.status === "FLAGGED" ? "border-orange-200/60" :
-              review.status === "PENDING" ? "border-yellow-200/60" : ""
+            className={`rounded-lg border bg-card p-4 ${
+              review.status === "FLAGGED"
+                ? "border-orange-200/60"
+                : review.status === "PENDING"
+                  ? "border-yellow-200/60"
+                  : ""
             }`}
           >
             <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -138,19 +222,29 @@ export default function AdminReviewsPage() {
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <p className="font-semibold text-sm">{review.vendor}</p>
                   <span className="text-xs text-muted-foreground">·</span>
-                  <span className="text-xs text-muted-foreground">{review.category}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {review.category}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <Stars rating={review.rating} />
-                  <span className="text-xs text-muted-foreground">par {review.reviewer}</span>
-                  <span className="text-xs text-muted-foreground">· {review.date}</span>
+                  <span className="text-xs text-muted-foreground">
+                    par {review.reviewer}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    · {review.date}
+                  </span>
                 </div>
-                <p className={`text-sm text-muted-foreground ${expanded === review.id ? "" : "line-clamp-2"}`}>
+                <p
+                  className={`text-sm text-muted-foreground ${expanded === review.id ? "" : "line-clamp-2"}`}
+                >
                   {review.comment}
                 </p>
                 {review.comment.length > 120 && (
                   <button
-                    onClick={() => setExpanded(expanded === review.id ? null : review.id)}
+                    onClick={() =>
+                      setExpanded(expanded === review.id ? null : review.id)
+                    }
                     className="text-xs text-primary hover:underline mt-1"
                   >
                     {expanded === review.id ? "Réduire" : "Lire plus"}
@@ -159,7 +253,9 @@ export default function AdminReviewsPage() {
               </div>
 
               <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[review.status]}`}>
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[review.status]}`}
+                >
                   {STATUS_LABELS[review.status]}
                 </span>
                 {review.status !== "APPROVED" && (
@@ -184,7 +280,7 @@ export default function AdminReviewsPage() {
                   <button
                     onClick={() => updateStatus(review.id, "FLAGGED")}
                     title="Signaler"
-                    className="p-1.5 rounded-lg hover:bg-orange-50 text-orange-500 transition-colors"
+                    className="p-1.5 rounded-sm hover:bg-orange-50 text-orange-500 transition-colors"
                   >
                     <Flag className="h-4 w-4" />
                   </button>
@@ -194,7 +290,7 @@ export default function AdminReviewsPage() {
           </div>
         ))}
         {filtered.length === 0 && (
-          <div className="rounded-2xl border bg-card p-12 text-center text-muted-foreground text-sm">
+          <div className="rounded-lg border bg-card p-12 text-center text-muted-foreground text-sm">
             Aucun avis trouvé.
           </div>
         )}
