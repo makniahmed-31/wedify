@@ -21,7 +21,9 @@ import {
   Bell,
   Image,
   X,
+  Home,
 } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 const NAV = [
   { label: "Aperçu", href: "/dashboard", icon: LayoutDashboard },
@@ -46,6 +48,7 @@ interface Props {
 
 export function DashboardSidebar({ onClose }: Props) {
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   return (
     <aside className="flex w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground min-h-screen h-full">
@@ -103,7 +106,17 @@ export function DashboardSidebar({ onClose }: Props) {
         >
           <Bell className="h-4 w-4" /> Notifications
         </Link>
-        <button className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-red-500/10 hover:text-red-400">
+        <Link
+          href="/"
+          onClick={onClose}
+          className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+        >
+          <Home className="h-4 w-4" /> Retour au site
+        </Link>
+        <button
+          onClick={() => { onClose?.(); logout(); }}
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-red-500/10 hover:text-red-400"
+        >
           <LogOut className="h-4 w-4" /> Se déconnecter
         </button>
       </div>
