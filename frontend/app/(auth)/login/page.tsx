@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2, Mail, Phone, Lock } from "lucide-react";
 
@@ -8,8 +9,15 @@ type Tab = "login" | "register";
 type Method = "email" | "phone" | "password";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>("login");
   const [method, setMethod] = useState<Method>("email");
+
+  useEffect(() => {
+    if (localStorage.getItem("accessToken")) {
+      router.replace("/dashboard");
+    }
+  }, [router]);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
