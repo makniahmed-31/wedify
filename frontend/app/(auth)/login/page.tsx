@@ -35,6 +35,7 @@ export default function LoginPage() {
       const data = await res.json();
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
+      document.cookie = "wedify_auth=1; path=/; max-age=86400; SameSite=Lax";
       window.location.href = "/dashboard";
     } catch {
       setLoading(false);
@@ -283,6 +284,7 @@ function RegisterForm({ onLogin }: { onLogin: () => void }) {
       const data = await res.json();
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
+      document.cookie = "wedify_auth=1; path=/; max-age=86400; SameSite=Lax";
       window.location.href = "/dashboard";
     } catch {
       setLoading(false);

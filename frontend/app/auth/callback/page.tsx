@@ -13,6 +13,7 @@ function AuthCallbackInner() {
     if (accessToken && refreshToken) {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
+      document.cookie = "wedify_auth=1; path=/; max-age=86400; SameSite=Lax";
       router.replace("/dashboard");
     } else {
       router.replace("/login?error=auth_failed");
