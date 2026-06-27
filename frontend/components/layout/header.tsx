@@ -1,40 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Menu, X, User, Crown, LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-
-function useAuth() {
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const hasToken = !!localStorage.getItem("accessToken");
-    setLoggedIn(hasToken);
-    if (hasToken && !document.cookie.includes("wedify_auth=1")) {
-      document.cookie = "wedify_auth=1; path=/; max-age=86400; SameSite=Lax";
-    }
-    if (!hasToken && document.cookie.includes("wedify_auth=1")) {
-      document.cookie = "wedify_auth=; path=/; max-age=0";
-    }
-  }, []);
-
-  return loggedIn;
-}
-
-function logout() {
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-  document.cookie = "wedify_auth=; path=/; max-age=0";
-  window.location.href = "/";
-}
+import { useAuth } from "@/lib/auth-context";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const { t, locale, setLocale } = useI18n();
-  const loggedIn = useAuth();
+  const { loggedIn, logout } = useAuth();
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

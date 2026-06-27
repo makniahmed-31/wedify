@@ -2,23 +2,23 @@
 
 import { useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 
 function AuthCallbackInner() {
   const params = useSearchParams();
   const router = useRouter();
+  const { login } = useAuth();
 
   useEffect(() => {
     const accessToken = params.get("accessToken");
     const refreshToken = params.get("refreshToken");
     if (accessToken && refreshToken) {
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-      document.cookie = "wedify_auth=1; path=/; max-age=86400; SameSite=Lax";
+      login(accessToken, refreshToken);
       router.replace("/dashboard");
     } else {
       router.replace("/login?error=auth_failed");
     }
-  }, [params, router]);
+  }, [params, router, login]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

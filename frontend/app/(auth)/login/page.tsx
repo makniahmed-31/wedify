@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/lib/auth-context";
 import { Eye, EyeOff, Loader2, Mail, Phone, Lock } from "lucide-react";
 
 type Tab = "login" | "register";
@@ -10,14 +11,13 @@ type Method = "email" | "phone" | "password";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { loggedIn, login } = useAuth();
   const [tab, setTab] = useState<Tab>("login");
   const [method, setMethod] = useState<Method>("email");
 
   useEffect(() => {
-    if (localStorage.getItem("accessToken")) {
-      router.replace("/dashboard");
-    }
-  }, [router]);
+    if (loggedIn) router.replace("/dashboard");
+  }, [loggedIn, router]);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -41,10 +41,8 @@ export default function LoginPage() {
       );
       if (!res.ok) throw new Error("Invalid credentials");
       const data = await res.json();
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      document.cookie = "wedify_auth=1; path=/; max-age=86400; SameSite=Lax";
-      window.location.href = "/dashboard";
+      login(data.accessToken, data.refreshToken);
+      router.replace("/dashboard");
     } catch {
       setLoading(false);
     }
@@ -290,10 +288,8 @@ function RegisterForm({ onLogin }: { onLogin: () => void }) {
       );
       if (!res.ok) throw new Error("Registration failed");
       const data = await res.json();
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      document.cookie = "wedify_auth=1; path=/; max-age=86400; SameSite=Lax";
-      window.location.href = "/dashboard";
+      login(data.accessToken, data.refreshToken);
+      router.replace("/dashboard");
     } catch {
       setLoading(false);
     }

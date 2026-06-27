@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, Playfair_Display, Noto_Sans_Arabic } from "next/font/google";
 import { I18nProvider } from "@/lib/i18n";
+import { AuthProvider } from "@/lib/auth-context";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -59,7 +60,9 @@ export default function RootLayout({
       className={`${poppins.variable} ${playfair.variable} ${notoArabic.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <I18nProvider>{children}</I18nProvider>
+        <I18nProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </I18nProvider>
       </body>
     </html>
   );
