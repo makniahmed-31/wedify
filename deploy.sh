@@ -59,7 +59,9 @@ echo "==> Staging backend..."
 rm -rf $PROD_BACKEND/dist.bak
 mv $PROD_BACKEND/dist $PROD_BACKEND/dist.bak 2>/dev/null || true
 cp -r $REPO/backend/dist $PROD_BACKEND/dist
-pm2 restart wedify-backend
+cd $PROD_BACKEND && npm install --omit=dev 2>/dev/null || true
+cd $REPO
+pm2 restart wedify-backend --update-env
 
 echo "==> Smoke test..."
 sleep 5
