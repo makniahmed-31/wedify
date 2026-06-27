@@ -5,19 +5,21 @@ const PROTECTED_ROUTES = ["/dashboard"];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isLoggedIn = !!request.cookies.get("wedify_auth");
+  const authCookie = request.cookies.get("wedify_auth")?.value;
+  const isLoggedIn = !!authCookie;
+  const isAdmin = authCookie === "ADMIN";
 
-  // Admin protection
-  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
-    const adminAuth = request.cookies.get("wedify_admin_auth");
-    if (!adminAuth || adminAuth.value !== "1") {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
+  // Admin routes: must be logged in as ADMIN
+  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
+    if (!isAdmin) {
+      return NextResponse.redirect(new URL("/login", request.url));
     }
+    return NextResponse.next();
   }
 
   // Already logged in → keep away from auth pages
   if (isLoggedIn && AUTH_ROUTES.some((r) => pathname.startsWith(r))) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL(isAdmin ? "/admin" : "/dashboard", request.url));
   }
 
   // Not logged in → keep away from protected pages

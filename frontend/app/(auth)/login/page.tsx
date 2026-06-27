@@ -11,13 +11,13 @@ type Method = "email" | "phone" | "password";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { loggedIn, login } = useAuth();
+  const { loggedIn, role, login } = useAuth();
   const [tab, setTab] = useState<Tab>("login");
   const [method, setMethod] = useState<Method>("email");
 
   useEffect(() => {
-    if (loggedIn) router.replace("/dashboard");
-  }, [loggedIn, router]);
+    if (loggedIn) router.replace(role === "ADMIN" ? "/admin" : "/dashboard");
+  }, [loggedIn, role, router]);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -291,7 +291,8 @@ function RegisterForm({ onLogin }: { onLogin: () => void }) {
       if (!res.ok) throw new Error("Registration failed");
       const data = await res.json();
       login(data.accessToken, data.refreshToken);
-      router.replace("/dashboard");
+      const r = (() => { try { return JSON.parse(atob(data.accessToken.split(".")[1])).role; } catch { return null; } })();
+      router.replace(r === "ADMIN" ? "/admin" : "/dashboard");
     } catch {
       setLoading(false);
     }

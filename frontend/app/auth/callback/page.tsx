@@ -14,7 +14,12 @@ function AuthCallbackInner() {
     const refreshToken = params.get("refreshToken");
     if (accessToken && refreshToken) {
       login(accessToken, refreshToken);
-      router.replace("/dashboard");
+      try {
+        const { role } = JSON.parse(atob(accessToken.split(".")[1]));
+        router.replace(role === "ADMIN" ? "/admin" : "/dashboard");
+      } catch {
+        router.replace("/dashboard");
+      }
     } else {
       router.replace("/login?error=auth_failed");
     }
