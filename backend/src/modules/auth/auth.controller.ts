@@ -1,19 +1,28 @@
 import {
-  Controller, Post, Body, HttpCode, HttpStatus, Get, Param, Query,
+  Controller, Post, Body, HttpCode, HttpStatus,
+  Get, Query, Req, Res, UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, RefreshTokenDto } from './dto/auth.dto';
 import { Public } from '../../common/decorators/public.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { User } from '../users/entities/user.entity';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly config: ConfigService,
+  ) {}
 
   @Public()
   @Post('register')
-  @ApiOperation({ summary: 'Register a new user (couple or vendor)' })
+  @ApiOperation({ summary: 'Register a new user' })
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
@@ -29,7 +38,7 @@ export class AuthController {
   @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Refresh access token using refresh token' })
+  @ApiOperation({ summary: 'Refresh access token' })
   refresh(@Body() dto: RefreshTokenDto) {
     return this.authService.refresh(dto);
   }
@@ -37,14 +46,13 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Logout and invalidate refresh token' })
-  logout() {
-    // currentUser extracted via JwtAuthGuard on AppModule level
-    return this.authService.logout('userId-from-jwt');
+  logout(@CurrentUser() user: User) {
+    return this.authService.logout(user.id);
   }
 
   @Public()
   @Get('verify-email')
-  @ApiOperation({ summary: 'Verify email with token from email link' })
+  @ApiOperation({ summary: 'Verify email with token' })
   verifyEmail(@Query('token') token: string) {
     return this.authService.verifyEmail(token);
   }
@@ -60,8 +68,32 @@ export class AuthController {
   @Public()
   @Post('reset-password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Reset password using token from email' })
-  resetPassword(@Body('token') token: string, @Body('password') password: string) {
+  @ApiOperation({ summary: 'Reset password using token' })
+  resetPassword(
+    @Body('token') token: string,
+    @Body('password') password: string,
+  ) {
     return this.authService.resetPassword(token, password);
+  }
+
+  @Public()
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'Initiate Google OAuth flow' })
+  googleAuth() {}
+
+  @Public()
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'Google OAuth callback' })
+  async googleCallback(@Req() req: any, @Res() res: Response) {
+    const tokens = await this.authService.handleGoogleUser(req.user);
+    const frontendUrl = this.config.get<string>(
+      'NEXT_PUBLIC_APP_URL',
+      'http://localhost:3000',
+    );
+    res.redirect(
+      `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
+    );
   }
 }

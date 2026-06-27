@@ -22,9 +22,27 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
-    setLoading(false);
-    window.location.href = "/dashboard";
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: form.email, password: form.password }),
+        },
+      );
+      if (!res.ok) throw new Error("Invalid credentials");
+      const data = await res.json();
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      window.location.href = "/dashboard";
+    } catch {
+      setLoading(false);
+    }
+  }
+
+  function handleGoogleAuth() {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/google`;
   }
 
   return (
@@ -55,7 +73,7 @@ export default function LoginPage() {
           </p>
 
           {/* Google */}
-          <button className="w-full flex items-center justify-center gap-3 border border-border rounded-md py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors mb-5">
+          <button onClick={handleGoogleAuth} className="w-full flex items-center justify-center gap-3 border border-border rounded-md py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors mb-5">
             <svg width="18" height="18" viewBox="0 0 24 24">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -236,14 +254,39 @@ function RegisterForm({ onLogin }: { onLogin: () => void }) {
     lastName: "",
     phone: "",
     email: "",
+    password: "",
   });
+
+  function handleGoogleAuth() {
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/google`;
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
-    setLoading(false);
-    window.location.href = "/dashboard";
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: form.email,
+            firstName: form.firstName,
+            lastName: form.lastName,
+            phone: form.phone || undefined,
+            password: form.password,
+          }),
+        },
+      );
+      if (!res.ok) throw new Error("Registration failed");
+      const data = await res.json();
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      window.location.href = "/dashboard";
+    } catch {
+      setLoading(false);
+    }
   }
 
   return (
@@ -256,7 +299,7 @@ function RegisterForm({ onLogin }: { onLogin: () => void }) {
       </p>
 
       {/* Google */}
-      <button className="w-full flex items-center justify-center gap-3 border border-border rounded-md py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors mb-5">
+      <button onClick={handleGoogleAuth} className="w-full flex items-center justify-center gap-3 border border-border rounded-md py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors mb-5">
         <svg width="18" height="18" viewBox="0 0 24 24">
           <path
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -341,6 +384,18 @@ function RegisterForm({ onLogin }: { onLogin: () => void }) {
             placeholder="Email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
+            className="w-full rounded-md border border-border bg-background pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+          />
+        </div>
+
+        <div className="relative">
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            required
+            type="password"
+            placeholder="Mot de passe"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
             className="w-full rounded-md border border-border bg-background pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           />
         </div>

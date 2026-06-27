@@ -1,0 +1,35 @@
+"use client";
+
+import { useEffect, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+
+function AuthCallbackInner() {
+  const params = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    const accessToken = params.get("accessToken");
+    const refreshToken = params.get("refreshToken");
+    if (accessToken && refreshToken) {
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      router.replace("/dashboard");
+    } else {
+      router.replace("/login?error=auth_failed");
+    }
+  }, [params, router]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-muted-foreground text-sm">Connexion en cours…</p>
+    </div>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense>
+      <AuthCallbackInner />
+    </Suspense>
+  );
+}
