@@ -24,7 +24,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`,
+        `/api/v1/auth/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -42,7 +42,7 @@ export default function LoginPage() {
   }
 
   function handleGoogleAuth() {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/google`;
+    window.location.href = `/api/v1/auth/google`;
   }
 
   return (
@@ -258,7 +258,7 @@ function RegisterForm({ onLogin }: { onLogin: () => void }) {
   });
 
   function handleGoogleAuth() {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/google`;
+    window.location.href = `/api/v1/auth/google`;
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -266,7 +266,7 @@ function RegisterForm({ onLogin }: { onLogin: () => void }) {
     setLoading(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/register`,
+        `/api/v1/auth/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

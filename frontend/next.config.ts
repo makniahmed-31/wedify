@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.s3.amazonaws.com" },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/v1/:path*",
+        destination: `${process.env.BACKEND_INTERNAL_URL ?? "http://localhost:4001"}/api/v1/:path*`,
+      },
+    ];
+  },
   async redirects() {
     return [
       { source: "/home", destination: "/", permanent: true },
@@ -17,7 +25,6 @@ const nextConfig: NextConfig = {
   },
   env: {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4001",
   },
 };
 
