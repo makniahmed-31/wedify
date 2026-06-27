@@ -92,6 +92,12 @@ export class AuthController {
       'NEXT_PUBLIC_APP_URL',
       'http://localhost:3000',
     );
+    res.cookie('wedify_auth', '1', {
+      httpOnly: false,
+      maxAge: 86400000,
+      path: '/',
+      sameSite: 'lax',
+    });
     res.redirect(
       `${frontendUrl}/auth/callback?accessToken=${tokens.accessToken}&refreshToken=${tokens.refreshToken}`,
     );

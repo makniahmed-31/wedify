@@ -9,7 +9,14 @@ function useAuth() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    setLoggedIn(!!localStorage.getItem("accessToken"));
+    const hasToken = !!localStorage.getItem("accessToken");
+    setLoggedIn(hasToken);
+    if (hasToken && !document.cookie.includes("wedify_auth=1")) {
+      document.cookie = "wedify_auth=1; path=/; max-age=86400; SameSite=Lax";
+    }
+    if (!hasToken && document.cookie.includes("wedify_auth=1")) {
+      document.cookie = "wedify_auth=; path=/; max-age=0";
+    }
   }, []);
 
   return loggedIn;
