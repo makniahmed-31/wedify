@@ -255,6 +255,7 @@ export default function LoginPage() {
 }
 
 function RegisterForm({ onLogin }: { onLogin: () => void }) {
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     firstName: "",
