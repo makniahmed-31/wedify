@@ -1,13 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Menu, X, User, Crown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Menu, X, User, Crown, LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+
+function useAuth() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setLoggedIn(!!localStorage.getItem("accessToken"));
+  }, []);
+
+  return loggedIn;
+}
+
+function logout() {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  document.cookie = "wedify_auth=; path=/; max-age=0";
+  window.location.href = "/";
+}
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
   const { t, locale, setLocale } = useI18n();
+  const loggedIn = useAuth();
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   const navLinks: [string, string][] = [
     [t("nav.home"), "/"],
@@ -24,19 +54,10 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 28 28"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M14 24s-10-6.5-10-13a6 6 0 0 1 10-4.47A6 6 0 0 1 24 11c0 6.5-10 13-10 13z"
-                fill="#D88C70"
-                stroke="#D88C70"
-                strokeWidth="1.5"
-                strokeLinejoin="round"
+                fill="#D88C70" stroke="#D88C70" strokeWidth="1.5" strokeLinejoin="round"
               />
               <circle cx="14" cy="11" r="3" fill="white" fillOpacity="0.6" />
             </svg>
@@ -59,29 +80,73 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Desktop CTA + Language switcher */}
+          {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-2">
             <button
               onClick={() => setLocale(locale === "fr" ? "ar" : "fr")}
               className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold text-foreground/70 hover:bg-muted transition-colors"
-              title={locale === "fr" ? "عربي" : "Français"}
             >
               {locale === "fr" ? "🇹🇳 عربي" : "🇫🇷 FR"}
             </button>
-            <Link
-              href="/login"
-              className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground/80 hover:bg-muted transition-colors"
-            >
-              <User className="h-4 w-4" />
-              {t("nav.login")}
-            </Link>
-            <Link
-              href="/register/vendor"
-              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-coral hover:opacity-90 transition-opacity"
-            >
-              <Crown className="h-4 w-4" />
-              {t("nav.becomeVendor")}
-            </Link>
+
+            {loggedIn ? (
+              <div className="relative" ref={profileRef}>
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground/80 hover:bg-muted transition-colors"
+                >
+                  <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                </button>
+                {profileOpen && (
+                  <div className="absolute right-0 mt-2 w-44 rounded-lg border border-border bg-white shadow-lg py-1 z-50">
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Mon espace
+                    </Link>
+                    <Link
+                      href="/dashboard/profile"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+                    >
+                      <User className="h-4 w-4" />
+                      Mon profil
+                    </Link>
+                    <div className="border-t border-border my-1" />
+                    <button
+                      onClick={logout}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Se déconnecter
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground/80 hover:bg-muted transition-colors"
+                >
+                  <User className="h-4 w-4" />
+                  {t("nav.login")}
+                </Link>
+                <Link
+                  href="/register/vendor"
+                  className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-coral hover:opacity-90 transition-opacity"
+                >
+                  <Crown className="h-4 w-4" />
+                  {t("nav.becomeVendor")}
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile toggle */}
@@ -90,11 +155,7 @@ export function Header() {
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
@@ -121,20 +182,40 @@ export function Header() {
             >
               {locale === "fr" ? "🇹🇳 عربي" : "🇫🇷 Français"}
             </button>
-            <Link
-              href="/login"
-              className="flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium"
-              onClick={() => setMobileOpen(false)}
-            >
-              <User className="h-4 w-4" /> {t("nav.login")}
-            </Link>
-            <Link
-              href="/register/vendor"
-              className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white"
-              onClick={() => setMobileOpen(false)}
-            >
-              <Crown className="h-4 w-4" /> {t("nav.becomeVendor")}
-            </Link>
+            {loggedIn ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <LayoutDashboard className="h-4 w-4" /> Mon espace
+                </Link>
+                <button
+                  onClick={logout}
+                  className="w-full flex items-center justify-center gap-2 rounded-lg border border-red-200 px-4 py-2.5 text-sm font-medium text-red-600"
+                >
+                  <LogOut className="h-4 w-4" /> Se déconnecter
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <User className="h-4 w-4" /> {t("nav.login")}
+                </Link>
+                <Link
+                  href="/register/vendor"
+                  className="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <Crown className="h-4 w-4" /> {t("nav.becomeVendor")}
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
