@@ -74,7 +74,8 @@ export default function SubscriptionPage() {
           <div>
             <p className="text-sm text-muted-foreground">Plan actuel</p>
             <p className="text-xl font-bold mt-0.5">
-              {PLAN_LABELS[currentPlan]} — {PLAN_PRICES[currentPlan]} DT/mois ou {PLAN_ANNUAL[currentPlan]} DT/an
+              {PLAN_LABELS[currentPlan]} — {PLAN_PRICES[currentPlan]} DT/mois ou{" "}
+              {PLAN_ANNUAL[currentPlan]} DT/an
             </p>
             <p className="text-sm text-muted-foreground mt-1">
               Prochaine facturation : 18 janvier 2026
@@ -137,7 +138,7 @@ export default function SubscriptionPage() {
                 } ${isCurrent ? "border-blue-500/40 bg-blue-50/30" : ""}`}
               >
                 {plan.isPopular && !isCurrent && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-white whitespace-nowrap">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-white whitespace-nowrap">
                     Le plus populaire
                   </span>
                 )}
@@ -188,7 +189,7 @@ export default function SubscriptionPage() {
                     className={`w-full rounded-full py-2.5 text-sm font-semibold transition-opacity hover:opacity-90 ${
                       downgrade
                         ? "border border-muted-foreground/40 text-foreground hover:bg-muted"
-                        : "gradient-gold text-white shadow-gold"
+                        : "bg-primary text-white shadow-gold"
                     }`}
                   >
                     {downgrade ? "Rétrograder" : "Passer"} vers {plan.label}
@@ -225,7 +226,9 @@ export default function SubscriptionPage() {
               <tr key={date} className="border-b last:border-0">
                 <td className="py-3 text-muted-foreground">{date}</td>
                 <td className="py-3">{PLAN_LABELS[currentPlan]}</td>
-                <td className="py-3 text-right font-medium">{PLAN_PRICES[currentPlan]} DT</td>
+                <td className="py-3 text-right font-medium">
+                  {PLAN_PRICES[currentPlan]} DT
+                </td>
                 <td className="py-3 pl-4">
                   <button className="text-primary text-xs hover:underline">
                     Télécharger

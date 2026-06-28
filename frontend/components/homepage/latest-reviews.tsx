@@ -9,7 +9,7 @@ export function LatestReviews() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <h2 className="text-3xl lg:text-4xl font-bold mb-3">
-            What Couples <span className="text-gradient-gold">Say</span>
+            What Couples <span className="text-bg-primary">Say</span>
           </h2>
           <p className="text-muted-foreground">
             Real stories from real weddings across Tunisia

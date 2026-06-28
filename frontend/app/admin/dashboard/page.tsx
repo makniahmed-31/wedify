@@ -169,7 +169,7 @@ export default function AdminOverviewPage() {
                 </div>
                 <div className="h-2 rounded-full bg-muted overflow-hidden">
                   <div
-                    className="h-full rounded-full gradient-gold"
+                    className="h-full rounded-full bg-primary"
                     style={{ width: `${(tier.count / 1850) * 100}%` }}
                   />
                 </div>

@@ -232,7 +232,7 @@ export default async function VendorPage({ params }: Props) {
 
                 <Link
                   href={`/vendors/${v.slug}/book`}
-                  className="flex items-center justify-center gap-2 w-full rounded-full gradient-gold py-3 text-sm font-semibold text-white shadow-gold hover:opacity-90 transition-opacity mb-3"
+                  className="flex items-center justify-center gap-2 w-full rounded-full bg-primary py-3 text-sm font-semibold text-white shadow-gold hover:opacity-90 transition-opacity mb-3"
                 >
                   <Calendar className="h-4 w-4" />
                   Demander un devis

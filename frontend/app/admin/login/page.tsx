@@ -102,7 +102,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 rounded-full gradient-gold py-3 text-sm font-semibold text-white shadow-gold disabled:opacity-70 mt-2"
+              className="w-full flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-white shadow-gold disabled:opacity-70 mt-2"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               {loading ? "Connexion..." : "Se connecter"}

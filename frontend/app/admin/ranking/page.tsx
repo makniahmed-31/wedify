@@ -79,7 +79,7 @@ export default function RankingPage() {
           ))}
         </div>
 
-        <button className="mt-8 rounded-full gradient-gold px-5 py-2.5 text-sm font-semibold text-white shadow-gold hover:opacity-90">
+        <button className="mt-8 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-gold hover:opacity-90">
           Save Ranking Configuration
         </button>
       </div>

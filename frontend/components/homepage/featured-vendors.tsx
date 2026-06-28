@@ -1,14 +1,27 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { VendorCard } from "@/components/marketplace/vendor-card";
-import { getFeaturedVendors } from "@/lib/mock-data";
 import { useT } from "@/lib/i18n";
+import { toVendor } from "@/lib/vendor-utils";
+import type { Vendor } from "@/lib/types";
 
 export function FeaturedVendors() {
   const t = useT();
-  const vendors = getFeaturedVendors();
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/v1/vendors?limit=5&featured=true")
+      .then((res) => (res.ok ? res.json() : { data: [] }))
+      .then((json) => {
+        setVendors((json.data ?? []).map(toVendor));
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <section className="py-14 lg:py-16 bg-white">
@@ -29,9 +42,22 @@ export function FeaturedVendors() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {vendors.slice(0, 5).map((vendor) => (
-            <VendorCard key={vendor.id} vendor={vendor} featured />
-          ))}
+          {loading
+            ? [0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="rounded-lg border bg-white overflow-hidden animate-pulse"
+                >
+                  <div className="h-48 bg-muted" />
+                  <div className="p-4 space-y-2">
+                    <div className="h-4 bg-muted rounded w-3/4" />
+                    <div className="h-3 bg-muted rounded w-1/2" />
+                  </div>
+                </div>
+              ))
+            : vendors.slice(0, 5).map((vendor) => (
+                <VendorCard key={vendor.id} vendor={vendor} featured />
+              ))}
         </div>
 
         <div className="mt-6 text-center sm:hidden">

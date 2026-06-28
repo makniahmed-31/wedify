@@ -217,7 +217,7 @@ export default function ProfilePage() {
 
         <button
           type="submit"
-          className="flex items-center gap-2 rounded-full gradient-gold px-6 py-3 text-sm font-semibold text-white shadow-gold hover:opacity-90 transition-opacity"
+          className="flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-gold hover:opacity-90 transition-opacity"
         >
           <Save className="h-4 w-4" />
           {saved ? "Saved!" : "Save Profile"}

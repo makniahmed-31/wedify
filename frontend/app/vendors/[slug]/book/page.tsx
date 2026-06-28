@@ -147,7 +147,7 @@ export default function BookingPage() {
 
                 <button
                   type="submit"
-                  className="w-full rounded-full gradient-gold py-3.5 text-sm font-semibold text-white shadow-gold hover:opacity-90 transition-opacity"
+                  className="w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-white shadow-gold hover:opacity-90 transition-opacity"
                 >
                   Send Booking Request
                 </button>

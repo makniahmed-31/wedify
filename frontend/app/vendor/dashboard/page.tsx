@@ -98,7 +98,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Plan upgrade banner */}
-      <div className="rounded-lg gradient-gold p-5 text-white flex items-center justify-between gap-4">
+      <div className="rounded-lg bg-primary p-5 text-white flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Crown className="h-8 w-8" />
           <div>
@@ -250,7 +250,7 @@ export default function DashboardPage() {
         </div>
         <div className="h-2 rounded-full bg-muted overflow-hidden mb-4">
           <div
-            className="h-full rounded-full gradient-gold"
+            className="h-full rounded-full bg-primary"
             style={{ width: "65%" }}
           />
         </div>

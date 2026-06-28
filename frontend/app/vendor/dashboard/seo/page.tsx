@@ -152,7 +152,7 @@ export default function SEOPage() {
             className="w-full rounded-md border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
-        <button className="rounded-full gradient-gold px-5 py-2.5 text-sm font-semibold text-white shadow-gold hover:opacity-90">
+        <button className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-gold hover:opacity-90">
           Save SEO Settings
         </button>
       </div>

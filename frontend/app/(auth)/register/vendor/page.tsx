@@ -46,7 +46,7 @@ export default function VendorRegisterPage() {
   if (step === "success") {
     return (
       <div className="text-center py-8">
-        <div className="w-16 h-16 rounded-full gradient-gold flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
           <Check className="h-8 w-8 text-white" />
         </div>
         <h2 className="text-2xl font-bold mb-2">You&apos;re all set!</h2>
@@ -56,7 +56,7 @@ export default function VendorRegisterPage() {
         </p>
         <Link
           href="/dashboard"
-          className="inline-flex items-center rounded-full gradient-gold px-6 py-3 text-sm font-semibold text-white shadow-gold"
+          className="inline-flex items-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-gold"
         >
           Go to Dashboard
         </Link>
@@ -80,7 +80,7 @@ export default function VendorRegisterPage() {
             <div
               className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
                 s.id === step
-                  ? "gradient-gold text-white"
+                  ? "bg-primary text-white"
                   : STEPS.indexOf(STEPS.find((x) => x.id === step)!) > i
                     ? "bg-green-500 text-white"
                     : "bg-muted text-muted-foreground"
@@ -227,7 +227,7 @@ export default function VendorRegisterPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-bold">{plan.label}</span>
                       {plan.isPopular && (
-                        <span className="rounded-full gradient-gold px-2 py-0.5 text-xs text-white">
+                        <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-white">
                           Popular
                         </span>
                       )}
@@ -259,7 +259,7 @@ export default function VendorRegisterPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 rounded-full gradient-gold py-3 text-sm font-semibold text-white shadow-gold disabled:opacity-70 mt-6"
+          className="w-full flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-white shadow-gold disabled:opacity-70 mt-6"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {step === "plan" ? "Create Account" : "Continue"}

@@ -1,6 +1,6 @@
 // ─── Enums ─────────────────────────────────────────────────────────────────
 
-export type SubscriptionPlan = "BRONZE" | "SILVER" | "GOLD";
+export type SubscriptionPlan = "BASIC" | "PRO" | "PREMIUM";
 
 export type BookingStatus =
   | "PENDING"
