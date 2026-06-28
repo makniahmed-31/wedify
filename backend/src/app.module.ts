@@ -29,7 +29,7 @@ import { BlogModule } from "./modules/blog/blog.module";
       type: "postgres",
       url: process.env.DATABASE_URL,
       entities: [__dirname + "/**/*.entity{.ts,.js}"],
-      synchronize: true,
+      synchronize: process.env.NODE_ENV !== "production",
       logging: false,
       ssl: false,
     }),
