@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const v = await fetchVendor(slug);
   if (!v) return {};
   return {
-    title: `${v.businessName} — ${v.category ?? ""} à ${v.city ?? "Tunisie"}`,
+    title: `${v.businessName} — ${typeof v.category === "object" ? (v.category?.name ?? "") : (v.category ?? "")} à ${(typeof v.city === "object" ? v.city?.name : v.city) ?? "Tunisie"}`,
     description: v.description?.substring(0, 160) ?? "",
     openGraph: {
       title: v.businessName,
@@ -90,6 +90,7 @@ export default async function VendorPage({ params }: Props) {
 
   const cat = CATEGORIES.find((c) => c.slug === v.categorySlug);
   const city = CITIES.find((c) => c.slug === v.citySlug);
+  const cityName: string | undefined = typeof v.city === "object" ? v.city?.name : v.city;
   const embedUrl = getYoutubeEmbedUrl(v.videoUrl);
   const gallery: string[] = Array.isArray(v.gallery) ? v.gallery : [];
   const schemaOrg = {
@@ -102,7 +103,7 @@ export default async function VendorPage({ params }: Props) {
     email: v.email,
     address: {
       "@type": "PostalAddress",
-      addressLocality: v.city ?? city?.name,
+      addressLocality: cityName ?? city?.name,
       addressCountry: "TN",
     },
     ...(v.rating > 0 && {
@@ -380,7 +381,7 @@ export default async function VendorPage({ params }: Props) {
                   {(v.city || city) && (
                     <div className="flex items-center gap-3 text-sm">
                       <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
-                      {v.city ?? city?.name}
+                      {cityName ?? city?.name}
                     </div>
                   )}
                   {v.phone && (
