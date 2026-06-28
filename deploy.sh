@@ -22,7 +22,8 @@ cd "$REPO"
 git pull
 
 echo "==> Installing dependencies..."
-npm install --silent
+# NODE_ENV=production skips devDependencies; force include them for build tools
+NODE_ENV=development npm install --silent
 
 # ─── Backend ─────────────────────────────────────────────────────────────────
 
