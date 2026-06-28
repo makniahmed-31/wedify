@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const BACKEND = process.env.BACKEND_INTERNAL_URL ?? "http://localhost:4001";
+import { BACKEND } from "@/lib/config";
 const ADMIN_SECRET = process.env.ADMIN_SECRET ?? "";
 
 export async function PUT(

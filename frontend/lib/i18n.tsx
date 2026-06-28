@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 import fr from "@/messages/fr.json";
 import ar from "@/messages/ar.json";
 
@@ -40,12 +40,11 @@ function interpolate(str: string, vars?: Record<string, string | number>): strin
 }
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("fr");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("bpm_locale") as Locale | null;
-    if (saved === "fr" || saved === "ar") setLocaleState(saved);
-  }, []);
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    if (typeof window === "undefined") return "fr";
+    const saved = localStorage.getItem("bpm_locale");
+    return (saved === "fr" || saved === "ar") ? saved : "fr";
+  });
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);

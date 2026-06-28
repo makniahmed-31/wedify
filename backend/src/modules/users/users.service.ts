@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial } from 'typeorm';
-import { User } from './entities/user.entity';
-import { UserResponseDto } from './dto/user.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository, DeepPartial } from "typeorm";
+import { User } from "./entities/user.entity";
+import { UserResponseDto } from "./dto/user.dto";
 
 @Injectable()
 export class UsersService {
@@ -10,18 +10,21 @@ export class UsersService {
     @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {}
 
-  async findAll(page: number, limit: number): Promise<{ data: UserResponseDto[]; total: number }> {
+  async findAll(
+    page: number,
+    limit: number,
+  ): Promise<{ data: UserResponseDto[]; total: number }> {
     const [data, total] = await this.userRepo.findAndCount({
       skip: (page - 1) * limit,
       take: limit,
-      order: { createdAt: 'DESC' },
+      order: { createdAt: "DESC" },
     });
     return { data: data.map(this.toDto), total };
   }
 
   async findOne(id: string): Promise<User> {
     const user = await this.userRepo.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException("User not found");
     return user;
   }
 
@@ -52,7 +55,10 @@ export class UsersService {
     return this.toDto(user);
   }
 
-  async updateProfile(userId: string, data: DeepPartial<User>): Promise<UserResponseDto> {
+  async updateProfile(
+    userId: string,
+    data: DeepPartial<User>,
+  ): Promise<UserResponseDto> {
     const user = await this.update(userId, data);
     return this.toDto(user);
   }

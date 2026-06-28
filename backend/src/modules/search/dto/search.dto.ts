@@ -1,13 +1,21 @@
-import { IsString, IsOptional, IsNumber, IsEnum, IsArray, Min, Max } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { VendorCategory } from '../../vendors/dto/vendor.dto';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsEnum,
+  IsArray,
+  Min,
+  Max,
+} from "class-validator";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { VendorCategory } from "../../vendors/dto/vendor.dto";
 
 export enum SortBy {
-  RELEVANCE = 'RELEVANCE',
-  RATING = 'RATING',
-  PRICE_ASC = 'PRICE_ASC',
-  PRICE_DESC = 'PRICE_DESC',
-  NEWEST = 'NEWEST',
+  RELEVANCE = "RELEVANCE",
+  RATING = "RATING",
+  PRICE_ASC = "PRICE_ASC",
+  PRICE_DESC = "PRICE_DESC",
+  NEWEST = "NEWEST",
 }
 
 export class SearchQueryDto {

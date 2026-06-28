@@ -13,17 +13,7 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
-
-interface SeoPage {
-  id: string;
-  type: "home" | "category" | "city" | "vendor" | "static";
-  path: string;
-  label: string;
-  title: string;
-  description: string;
-  indexed: boolean;
-  hasSchema: boolean;
-}
+import type { SeoPage } from "@/types";
 
 const INITIAL_PAGES: SeoPage[] = [
   {

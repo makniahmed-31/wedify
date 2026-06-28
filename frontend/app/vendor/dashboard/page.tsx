@@ -12,63 +12,9 @@ import {
   Zap,
 } from "lucide-react";
 import { serverFetch } from "@/lib/server-auth";
+import type { VendorBooking } from "@/types";
 
 export const metadata: Metadata = { title: "Dashboard" };
-
-const STATS = [
-  {
-    label: "Profile Views",
-    value: "1,247",
-    change: +12.5,
-    icon: Eye,
-    href: "/dashboard/analytics",
-  },
-  {
-    label: "Clicks",
-    value: "342",
-    change: +8.3,
-    icon: MousePointerClick,
-    href: "/dashboard/analytics",
-  },
-  {
-    label: "Bookings",
-    value: "18",
-    change: +22.2,
-    icon: CalendarCheck,
-    href: "/dashboard/bookings",
-  },
-  {
-    label: "Avg Rating",
-    value: "4.8",
-    change: +0.2,
-    icon: Star,
-    href: "/dashboard/reviews",
-  },
-];
-
-const RECENT_BOOKINGS = [
-  {
-    id: "b1",
-    name: "Sarah & Ahmed",
-    date: "2025-02-14",
-    status: "PENDING",
-    amount: 8000,
-  },
-  {
-    id: "b2",
-    name: "Fatima & Khalil",
-    date: "2025-03-22",
-    status: "CONFIRMED",
-    amount: 15000,
-  },
-  {
-    id: "b3",
-    name: "Leila & Omar",
-    date: "2025-04-05",
-    status: "CONFIRMED",
-    amount: 8000,
-  },
-];
 
 const STATUS_STYLES: Record<string, string> = {
   PENDING: "bg-yellow-500/10 text-yellow-600",
@@ -90,14 +36,64 @@ export default async function DashboardPage() {
     }
   } catch {}
 
+  // Fetch analytics
+  let analytics: {
+    profileViews: number;
+    bookingRequests: number;
+    averageRating: number;
+  } | null = null;
+  try {
+    const res = await serverFetch("/api/v1/analytics/vendor");
+    if (res.ok) analytics = await res.json();
+  } catch {}
+
+  // Fetch recent bookings
+  let recentBookings: VendorBooking[] = [];
+  try {
+    const res = await serverFetch("/api/v1/bookings/vendor");
+    if (res.ok) {
+      const all = await res.json();
+      recentBookings = Array.isArray(all) ? all.slice(0, 3) : [];
+    }
+  } catch {}
+
+  const stats = [
+    {
+      label: "Profile Views",
+      value: analytics ? analytics.profileViews.toLocaleString() : "—",
+      change: null as number | null,
+      icon: Eye,
+      href: "/dashboard/analytics",
+    },
+    {
+      label: "Clicks",
+      value: "0",
+      change: null as number | null,
+      icon: MousePointerClick,
+      href: "/dashboard/analytics",
+    },
+    {
+      label: "Bookings",
+      value: analytics ? analytics.bookingRequests.toLocaleString() : "—",
+      change: null as number | null,
+      icon: CalendarCheck,
+      href: "/dashboard/bookings",
+    },
+    {
+      label: "Avg Rating",
+      value: analytics ? analytics.averageRating.toFixed(1) : "—",
+      change: null as number | null,
+      icon: Star,
+      href: "/dashboard/reviews",
+    },
+  ];
+
   return (
-    <div className="space-y-8 max-w-6xl">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">
-            Bonjour, {name} ! 👋
-          </h1>
+          <h1 className="text-2xl font-bold">Bonjour, {name} ! 👋</h1>
           <p className="text-muted-foreground mt-1">
             Here&apos;s what&apos;s happening with your business today.
           </p>
@@ -134,8 +130,8 @@ export default async function DashboardPage() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {STATS.map((stat) => {
-          const positive = stat.change >= 0;
+        {stats.map((stat) => {
+          const positive = stat.change === null || stat.change >= 0;
           return (
             <Link
               key={stat.label}
@@ -144,16 +140,18 @@ export default async function DashboardPage() {
             >
               <div className="flex items-center justify-between mb-3">
                 <stat.icon className="h-5 w-5 text-muted-foreground" />
-                <span
-                  className={`flex items-center gap-0.5 text-xs font-medium ${positive ? "text-green-600" : "text-red-500"}`}
-                >
-                  {positive ? (
-                    <TrendingUp className="h-3.5 w-3.5" />
-                  ) : (
-                    <TrendingDown className="h-3.5 w-3.5" />
-                  )}
-                  {Math.abs(stat.change)}%
-                </span>
+                {stat.change !== null && (
+                  <span
+                    className={`flex items-center gap-0.5 text-xs font-medium ${positive ? "text-green-600" : "text-red-500"}`}
+                  >
+                    {positive ? (
+                      <TrendingUp className="h-3.5 w-3.5" />
+                    ) : (
+                      <TrendingDown className="h-3.5 w-3.5" />
+                    )}
+                    {Math.abs(stat.change)}%
+                  </span>
+                )}
               </div>
               <p className="text-2xl font-bold">{stat.value}</p>
               <p className="text-sm text-muted-foreground mt-0.5">
@@ -202,82 +200,104 @@ export default async function DashboardPage() {
           </Link>
         </div>
         <div className="rounded-lg border bg-card overflow-hidden">
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-muted/50">
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Couple
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Date
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Status
-                  </th>
-                  <th className="px-4 py-3 text-right font-medium text-muted-foreground">
-                    Amount
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {RECENT_BOOKINGS.map((b) => (
-                  <tr
-                    key={b.id}
-                    className="border-b last:border-0 hover:bg-muted/30 transition-colors"
-                  >
-                    <td className="px-4 py-3 font-medium">{b.name}</td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {new Date(b.date).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[b.status]}`}
-                      >
-                        {b.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right font-semibold">
-                      {b.amount.toLocaleString()} د.ت
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="md:hidden divide-y">
-            {RECENT_BOOKINGS.map((b) => (
-              <div
-                key={b.id}
-                className="flex items-center justify-between gap-3 p-4"
-              >
-                <div>
-                  <p className="text-sm font-medium">{b.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(b.date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
+          {recentBookings.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              No bookings yet.
+            </div>
+          ) : (
+            <>
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b bg-muted/50">
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                        Couple
+                      </th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                        Date
+                      </th>
+                      <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                        Status
+                      </th>
+                      <th className="px-4 py-3 text-right font-medium text-muted-foreground">
+                        Amount
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentBookings.map((b) => {
+                      const coupleName = b.name ?? b.coupleName ?? "—";
+                      const date = b.date ?? b.eventDate ?? "";
+                      const amount = b.amount ?? b.totalAmount ?? 0;
+                      return (
+                        <tr
+                          key={b.id}
+                          className="border-b last:border-0 hover:bg-muted/30 transition-colors"
+                        >
+                          <td className="px-4 py-3 font-medium">{coupleName}</td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {date
+                              ? new Date(date).toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                })
+                              : "—"}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[b.status] ?? ""}`}
+                            >
+                              {b.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right font-semibold">
+                            {amount > 0 ? `${amount.toLocaleString()} د.ت` : "—"}
+                          </td>
+                        </tr>
+                      );
                     })}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[b.status]}`}
-                  >
-                    {b.status}
-                  </span>
-                  <span className="text-sm font-semibold">
-                    {b.amount.toLocaleString()} د.ت
-                  </span>
-                </div>
+                  </tbody>
+                </table>
               </div>
-            ))}
-          </div>
+              <div className="md:hidden divide-y">
+                {recentBookings.map((b) => {
+                  const coupleName = b.name ?? b.coupleName ?? "—";
+                  const date = b.date ?? b.eventDate ?? "";
+                  const amount = b.amount ?? b.totalAmount ?? 0;
+                  return (
+                    <div
+                      key={b.id}
+                      className="flex items-center justify-between gap-3 p-4"
+                    >
+                      <div>
+                        <p className="text-sm font-medium">{coupleName}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {date
+                            ? new Date(date).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })
+                            : "—"}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[b.status] ?? ""}`}
+                        >
+                          {b.status}
+                        </span>
+                        <span className="text-sm font-semibold">
+                          {amount > 0 ? `${amount.toLocaleString()} د.ت` : "—"}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
       </div>
 

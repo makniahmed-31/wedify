@@ -7,44 +7,31 @@ import {
   Search, Filter, CheckCircle2, XCircle, Eye,
   ChevronDown, Crown, Gem, Loader2,
 } from "lucide-react";
+import type { AdminVendor, AdminVendorStatus, SubscriptionPlan } from "@/types";
 
-type Status = "ACTIVE" | "PENDING" | "SUSPENDED";
-type Plan = "BRONZE" | "SILVER" | "GOLD";
-
-interface Vendor {
-  id: string;
-  name: string;
-  category: string;
-  city: string;
-  plan: Plan;
-  status: Status;
-  joined: string;
-  revenue: number;
-}
-
-const STATUS_STYLES: Record<Status, string> = {
+const STATUS_STYLES: Record<AdminVendorStatus, string> = {
   ACTIVE: "bg-green-500/10 text-green-600",
   PENDING: "bg-yellow-500/10 text-yellow-600",
   SUSPENDED: "bg-red-500/10 text-red-500",
 };
-const STATUS_LABELS: Record<Status, string> = {
+const STATUS_LABELS: Record<AdminVendorStatus, string> = {
   ACTIVE: "Actif",
   PENDING: "En attente",
   SUSPENDED: "Suspendu",
 };
-const PLAN_STYLES: Record<Plan, string> = {
+const PLAN_STYLES: Record<SubscriptionPlan, string> = {
   GOLD: "bg-primary/10 text-primary",
   SILVER: "bg-blue-500/10 text-blue-600",
   BRONZE: "bg-muted text-muted-foreground",
 };
 
-export default function VendorsTable({ initialVendors }: { initialVendors: Vendor[] }) {
+export default function VendorsTable({ initialVendors }: { initialVendors: AdminVendor[] }) {
   const router = useRouter();
-  const [vendors, setVendors] = useState<Vendor[]>(initialVendors);
+  const [vendors, setVendors] = useState<AdminVendor[]>(initialVendors);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState<Status | "ALL">("ALL");
-  const [filterPlan, setFilterPlan] = useState<Plan | "ALL">("ALL");
+  const [filterStatus, setFilterStatus] = useState<AdminVendorStatus | "ALL">("ALL");
+  const [filterPlan, setFilterPlan] = useState<SubscriptionPlan | "ALL">("ALL");
 
   async function refresh() {
     setRefreshing(true);
@@ -52,7 +39,7 @@ export default function VendorsTable({ initialVendors }: { initialVendors: Vendo
     setTimeout(() => setRefreshing(false), 800);
   }
 
-  async function updateStatus(id: string, status: Status) {
+  async function updateStatus(id: string, status: AdminVendorStatus) {
     const prev = vendors.find((v) => v.id === id)?.status;
     setVendors((v) => v.map((x) => (x.id === id ? { ...x, status } : x)));
     const res = await apiFetch(`/api/v1/admin/vendors/${id}/action`, {
@@ -115,7 +102,7 @@ export default function VendorsTable({ initialVendors }: { initialVendors: Vendo
           <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as Status | "ALL")}
+            onChange={(e) => setFilterStatus(e.target.value as AdminVendorStatus | "ALL")}
             className="pl-9 pr-8 py-2 rounded-md border bg-card text-sm outline-none appearance-none focus:ring-2 focus:ring-primary/30"
           >
             <option value="ALL">Tous les statuts</option>
@@ -128,7 +115,7 @@ export default function VendorsTable({ initialVendors }: { initialVendors: Vendo
         <div className="relative">
           <select
             value={filterPlan}
-            onChange={(e) => setFilterPlan(e.target.value as Plan | "ALL")}
+            onChange={(e) => setFilterPlan(e.target.value as SubscriptionPlan | "ALL")}
             className="px-4 py-2 rounded-md border bg-card text-sm outline-none appearance-none focus:ring-2 focus:ring-primary/30"
           >
             <option value="ALL">Tous les plans</option>

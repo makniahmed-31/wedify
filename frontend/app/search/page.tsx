@@ -5,8 +5,8 @@ import { Footer } from "@/components/layout/footer";
 import { SearchFilters } from "@/components/marketplace/search-filters";
 import { VendorCard } from "@/components/marketplace/vendor-card";
 import { CATEGORIES, CITIES } from "@/lib/constants";
-import type { Vendor } from "@/lib/types";
-import { toVendor, BACKEND } from "@/lib/vendor-utils";
+import type { Vendor } from "@/types";
+import { BACKEND } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Rechercher des prestataires",
@@ -30,7 +30,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     const res = await fetch(url.toString(), { next: { revalidate: 60 } });
     if (res.ok) {
       const json = await res.json();
-      vendors = (json.data ?? []).map(toVendor);
+      vendors = (json.data ?? []) as Vendor[];
     }
   } catch {
     // fallback: empty list

@@ -1,12 +1,19 @@
-import { IsString, IsDateString, IsOptional, IsNumber, IsEnum, Min } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import {
+  IsString,
+  IsDateString,
+  IsOptional,
+  IsNumber,
+  IsEnum,
+  Min,
+} from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export enum BookingStatus {
-  PENDING = 'PENDING',
-  CONFIRMED = 'CONFIRMED',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-  REFUNDED = 'REFUNDED',
+  PENDING = "PENDING",
+  CONFIRMED = "CONFIRMED",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  REFUNDED = "REFUNDED",
 }
 
 export class CreateBookingDto {
@@ -18,7 +25,7 @@ export class CreateBookingDto {
   @IsString()
   serviceId: string;
 
-  @ApiProperty({ example: '2025-09-15' })
+  @ApiProperty({ example: "2025-09-15" })
   @IsDateString()
   weddingDate: string;
 

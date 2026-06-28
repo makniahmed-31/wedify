@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { SearchFilters } from "@/components/marketplace/search-filters";
 import { VendorCard } from "@/components/marketplace/vendor-card";
 import { CATEGORIES, CITIES } from "@/lib/constants";
-import { MOCK_VENDORS } from "@/lib/mock-data";
+import type { Vendor } from "@/types";
+import { BACKEND } from "@/lib/config";
 
 interface Props {
   params: Promise<{ category: string; city: string }>;
@@ -37,6 +39,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+async function fetchVendors(categorySlug: string, citySlug: string): Promise<Vendor[]> {
+  try {
+    const res = await fetch(
+      `${BACKEND}/api/v1/vendors?status=ACTIVE&category=${categorySlug}&city=${citySlug}&limit=100`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : (data.vendors ?? data.data ?? []);
+  } catch {
+    return [];
+  }
+}
+
 export default async function CategoryCityPage({ params }: Props) {
   const { category: catSlug, city: citySlug } = await params;
 
@@ -45,9 +61,7 @@ export default async function CategoryCityPage({ params }: Props) {
 
   if (!category || !city) notFound();
 
-  const vendors = MOCK_VENDORS.filter(
-    (v) => v.category.slug === catSlug && v.city.slug === citySlug,
-  );
+  const vendors = await fetchVendors(catSlug, citySlug);
 
   return (
     <>
@@ -57,13 +71,13 @@ export default async function CategoryCityPage({ params }: Props) {
         <div className="bg-secondary/50 border-b py-10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <nav className="text-sm text-muted-foreground mb-3">
-              <a href="/" className="hover:text-foreground">
+              <Link href="/" className="hover:text-foreground">
                 Home
-              </a>
+              </Link>
               {" / "}
-              <a href={`/${catSlug}`} className="hover:text-foreground">
+              <Link href={`/${catSlug}`} className="hover:text-foreground">
                 {category.name}
-              </a>
+              </Link>
               {" / "}
               <span>{city.name}</span>
             </nav>
@@ -106,12 +120,12 @@ export default async function CategoryCityPage({ params }: Props) {
               <p className="text-muted-foreground mt-2 mb-6">
                 Browse {category.name.toLowerCase()} in other cities.
               </p>
-              <a
+              <Link
                 href={`/${catSlug}`}
                 className="rounded-full border px-5 py-2.5 text-sm font-medium hover:bg-muted"
               >
                 View all {category.name}
-              </a>
+              </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mt-4">

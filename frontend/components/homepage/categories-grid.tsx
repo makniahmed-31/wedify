@@ -1,7 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { Building2, Camera, Video, UtensilsCrossed, Sparkles, Shirt, Car, Music2, Music, ClipboardList, Wand2, Flower2, User, Armchair, Cake, Gift, Plus } from "lucide-react";
+import {
+  Building2,
+  Camera,
+  Video,
+  UtensilsCrossed,
+  Sparkles,
+  Shirt,
+  Car,
+  Music2,
+  Music,
+  ClipboardList,
+  Wand2,
+  Flower2,
+  User,
+  Armchair,
+  Cake,
+  Gift,
+  Plus,
+} from "lucide-react";
 import { CATEGORIES } from "@/lib/constants";
 import { useT } from "@/lib/i18n";
 
@@ -26,6 +44,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 
 export function CategoriesGrid() {
   const t = useT();
+
   const featured = CATEGORIES.slice(0, 9);
 
   return (

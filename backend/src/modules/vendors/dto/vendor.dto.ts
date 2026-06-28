@@ -1,25 +1,33 @@
-import { IsString, IsOptional, IsEnum, IsArray, IsNumber, Min, Max, IsUrl } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsArray,
+  IsNumber,
+  Min,
+  IsUrl,
+} from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export enum VendorCategory {
-  VENUE = 'VENUE',
-  PHOTOGRAPHER = 'PHOTOGRAPHER',
-  VIDEOGRAPHER = 'VIDEOGRAPHER',
-  CATERER = 'CATERER',
-  FLORIST = 'FLORIST',
-  DJ = 'DJ',
-  BAND = 'BAND',
-  PLANNER = 'PLANNER',
-  CAKE = 'CAKE',
-  HAIR_MAKEUP = 'HAIR_MAKEUP',
-  TRANSPORTATION = 'TRANSPORTATION',
-  OFFICIANT = 'OFFICIANT',
+  VENUE = "VENUE",
+  PHOTOGRAPHER = "PHOTOGRAPHER",
+  VIDEOGRAPHER = "VIDEOGRAPHER",
+  CATERER = "CATERER",
+  FLORIST = "FLORIST",
+  DJ = "DJ",
+  BAND = "BAND",
+  PLANNER = "PLANNER",
+  CAKE = "CAKE",
+  HAIR_MAKEUP = "HAIR_MAKEUP",
+  TRANSPORTATION = "TRANSPORTATION",
+  OFFICIANT = "OFFICIANT",
 }
 
 export enum VendorStatus {
-  PENDING = 'PENDING',
-  ACTIVE = 'ACTIVE',
-  SUSPENDED = 'SUSPENDED',
+  PENDING = "PENDING",
+  ACTIVE = "ACTIVE",
+  SUSPENDED = "SUSPENDED",
 }
 
 export class CreateVendorProfileDto {
@@ -78,10 +86,18 @@ export class UpdateVendorProfileDto {
   @ApiPropertyOptional() @IsOptional() @IsString() youtube?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() tiktok?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() videoUrl?: string;
-  @ApiPropertyOptional({ type: [String] }) @IsOptional() @IsArray() @IsString({ each: true }) gallery?: string[];
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  gallery?: string[];
   @ApiPropertyOptional() @IsOptional() @IsNumber() @Min(0) minPrice?: number;
   @ApiPropertyOptional() @IsOptional() @IsNumber() @Min(0) maxPrice?: number;
-  @ApiPropertyOptional() @IsOptional() @IsNumber() @Min(0) yearsInBusiness?: number;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  yearsInBusiness?: number;
 }
 
 export class VendorResponseDto {

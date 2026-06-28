@@ -11,30 +11,7 @@ import {
   TrendingDown,
   CreditCard,
 } from "lucide-react";
-
-type Plan = "BRONZE" | "SILVER" | "GOLD";
-type ReqStatus = "PENDING" | "APPROVED" | "REJECTED";
-
-interface SubRequest {
-  id: string;
-  vendor: string;
-  city: string;
-  fromPlan: Plan;
-  toPlan: Plan;
-  requestedAt: string;
-  status: ReqStatus;
-  monthlyRevenue: number;
-}
-
-interface ActiveSub {
-  id: string;
-  vendor: string;
-  plan: Plan;
-  since: string;
-  nextBilling: string;
-  amount: number;
-  status: "ACTIVE" | "CANCELLED";
-}
+import type { SubRequest, ActiveSub } from "@/types";
 
 const INITIAL_REQUESTS: SubRequest[] = [
   {

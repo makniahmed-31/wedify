@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Poppins, Playfair_Display, Noto_Sans_Arabic } from "next/font/google";
+import { cookies } from "next/headers";
 import { I18nProvider } from "@/lib/i18n";
 import { AuthProvider } from "@/lib/auth-context";
+import type { UserRole } from "@/lib/auth-context";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -49,11 +51,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const authCookie = cookieStore.get("wedify_auth");
+  const initialLoggedIn = !!authCookie?.value;
+  const initialRole = (authCookie?.value as UserRole) ?? null;
+
   return (
     <html
       lang="fr"
@@ -61,7 +68,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <I18nProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider initialLoggedIn={initialLoggedIn} initialRole={initialRole}>
+            {children}
+          </AuthProvider>
         </I18nProvider>
       </body>
     </html>

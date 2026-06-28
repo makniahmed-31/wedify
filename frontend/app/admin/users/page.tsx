@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { serverFetch } from "@/lib/server-auth";
+import type { AppUser } from "@/types";
 import UsersTable from "./users-table";
 
 export const metadata: Metadata = { title: "Utilisateurs" };
 
 export default async function AdminUsersPage() {
-  let users: any[] = [];
+  let users: AppUser[] = [];
   try {
     const res = await serverFetch("/api/v1/users");
     if (res.ok) {

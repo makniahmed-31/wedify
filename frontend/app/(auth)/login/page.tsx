@@ -16,7 +16,9 @@ export default function LoginPage() {
   const [method, setMethod] = useState<Method>("email");
 
   useEffect(() => {
-    if (loggedIn && role) router.replace(`/${role.toLowerCase()}/dashboard`);
+    if (loggedIn && role) {
+      router.replace(role.toLowerCase() === "user" ? "/" : `/${role.toLowerCase()}/dashboard`);
+    }
   }, [loggedIn, role, router]);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -44,9 +46,9 @@ export default function LoginPage() {
       login(data.accessToken, data.refreshToken);
       try {
         const r: string = JSON.parse(atob(data.accessToken.split(".")[1])).role;
-        router.replace(`/${r.toLowerCase()}/dashboard`);
+        router.replace(r.toLowerCase() === "user" ? "/" : `/${r.toLowerCase()}/dashboard`);
       } catch {
-        router.replace("/user/dashboard");
+        router.replace("/");
       }
     } catch {
       setLoading(false);
@@ -297,7 +299,7 @@ function RegisterForm({ onLogin }: { onLogin: () => void }) {
       const data = await res.json();
       login(data.accessToken, data.refreshToken);
       const r: string = (() => { try { return JSON.parse(atob(data.accessToken.split(".")[1])).role; } catch { return "USER"; } })();
-      router.replace(`/${r.toLowerCase()}/dashboard`);
+      router.replace(r.toLowerCase() === "user" ? "/" : `/${r.toLowerCase()}/dashboard`);
     } catch {
       setLoading(false);
     }

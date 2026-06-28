@@ -1,21 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import {
   Calendar,
-  Clock,
   Users,
   MessageSquare,
   CheckCircle,
 } from "lucide-react";
-import { getVendorBySlug } from "@/lib/mock-data";
+
+interface VendorBasic {
+  businessName: string;
+  slug: string;
+  responseTime?: string;
+}
 
 export default function BookingPage() {
   const params = useParams();
-  const vendor = getVendorBySlug(params.slug as string);
+  const slug = params.slug as string;
+
+  const [vendor, setVendor] = useState<VendorBasic | null>(null);
+  const [loading, setLoading] = useState(true);
   const [step, setStep] = useState<"form" | "success">("form");
   const [form, setForm] = useState({
     name: "",
@@ -26,6 +33,14 @@ export default function BookingPage() {
     notes: "",
   });
 
+  useEffect(() => {
+    fetch(`/api/v1/vendors/slug/${slug}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { setVendor(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [slug]);
+
+  if (loading) return null;
   if (!vendor) return null;
 
   function handleSubmit(e: React.FormEvent) {

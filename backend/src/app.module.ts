@@ -1,21 +1,22 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
-import { VendorsModule } from './modules/vendors/vendors.module';
-import { ServicesModule } from './modules/services/services.module';
-import { BookingsModule } from './modules/bookings/bookings.module';
-import { ReviewsModule } from './modules/reviews/reviews.module';
-import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
-import { SearchModule } from './modules/search/search.module';
-import { SeoModule } from './modules/seo/seo.module';
-import { AnalyticsModule } from './modules/analytics/analytics.module';
-import { AdminModule } from './modules/admin/admin.module';
-import { NotificationsModule } from './modules/notifications/notifications.module';
-import { MarketplaceModule } from './modules/marketplace/marketplace.module';
+import { Module } from "@nestjs/common";
+import { AppController } from "./app.controller";
+import { ConfigModule } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ThrottlerModule } from "@nestjs/throttler";
+import { AuthModule } from "./modules/auth/auth.module";
+import { UsersModule } from "./modules/users/users.module";
+import { VendorsModule } from "./modules/vendors/vendors.module";
+import { ServicesModule } from "./modules/services/services.module";
+import { BookingsModule } from "./modules/bookings/bookings.module";
+import { ReviewsModule } from "./modules/reviews/reviews.module";
+import { SubscriptionsModule } from "./modules/subscriptions/subscriptions.module";
+import { SearchModule } from "./modules/search/search.module";
+import { SeoModule } from "./modules/seo/seo.module";
+import { AnalyticsModule } from "./modules/analytics/analytics.module";
+import { AdminModule } from "./modules/admin/admin.module";
+import { NotificationsModule } from "./modules/notifications/notifications.module";
+import { MarketplaceModule } from "./modules/marketplace/marketplace.module";
+import { BlogModule } from "./modules/blog/blog.module";
 
 @Module({
   controllers: [AppController],
@@ -25,9 +26,9 @@ import { MarketplaceModule } from './modules/marketplace/marketplace.module';
 
     // Database
     TypeOrmModule.forRoot({
-      type: 'postgres',
+      type: "postgres",
       url: process.env.DATABASE_URL,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      entities: [__dirname + "/**/*.entity{.ts,.js}"],
       synchronize: true,
       logging: false,
       ssl: false,
@@ -50,6 +51,7 @@ import { MarketplaceModule } from './modules/marketplace/marketplace.module';
     AdminModule,
     NotificationsModule,
     MarketplaceModule,
+    BlogModule,
   ],
 })
 export class AppModule {}

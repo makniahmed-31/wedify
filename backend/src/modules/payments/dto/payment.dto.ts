@@ -1,20 +1,20 @@
-import { IsString, IsNumber, IsOptional, IsEnum, Min } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, IsNumber, IsOptional, IsEnum, Min } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export enum PaymentType {
-  BOOKING_DEPOSIT = 'BOOKING_DEPOSIT',
-  BOOKING_FINAL = 'BOOKING_FINAL',
-  SUBSCRIPTION = 'SUBSCRIPTION',
-  REFUND = 'REFUND',
+  BOOKING_DEPOSIT = "BOOKING_DEPOSIT",
+  BOOKING_FINAL = "BOOKING_FINAL",
+  SUBSCRIPTION = "SUBSCRIPTION",
+  REFUND = "REFUND",
 }
 
 export enum PaymentStatus {
-  PENDING = 'PENDING',
-  PROCESSING = 'PROCESSING',
-  SUCCEEDED = 'SUCCEEDED',
-  FAILED = 'FAILED',
-  REFUNDED = 'REFUNDED',
-  PARTIALLY_REFUNDED = 'PARTIALLY_REFUNDED',
+  PENDING = "PENDING",
+  PROCESSING = "PROCESSING",
+  SUCCEEDED = "SUCCEEDED",
+  FAILED = "FAILED",
+  REFUNDED = "REFUNDED",
+  PARTIALLY_REFUNDED = "PARTIALLY_REFUNDED",
 }
 
 export class CreatePaymentIntentDto {
@@ -26,7 +26,9 @@ export class CreatePaymentIntentDto {
   @IsEnum(PaymentType)
   type: PaymentType;
 
-  @ApiPropertyOptional({ description: 'Amount in cents. Derived from booking if omitted.' })
+  @ApiPropertyOptional({
+    description: "Amount in cents. Derived from booking if omitted.",
+  })
   @IsOptional()
   @IsNumber()
   @Min(50)
@@ -39,7 +41,9 @@ export class CreatePaymentIntentDto {
 }
 
 export class RefundDto {
-  @ApiPropertyOptional({ description: 'Amount in cents. Full refund if omitted.' })
+  @ApiPropertyOptional({
+    description: "Amount in cents. Full refund if omitted.",
+  })
   @IsOptional()
   @IsNumber()
   @Min(1)
@@ -70,7 +74,9 @@ export class PaymentResponseDto {
   @ApiProperty()
   currency: string;
 
-  @ApiPropertyOptional({ description: 'Stripe PaymentIntent client secret (frontend use)' })
+  @ApiPropertyOptional({
+    description: "Stripe PaymentIntent client secret (frontend use)",
+  })
   clientSecret?: string;
 
   @ApiPropertyOptional()

@@ -1,6 +1,12 @@
-import { IsEmail, IsString, IsOptional, IsEnum, IsPhoneNumber } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { UserRole } from '../../auth/dto/auth.dto';
+import {
+  IsEmail,
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsPhoneNumber,
+} from "class-validator";
+import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
+import { UserRole } from "../../auth/dto/auth.dto";
 
 export class CreateUserDto {
   @ApiProperty()

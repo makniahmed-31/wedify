@@ -1,7 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Star, MapPin, MessageCircle, Shield } from "lucide-react";
-import type { Vendor } from "@/lib/types";
+import type { Vendor } from "@/types";
+
+const DEFAULT_COVER = "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200&q=80";
 
 interface VendorCardProps {
   vendor: Vendor;
@@ -33,7 +35,7 @@ export function VendorCard({ vendor, featured = false }: VendorCardProps) {
       {/* Cover Image */}
       <div className="relative h-48 overflow-hidden">
         <Image
-          src={vendor.coverImage}
+          src={vendor.coverImage ?? DEFAULT_COVER}
           alt={vendor.businessName}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"

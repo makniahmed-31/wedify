@@ -68,11 +68,10 @@ const STATUS_LABELS: Record<Status, string> = {
 };
 
 export default function AdminContentPage() {
-  const [articles, setArticles] = useState(ARTICLES);
   const [filter, setFilter] = useState<Status | "ALL">("ALL");
 
   const filtered =
-    filter === "ALL" ? articles : articles.filter((a) => a.status === filter);
+    filter === "ALL" ? ARTICLES : ARTICLES.filter((a) => a.status === filter);
 
   return (
     <div className="space-y-6">

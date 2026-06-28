@@ -1,12 +1,19 @@
-import { IsString, IsNumber, IsOptional, IsBoolean, Min, IsEnum } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsBoolean,
+  Min,
+  IsEnum,
+} from "class-validator";
+import { ApiProperty, ApiPropertyOptional, PartialType } from "@nestjs/swagger";
 
 export enum ServicePricingModel {
-  FLAT = 'FLAT',
-  HOURLY = 'HOURLY',
-  PER_PERSON = 'PER_PERSON',
-  PACKAGE = 'PACKAGE',
-  QUOTE = 'QUOTE',
+  FLAT = "FLAT",
+  HOURLY = "HOURLY",
+  PER_PERSON = "PER_PERSON",
+  PACKAGE = "PACKAGE",
+  QUOTE = "QUOTE",
 }
 
 export class CreateServiceDto {

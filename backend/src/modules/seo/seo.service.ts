@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { SeoScoreDto, UpdateSeoMetaDto } from './dto/seo.dto';
+import { Injectable } from "@nestjs/common";
+import { SeoScoreDto, UpdateSeoMetaDto } from "./dto/seo.dto";
 
 @Injectable()
 export class SeoService {
-  async calculateScore(vendorId: string): Promise<SeoScoreDto> {
+  async calculateScore(_vendorId: string): Promise<SeoScoreDto> {
     // TODO: Fetch vendor data, compute weighted score across dimensions:
     //   - Profile completeness (business name, description, city, website, tags)
     //   - Media count (photos/videos uploaded)
@@ -11,15 +11,15 @@ export class SeoService {
     //   - Booking response rate
     //   - Description word count
     //   - Website linked
-    throw new Error('Not implemented');
+    throw new Error("Not implemented");
   }
 
-  async getScore(vendorId: string): Promise<SeoScoreDto> {
+  async getScore(_vendorId: string): Promise<SeoScoreDto> {
     // TODO: Return cached score or recalculate
-    throw new Error('Not implemented');
+    throw new Error("Not implemented");
   }
 
-  async updateMeta(vendorId: string, dto: UpdateSeoMetaDto): Promise<void> {
+  async updateMeta(_vendorId: string, _dto: UpdateSeoMetaDto): Promise<void> {
     // TODO: Update meta title, description, and slug for the vendor profile page
   }
 
@@ -29,6 +29,6 @@ export class SeoService {
 
   async getSitemapData(): Promise<{ slug: string; updatedAt: Date }[]> {
     // TODO: Return all active vendor slugs for sitemap generation
-    throw new Error('Not implemented');
+    throw new Error("Not implemented");
   }
 }

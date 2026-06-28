@@ -6,7 +6,8 @@ import { Footer } from "@/components/layout/footer";
 import { SearchFilters } from "@/components/marketplace/search-filters";
 import { VendorCard } from "@/components/marketplace/vendor-card";
 import { CATEGORIES } from "@/lib/constants";
-import { MOCK_VENDORS } from "@/lib/mock-data";
+import type { Vendor } from "@/types";
+import { BACKEND } from "@/lib/config";
 
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
@@ -32,6 +33,37 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   };
 }
 
+async function fetchVendors(categorySlug: string, city?: string, rating?: string): Promise<Vendor[]> {
+  try {
+    const params = new URLSearchParams({ status: "ACTIVE", limit: "100" });
+    if (city) params.set("city", city);
+    if (rating) params.set("minRating", rating);
+    const res = await fetch(
+      `${BACKEND}/api/v1/vendors?category=${categorySlug}&${params.toString()}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : (data.vendors ?? data.data ?? []);
+  } catch {
+    return [];
+  }
+}
+
+async function fetchCityVendorCount(categorySlug: string, citySlug: string): Promise<number> {
+  try {
+    const res = await fetch(
+      `${BACKEND}/api/v1/vendors?status=ACTIVE&category=${categorySlug}&city=${citySlug}&limit=1`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) return 0;
+    const data = await res.json();
+    return data.total ?? (Array.isArray(data) ? data.length : 0);
+  } catch {
+    return 0;
+  }
+}
+
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { category: slug } = await params;
   const filters = await searchParams;
@@ -39,10 +71,15 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const category = CATEGORIES.find((c) => c.slug === slug);
   if (!category) notFound();
 
-  let vendors = MOCK_VENDORS.filter((v) => v.category.slug === slug);
+  const vendors = await fetchVendors(slug, filters.city, filters.rating);
 
-  if (filters.city) vendors = vendors.filter((v) => v.city.slug === filters.city);
-  if (filters.rating) vendors = vendors.filter((v) => v.rating >= parseFloat(filters.rating!));
+  const popularCitySlugs = ["tunis", "sousse", "sfax", "monastir", "nabeul"];
+  const cityCounts = await Promise.all(
+    popularCitySlugs.map(async (citySlug) => ({
+      slug: citySlug,
+      count: await fetchCityVendorCount(slug, citySlug),
+    }))
+  );
 
   return (
     <>
@@ -67,20 +104,15 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           {/* SEO landing pages for city combos */}
           <div className="flex flex-wrap gap-2 mb-6">
             <span className="text-sm text-muted-foreground">Popular cities:</span>
-            {["tunis", "sousse", "sfax", "monastir", "nabeul"].map((citySlug) => {
-              const count = MOCK_VENDORS.filter(
-                (v) => v.category.slug === slug && v.city.slug === citySlug
-              ).length;
-              return (
-                <a
-                  key={citySlug}
-                  href={`/${slug}/${citySlug}`}
-                  className="rounded-full border px-3 py-1 text-xs hover:bg-muted transition-colors capitalize"
-                >
-                  {citySlug.replace(/-/g, " ")} ({count})
-                </a>
-              );
-            })}
+            {cityCounts.map(({ slug: citySlug, count }) => (
+              <a
+                key={citySlug}
+                href={`/${slug}/${citySlug}`}
+                className="rounded-full border px-3 py-1 text-xs hover:bg-muted transition-colors capitalize"
+              >
+                {citySlug.replace(/-/g, " ")} ({count})
+              </a>
+            ))}
           </div>
 
           <p className="text-sm text-muted-foreground mb-4">{vendors.length} results</p>

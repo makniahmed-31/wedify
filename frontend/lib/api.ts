@@ -1,5 +1,7 @@
+import { getCookie, setCookie, deleteCookie } from "./cookies";
+
 async function refreshTokens(): Promise<string | null> {
-  const refreshToken = localStorage.getItem("refreshToken");
+  const refreshToken = getCookie("wedify_refresh");
   if (!refreshToken) return null;
   try {
     const res = await fetch("/api/v1/auth/refresh", {
@@ -9,9 +11,8 @@ async function refreshTokens(): Promise<string | null> {
     });
     if (!res.ok) return null;
     const data = await res.json();
-    localStorage.setItem("accessToken", data.accessToken);
-    localStorage.setItem("refreshToken", data.refreshToken);
-    document.cookie = `wedify_token=${data.accessToken}; path=/; max-age=86400; SameSite=Lax`;
+    setCookie("wedify_token", data.accessToken, 86400);
+    setCookie("wedify_refresh", data.refreshToken, 86400 * 7);
     return data.accessToken;
   } catch {
     return null;
@@ -19,7 +20,7 @@ async function refreshTokens(): Promise<string | null> {
 }
 
 export async function apiFetch(input: string, init: RequestInit = {}): Promise<Response> {
-  const token = localStorage.getItem("accessToken");
+  const token = getCookie("wedify_token");
 
   const withAuth = (t: string | null): RequestInit => ({
     ...init,
@@ -36,9 +37,9 @@ export async function apiFetch(input: string, init: RequestInit = {}): Promise<R
     if (newToken) {
       res = await fetch(input, withAuth(newToken));
     } else {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      document.cookie = "wedify_auth=; path=/; max-age=0";
+      deleteCookie("wedify_token");
+      deleteCookie("wedify_refresh");
+      deleteCookie("wedify_auth");
       window.location.href = "/login";
     }
   }

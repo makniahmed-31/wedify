@@ -1,15 +1,22 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { getCookie, setCookie, deleteCookie } from "./cookies";
 
-type UserRole = "USER" | "VENDOR" | "ADMIN";
+export type UserRole = "USER" | "VENDOR" | "ADMIN";
 
 interface AuthContextValue {
   loggedIn: boolean;
   role: UserRole | null;
   login: (accessToken: string, refreshToken: string) => void;
   logout: () => void;
+}
+
+interface AuthProviderProps {
+  children: React.ReactNode;
+  initialLoggedIn?: boolean;
+  initialRole?: UserRole | null;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -28,34 +35,24 @@ function parseRole(token: string): UserRole | null {
   }
 }
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [role, setRole] = useState<UserRole | null>(null);
+export function AuthProvider({ children, initialLoggedIn = false, initialRole = null }: AuthProviderProps) {
+  const [loggedIn, setLoggedIn] = useState(initialLoggedIn);
+  const [role, setRole] = useState<UserRole | null>(initialRole);
   const router = useRouter();
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      const r = parseRole(token);
-      setLoggedIn(true);
-      setRole(r);
-      syncCookie(true, r, token);
-    }
-  }, []);
-
   const login = useCallback((accessToken: string, refreshToken: string) => {
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
     const r = parseRole(accessToken);
+    setCookie("wedify_token", accessToken, 86400);
+    setCookie("wedify_refresh", refreshToken, 86400 * 7);
+    setCookie("wedify_auth", r ?? "USER", 86400);
     setLoggedIn(true);
     setRole(r);
-    syncCookie(true, r, accessToken);
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    syncCookie(false);
+    deleteCookie("wedify_token");
+    deleteCookie("wedify_refresh");
+    deleteCookie("wedify_auth");
     setLoggedIn(false);
     setRole(null);
     router.push("/");
@@ -72,15 +69,4 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-function syncCookie(loggedIn: boolean, role?: UserRole | null, token?: string) {
-  if (loggedIn) {
-    const value = role ?? "USER";
-    document.cookie = `wedify_auth=${value}; path=/; max-age=86400; SameSite=Lax`;
-    if (token) {
-      document.cookie = `wedify_token=${token}; path=/; max-age=86400; SameSite=Lax`;
-    }
-  } else {
-    document.cookie = "wedify_auth=; path=/; max-age=0";
-    document.cookie = "wedify_token=; path=/; max-age=0";
-  }
-}
+export { getCookie };

@@ -1,6 +1,6 @@
-import { IsString, IsOptional, IsEnum, IsDateString } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { VendorStatus } from '../../vendors/dto/vendor.dto';
+import { IsString, IsOptional, IsEnum, IsDateString } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { VendorStatus } from "../../vendors/dto/vendor.dto";
 
 export class AdminVendorActionDto {
   @ApiProperty({ enum: VendorStatus })

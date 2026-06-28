@@ -1,19 +1,19 @@
-import { IsString, IsEnum, IsOptional } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, IsEnum, IsOptional } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export enum SubscriptionPlan {
-  FREE = 'FREE',
-  STARTER = 'STARTER',
-  PROFESSIONAL = 'PROFESSIONAL',
-  PREMIUM = 'PREMIUM',
+  FREE = "FREE",
+  STARTER = "STARTER",
+  PROFESSIONAL = "PROFESSIONAL",
+  PREMIUM = "PREMIUM",
 }
 
 export enum SubscriptionStatus {
-  ACTIVE = 'ACTIVE',
-  TRIALING = 'TRIALING',
-  PAST_DUE = 'PAST_DUE',
-  CANCELLED = 'CANCELLED',
-  EXPIRED = 'EXPIRED',
+  ACTIVE = "ACTIVE",
+  TRIALING = "TRIALING",
+  PAST_DUE = "PAST_DUE",
+  CANCELLED = "CANCELLED",
+  EXPIRED = "EXPIRED",
 }
 
 export class CreateSubscriptionDto {
@@ -21,7 +21,7 @@ export class CreateSubscriptionDto {
   @IsEnum(SubscriptionPlan)
   plan: SubscriptionPlan;
 
-  @ApiPropertyOptional({ description: 'Stripe payment method ID' })
+  @ApiPropertyOptional({ description: "Stripe payment method ID" })
   @IsOptional()
   @IsString()
   paymentMethodId?: string;

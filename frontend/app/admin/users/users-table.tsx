@@ -2,33 +2,30 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Shield, User, Crown, Loader2 } from "lucide-react";
+import { Search, Shield, User, Crown, Loader2, Trash2 } from "lucide-react";
+import type { AppUser } from "@/types";
+import { apiFetch } from "@/lib/api";
 
-interface AppUser {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  isEmailVerified: boolean;
-  createdAt: string;
-}
-
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN: "Administrateur",
-  VENDOR: "Prestataire",
-  USER: "Utilisateur",
-};
 const ROLE_STYLES: Record<string, string> = {
   ADMIN: "bg-red-500/10 text-red-600",
   VENDOR: "bg-blue-500/10 text-blue-600",
   USER: "bg-green-500/10 text-green-600",
 };
 
+function RoleIcon({ role }: { role: string }) {
+  if (role === "ADMIN") return <Shield className="h-4 w-4 text-red-500" />;
+  if (role === "VENDOR") return <Crown className="h-4 w-4 text-blue-500" />;
+  return <User className="h-4 w-4 text-muted-foreground" />;
+}
+
 export default function UsersTable({ initialUsers }: { initialUsers: AppUser[] }) {
   const router = useRouter();
+  const [users, setUsers] = useState<AppUser[]>(initialUsers);
   const [search, setSearch] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [updating, setUpdating] = useState<Set<string>>(new Set());
+  const [confirmDelete, setConfirmDelete] = useState<AppUser | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   function refresh() {
     setRefreshing(true);
@@ -36,7 +33,45 @@ export default function UsersTable({ initialUsers }: { initialUsers: AppUser[] }
     setTimeout(() => setRefreshing(false), 800);
   }
 
-  const filtered = initialUsers.filter((u) => {
+  async function handleRoleChange(userId: string, newRole: string) {
+    setUpdating((prev) => new Set(prev).add(userId));
+    try {
+      const res = await apiFetch(`/api/v1/users/${userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: newRole }),
+      });
+      if (res.ok) {
+        setUsers((prev) =>
+          prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+        );
+      }
+    } finally {
+      setUpdating((prev) => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+    }
+  }
+
+  async function handleDelete() {
+    if (!confirmDelete) return;
+    setDeleting(true);
+    try {
+      const res = await apiFetch(`/api/v1/users/${confirmDelete.id}`, {
+        method: "DELETE",
+      });
+      if (res.ok || res.status === 204) {
+        setUsers((prev) => prev.filter((u) => u.id !== confirmDelete.id));
+        setConfirmDelete(null);
+      }
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  const filtered = users.filter((u) => {
     const q = search.toLowerCase();
     return (
       !search ||
@@ -47,107 +82,195 @@ export default function UsersTable({ initialUsers }: { initialUsers: AppUser[] }
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-bold">Utilisateurs</h1>
-          <p className="text-muted-foreground mt-1">
-            {initialUsers.length} utilisateurs inscrits
-          </p>
+    <>
+      <div className="space-y-6">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-2xl font-bold">Utilisateurs</h1>
+            <p className="text-muted-foreground mt-1">
+              {users.length} utilisateurs inscrits
+            </p>
+          </div>
+          <button
+            onClick={refresh}
+            disabled={refreshing}
+            className="flex items-center gap-2 rounded-md border px-4 py-2 text-sm hover:bg-muted transition-colors disabled:opacity-50"
+          >
+            {refreshing && <Loader2 className="h-4 w-4 animate-spin" />}
+            Actualiser
+          </button>
         </div>
-        <button
-          onClick={refresh}
-          disabled={refreshing}
-          className="flex items-center gap-2 rounded-md border px-4 py-2 text-sm hover:bg-muted transition-colors disabled:opacity-50"
-        >
-          {refreshing && <Loader2 className="h-4 w-4 animate-spin" />}
-          Actualiser
-        </button>
-      </div>
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder="Rechercher un utilisateur..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 rounded-md border bg-card text-sm outline-none focus:ring-2 focus:ring-primary/30"
-        />
-      </div>
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Rechercher un utilisateur..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 rounded-md border bg-card text-sm outline-none focus:ring-2 focus:ring-primary/30"
+          />
+        </div>
 
-      <div className="rounded-lg border bg-card overflow-hidden">
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/30">
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Utilisateur</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Email</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Rôle</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Vérifié</th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Inscrit le</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((u) => (
-                <tr key={u.id} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                        {u.role === "ADMIN" ? <Shield className="h-4 w-4 text-red-500" /> : u.role === "VENDOR" ? <Crown className="h-4 w-4 text-blue-500" /> : <User className="h-4 w-4 text-muted-foreground" />}
-                      </div>
-                      <span className="font-medium">{u.firstName} {u.lastName}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">{u.email}</td>
-                  <td className="px-4 py-3">
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${ROLE_STYLES[u.role] ?? "bg-muted text-muted-foreground"}`}>
-                      {ROLE_LABELS[u.role] ?? u.role}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`text-xs font-medium ${u.isEmailVerified ? "text-green-600" : "text-yellow-600"}`}>
-                      {u.isEmailVerified ? "✓ Oui" : "✗ Non"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {u.createdAt ? new Date(u.createdAt).toLocaleDateString("fr-FR") : "—"}
-                  </td>
+        <div className="rounded-lg border bg-card overflow-hidden">
+          {/* Desktop */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/30">
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Utilisateur</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Email</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Rôle</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Vérifié</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Inscrit le</th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Actions</th>
                 </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr><td colSpan={5} className="px-4 py-12 text-center text-muted-foreground text-sm">Aucun utilisateur trouvé.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="md:hidden divide-y">
-          {filtered.map((u) => (
-            <div key={u.id} className="flex items-center justify-between gap-3 p-4">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center shrink-0">
-                  {u.role === "ADMIN" ? <Shield className="h-4 w-4 text-red-500" /> : u.role === "VENDOR" ? <Crown className="h-4 w-4 text-blue-500" /> : <User className="h-4 w-4 text-muted-foreground" />}
+              </thead>
+              <tbody>
+                {filtered.map((u) => (
+                  <tr key={u.id} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                          <RoleIcon role={u.role} />
+                        </div>
+                        <span className="font-medium">{u.firstName} {u.lastName}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">{u.email}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        {updating.has(u.id) ? (
+                          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                        ) : null}
+                        <select
+                          value={u.role}
+                          disabled={updating.has(u.id)}
+                          onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold border-0 outline-none cursor-pointer disabled:opacity-50 ${ROLE_STYLES[u.role] ?? "bg-muted text-muted-foreground"}`}
+                        >
+                          <option value="USER">Utilisateur</option>
+                          <option value="VENDOR">Prestataire</option>
+                          <option value="ADMIN">Administrateur</option>
+                        </select>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs font-medium ${u.isEmailVerified ? "text-green-600" : "text-yellow-600"}`}>
+                        {u.isEmailVerified ? "✓ Oui" : "✗ Non"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {u.createdAt ? new Date(u.createdAt).toLocaleDateString("fr-FR") : "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => setConfirmDelete(u)}
+                        className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Supprimer
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-12 text-center text-muted-foreground text-sm">
+                      Aucun utilisateur trouvé.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile */}
+          <div className="md:hidden divide-y">
+            {filtered.map((u) => (
+              <div key={u.id} className="p-4 space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center shrink-0">
+                      <RoleIcon role={u.role} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm">{u.firstName} {u.lastName}</p>
+                      <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setConfirmDelete(u)}
+                    className="rounded-md p-1.5 text-red-500 hover:bg-red-50 transition-colors shrink-0"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
-                <div className="min-w-0">
-                  <p className="font-medium text-sm">{u.firstName} {u.lastName}</p>
-                  <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    {updating.has(u.id) && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+                    <select
+                      value={u.role}
+                      disabled={updating.has(u.id)}
+                      onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold border-0 outline-none cursor-pointer disabled:opacity-50 ${ROLE_STYLES[u.role] ?? "bg-muted text-muted-foreground"}`}
+                    >
+                      <option value="USER">Utilisateur</option>
+                      <option value="VENDOR">Prestataire</option>
+                      <option value="ADMIN">Administrateur</option>
+                    </select>
+                  </div>
+                  <span className={`text-xs font-medium ${u.isEmailVerified ? "text-green-600" : "text-yellow-600"}`}>
+                    {u.isEmailVerified ? "✓ Vérifié" : "✗ Non vérifié"}
+                  </span>
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-1 shrink-0">
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${ROLE_STYLES[u.role] ?? "bg-muted text-muted-foreground"}`}>
-                  {ROLE_LABELS[u.role] ?? u.role}
-                </span>
-                <span className={`text-xs font-medium ${u.isEmailVerified ? "text-green-600" : "text-yellow-600"}`}>
-                  {u.isEmailVerified ? "✓ Vérifié" : "✗ Non vérifié"}
-                </span>
+            ))}
+            {filtered.length === 0 && (
+              <p className="px-4 py-12 text-center text-muted-foreground text-sm">Aucun utilisateur trouvé.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Delete confirmation modal */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-card rounded-xl border shadow-lg max-w-sm w-full p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                <Trash2 className="h-5 w-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Supprimer l&apos;utilisateur</h3>
+                <p className="text-sm text-muted-foreground">Cette action est irréversible.</p>
               </div>
             </div>
-          ))}
-          {filtered.length === 0 && (
-            <p className="px-4 py-12 text-center text-muted-foreground text-sm">Aucun utilisateur trouvé.</p>
-          )}
+            <p className="text-sm">
+              Voulez-vous vraiment supprimer{" "}
+              <span className="font-medium">{confirmDelete.firstName} {confirmDelete.lastName}</span>{" "}
+              (<span className="text-muted-foreground">{confirmDelete.email}</span>) ?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                disabled={deleting}
+                className="rounded-md border px-4 py-2 text-sm hover:bg-muted transition-colors disabled:opacity-50"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {deleting && <Loader2 className="h-4 w-4 animate-spin" />}
+                Supprimer
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

@@ -77,6 +77,7 @@ function GalleryEditor({
             className="flex-1 rounded-md border bg-background px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary"
           />
           {url && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={url}
               alt=""

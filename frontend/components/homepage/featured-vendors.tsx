@@ -5,8 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { VendorCard } from "@/components/marketplace/vendor-card";
 import { useT } from "@/lib/i18n";
-import { toVendor } from "@/lib/vendor-utils";
-import type { Vendor } from "@/lib/types";
+import type { Vendor } from "@/types";
 
 export function FeaturedVendors() {
   const t = useT();
@@ -17,7 +16,7 @@ export function FeaturedVendors() {
     fetch("/api/v1/vendors?limit=5&featured=true")
       .then((res) => (res.ok ? res.json() : { data: [] }))
       .then((json) => {
-        setVendors((json.data ?? []).map(toVendor));
+        setVendors((json.data ?? []) as Vendor[]);
       })
       .catch(() => {})
       .finally(() => setLoading(false));

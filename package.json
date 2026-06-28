@@ -4,7 +4,8 @@
   "private": true,
   "description": "Wedify — Tunisia's Wedding SaaS Marketplace. Monorepo: frontend (Next.js) + backend (NestJS).",
   "scripts": {
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev": "concurrently --kill-others \"npm run dev:backend\" \"npm run dev:frontend:wait\"",
+    "dev:frontend:wait": "wait-on tcp:localhost:4001 && npm run dev:frontend",
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && npm run start:dev",
     "build": "npm run build:frontend && npm run build:backend",
@@ -18,7 +19,8 @@
     "db:studio": "cd frontend && npx prisma studio"
   },
   "devDependencies": {
-    "concurrently": "^9.0.0"
+    "concurrently": "^9.0.0",
+    "wait-on": "^9.0.10"
   },
   "workspaces": [
     "frontend",

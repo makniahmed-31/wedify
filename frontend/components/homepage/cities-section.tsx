@@ -1,8 +1,27 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
-import { CITIES } from "@/lib/constants";
+
+interface CityData {
+  name: string;
+  slug: string;
+  vendorCount: number;
+}
 
 export function CitiesSection() {
+  const [cities, setCities] = useState<CityData[]>([]);
+
+  useEffect(() => {
+    fetch("/api/v1/marketplace/cities")
+      .then((r) => r.ok ? r.json() : [])
+      .then((data) => { if (Array.isArray(data)) setCities(data); })
+      .catch(() => {});
+  }, []);
+
+  if (cities.length === 0) return null;
+
   return (
     <section className="py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -16,9 +35,9 @@ export function CitiesSection() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {CITIES.map((city) => (
+          {cities.map((city) => (
             <Link
-              key={city.id}
+              key={city.slug}
               href={`/vendors?city=${city.slug}`}
               className="group relative overflow-hidden rounded-lg border bg-card aspect-[4/3] flex items-end hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
             >

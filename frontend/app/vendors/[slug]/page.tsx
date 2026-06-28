@@ -17,8 +17,8 @@ import {
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { CATEGORIES, CITIES, CURRENCY_SYMBOL } from "@/lib/constants";
+import { BACKEND } from "@/lib/config";
 
-const BACKEND = process.env.BACKEND_INTERNAL_URL ?? "http://localhost:4001";
 const DEFAULT_COVER =
   "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200&q=80";
 
@@ -47,9 +47,8 @@ export async function generateStaticParams() {
     });
     if (!res.ok) return [];
     const json = await res.json();
-    return (json.data ?? [])
-      .filter((v: any) => v.slug)
-      .map((v: any) => ({ slug: v.slug }));
+    const items = json.data as Array<{ slug?: string }>;
+    return items.filter((v) => v.slug).map((v) => ({ slug: v.slug as string }));
   } catch {
     return [];
   }

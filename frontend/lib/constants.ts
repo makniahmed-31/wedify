@@ -1,4 +1,5 @@
-import type { Category, City, SubscriptionPlanConfig } from "./types";
+import type { Category, City } from "../types/vendor";
+import type { SubscriptionPlanConfig } from "../types/subscription";
 
 // ─── Categories ──────────────────────────────────────────────────────────────
 

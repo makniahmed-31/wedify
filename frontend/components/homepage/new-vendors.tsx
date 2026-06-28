@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { toVendor } from "@/lib/vendor-utils";
-import type { Vendor } from "@/lib/types";
+import type { Vendor } from "@/types";
 
 export function NewVendors() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -13,7 +12,7 @@ export function NewVendors() {
   useEffect(() => {
     fetch("/api/v1/vendors?limit=5&sort=newest")
       .then((res) => (res.ok ? res.json() : { data: [] }))
-      .then((json) => setVendors((json.data ?? []).map(toVendor)))
+      .then((json) => setVendors((json.data ?? []) as Vendor[]))
       .catch(() => {});
   }, []);
 
@@ -46,6 +45,7 @@ export function NewVendors() {
                   src={vendor.coverImage}
                   alt={vendor.businessName}
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />

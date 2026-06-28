@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
-
-const BACKEND = process.env.BACKEND_INTERNAL_URL ?? "http://localhost:4001";
+import { BACKEND } from "./config";
 
 export async function getToken(): Promise<string | null> {
   const store = await cookies();

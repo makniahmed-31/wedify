@@ -1,22 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Star, CheckCircle2, XCircle, Flag, Eye, Search } from "lucide-react";
+import { Star, CheckCircle2, XCircle, Flag, Search } from "lucide-react";
+import type { ReviewStatus, AdminReview } from "@/types";
 
-type ReviewStatus = "PENDING" | "APPROVED" | "REJECTED" | "FLAGGED";
-
-interface Review {
-  id: string;
-  vendor: string;
-  reviewer: string;
-  rating: number;
-  comment: string;
-  date: string;
-  status: ReviewStatus;
-  category: string;
-}
-
-const INITIAL_REVIEWS: Review[] = [
+const INITIAL_REVIEWS: AdminReview[] = [
   {
     id: "rv1",
     vendor: "Elegance Hall Tunis",
@@ -112,7 +100,7 @@ function Stars({ rating }: { rating: number }) {
 }
 
 export default function AdminReviewsPage() {
-  const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
+  const [reviews, setReviews] = useState<AdminReview[]>(INITIAL_REVIEWS);
   const [filter, setFilter] = useState<ReviewStatus | "ALL">("ALL");
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
