@@ -25,7 +25,7 @@ export function CTASection() {
               <Heart className="h-4 w-4 fill-white" />
               {t("cta.becomeVendor")}
             </Link>
-            <Link href="/dashboard/subscription" className="flex items-center gap-2 rounded-lg border border-white/20 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
+            <Link href="/vendor/dashboard/subscription" className="flex items-center gap-2 rounded-lg border border-white/20 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors">
               {t("cta.viewPlans")} <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

@@ -1,10 +1,21 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { MOCK_VENDORS } from "@/lib/mock-data";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { toVendor } from "@/lib/vendor-utils";
+import type { Vendor } from "@/lib/types";
 
 export function NewVendors() {
-  const vendors = MOCK_VENDORS.slice(0, 5);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+
+  useEffect(() => {
+    fetch("/api/v1/vendors?limit=5&sort=newest")
+      .then((res) => (res.ok ? res.json() : { data: [] }))
+      .then((json) => setVendors((json.data ?? []).map(toVendor)))
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="py-14 lg:py-16 bg-background">
@@ -81,7 +92,7 @@ export function NewVendors() {
               </p>
             </div>
             <Link
-              href="/dashboard/subscription"
+              href="/vendor/dashboard/subscription"
               className="shrink-0 rounded-sm border border-white/50 px-4 py-1.5 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
             >
               Espace publicitaire

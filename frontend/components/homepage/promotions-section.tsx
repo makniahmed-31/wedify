@@ -110,7 +110,7 @@ export function PromotionsSection() {
               {PROMOTIONS.map((promo) => (
                 <Link
                   key={promo.id}
-                  href={`/vendors/${promo.slug}`}
+                  href={`/search?q=${promo.slug}`}
                   className="group relative rounded-xl overflow-hidden border border-border bg-white hover:shadow-md transition-shadow"
                 >
                   <div className="relative h-28 overflow-hidden">
@@ -189,7 +189,7 @@ export function PromotionsSection() {
               <p className="text-sm text-white/80">{t("ads.premiumSub")}</p>
             </div>
             <Link
-              href="/dashboard/subscription"
+              href="/vendor/dashboard/subscription"
               className="ml-auto shrink-0 rounded-lg border border-white/50 px-4 py-1.5 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
             >
               {t("ads.adSpace")}
@@ -204,7 +204,7 @@ export function PromotionsSection() {
               <p className="text-sm text-white/80">{t("ads.classicSub")}</p>
             </div>
             <Link
-              href="/dashboard/subscription"
+              href="/vendor/dashboard/subscription"
               className="ml-auto shrink-0 rounded-lg border border-white/50 px-4 py-1.5 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
             >
               {t("ads.learnMore")}
