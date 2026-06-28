@@ -50,6 +50,11 @@ else
       --cwd $PROD_FRONTEND/.next/standalone
 fi
 
+# Always sync static files to nginx-served path (hash changes each build)
+echo "==> Syncing static files to nginx path..."
+rm -rf $PROD_FRONTEND/.next/static
+cp -r $REPO/frontend/.next/static $PROD_FRONTEND/.next/static
+
 echo "==> Building backend..."
 cd $REPO/backend
 $ROOT_BINS/nest build
