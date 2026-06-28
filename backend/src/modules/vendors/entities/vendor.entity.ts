@@ -8,6 +8,9 @@ export class Vendor {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ name: 'user_id', nullable: true })
+  userId: string;
+
   @Column({ name: 'business_name' })
   businessName: string;
 

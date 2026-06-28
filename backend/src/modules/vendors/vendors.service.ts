@@ -13,6 +13,7 @@ export class VendorsService {
 
   async createProfile(userId: string, dto: CreateVendorProfileDto): Promise<VendorResponseDto> {
     const vendor = this.repo.create({
+      userId,
       businessName: dto.businessName,
       category: dto.category as string,
       description: dto.description,
@@ -26,12 +27,36 @@ export class VendorsService {
     return this.toDto(saved, userId);
   }
 
-  async getMyProfile(userId: string): Promise<VendorResponseDto> {
-    throw new Error('Not implemented');
+  async getMyProfile(userId: string) {
+    const vendor = await this.repo.findOne({ where: { userId } });
+    if (!vendor) throw new NotFoundException('Vendor profile not found');
+    return this.toPublic(vendor);
   }
 
-  async updateProfile(userId: string, dto: UpdateVendorProfileDto): Promise<VendorResponseDto> {
-    throw new Error('Not implemented');
+  async updateProfile(userId: string, dto: UpdateVendorProfileDto) {
+    const vendor = await this.repo.findOne({ where: { userId } });
+    if (!vendor) throw new NotFoundException('Vendor profile not found');
+    const fields: Partial<typeof vendor> = {};
+    if (dto.businessName !== undefined) fields.businessName = dto.businessName;
+    if (dto.tagline !== undefined) fields.tagline = dto.tagline;
+    if (dto.description !== undefined) fields.description = dto.description;
+    if (dto.category !== undefined) fields.category = dto.category;
+    if (dto.city !== undefined) fields.city = dto.city;
+    if (dto.website !== undefined) fields.website = dto.website;
+    if (dto.phone !== undefined) fields.phone = dto.phone;
+    if (dto.whatsapp !== undefined) fields.whatsapp = dto.whatsapp;
+    if (dto.email !== undefined) fields.email = dto.email;
+    if (dto.facebook !== undefined) fields.facebook = dto.facebook;
+    if (dto.instagram !== undefined) fields.instagram = dto.instagram;
+    if (dto.youtube !== undefined) fields.youtube = dto.youtube;
+    if (dto.tiktok !== undefined) fields.tiktok = dto.tiktok;
+    if (dto.videoUrl !== undefined) fields.videoUrl = dto.videoUrl;
+    if (dto.gallery !== undefined) fields.gallery = dto.gallery;
+    if (dto.minPrice !== undefined) fields.minPrice = dto.minPrice;
+    if (dto.maxPrice !== undefined) fields.maxPrice = dto.maxPrice;
+    if (dto.yearsInBusiness !== undefined) fields.yearsInBusiness = dto.yearsInBusiness;
+    await this.repo.update(vendor.id, fields);
+    return this.toPublic({ ...vendor, ...fields });
   }
 
   async findById(vendorId: string): Promise<VendorResponseDto> {

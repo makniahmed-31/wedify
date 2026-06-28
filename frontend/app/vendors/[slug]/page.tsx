@@ -178,7 +178,7 @@ export default async function VendorPage({ params }: Props) {
             {/* Left */}
             <div className="lg:col-span-2 space-y-8">
               {/* Stats */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <div className="rounded-md border bg-card p-4 text-center">
                   <div className="flex items-center justify-center gap-1 text-xl font-bold">
                     <Star className="h-5 w-5 fill-primary text-primary" />
@@ -202,14 +202,6 @@ export default async function VendorPage({ params }: Props) {
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     {v.responseTime ?? "Répond rapidement"}
-                  </p>
-                </div>
-                <div className="rounded-md border bg-card p-4 text-center">
-                  <div className="text-xl font-bold capitalize">
-                    {v.plan?.toLowerCase()}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Abonnement
                   </p>
                 </div>
               </div>
