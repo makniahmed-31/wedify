@@ -192,7 +192,7 @@ export default function AdminSubscriptionsPage() {
     .reduce((sum, s) => sum + s.amount, 0);
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Abonnements</h1>
         <p className="text-muted-foreground mt-1">

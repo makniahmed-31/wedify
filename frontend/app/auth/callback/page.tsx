@@ -15,10 +15,8 @@ function AuthCallbackInner() {
     if (accessToken && refreshToken) {
       login(accessToken, refreshToken);
       try {
-        const { role } = JSON.parse(atob(accessToken.split(".")[1]));
-        if (role === "ADMIN") router.replace("/admin");
-        else if (role === "VENDOR") router.replace("/vendor/dashboard");
-        else router.replace("/user/dashboard");
+        const { role }: { role: string } = JSON.parse(atob(accessToken.split(".")[1]));
+        router.replace(`/${role.toLowerCase()}/dashboard`);
       } catch {
         router.replace("/user/dashboard");
       }

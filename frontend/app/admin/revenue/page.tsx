@@ -1,6 +1,16 @@
 "use client";
 
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
 import { TrendingUp, DollarSign, CreditCard, ArrowUpRight } from "lucide-react";
 
 const MRR_DATA = [
@@ -25,18 +35,40 @@ const PLAN_REVENUE = [
 ];
 
 const KPIS = [
-  { label: "MRR actuel", value: "68 400 TND", change: "+10.2%", icon: DollarSign },
-  { label: "ARR projeté", value: "820 800 TND", change: "+10.2%", icon: TrendingUp },
-  { label: "Abonnés actifs", value: "1 734", change: "+42 ce mois", icon: CreditCard },
-  { label: "Revenu moyen/vendor", value: "51.6 TND", change: "+3.1%", icon: ArrowUpRight },
+  {
+    label: "MRR actuel",
+    value: "68 400 TND",
+    change: "+10.2%",
+    icon: DollarSign,
+  },
+  {
+    label: "ARR projeté",
+    value: "820 800 TND",
+    change: "+10.2%",
+    icon: TrendingUp,
+  },
+  {
+    label: "Abonnés actifs",
+    value: "1 734",
+    change: "+42 ce mois",
+    icon: CreditCard,
+  },
+  {
+    label: "Revenu moyen/vendor",
+    value: "51.6 TND",
+    change: "+3.1%",
+    icon: ArrowUpRight,
+  },
 ];
 
 export default function AdminRevenuePage() {
   return (
-    <div className="space-y-8 max-w-7xl">
+    <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold">Revenus</h1>
-        <p className="text-muted-foreground mt-1">Suivi financier de la plateforme</p>
+        <p className="text-muted-foreground mt-1">
+          Suivi financier de la plateforme
+        </p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -44,7 +76,9 @@ export default function AdminRevenuePage() {
           <div key={kpi.label} className="rounded-lg border bg-card p-5">
             <div className="flex items-center justify-between mb-3">
               <kpi.icon className="h-5 w-5 text-muted-foreground" />
-              <span className="text-xs font-medium text-green-600">{kpi.change}</span>
+              <span className="text-xs font-medium text-green-600">
+                {kpi.change}
+              </span>
             </div>
             <p className="text-2xl font-bold">{kpi.value}</p>
             <p className="text-sm text-muted-foreground mt-0.5">{kpi.label}</p>
@@ -54,7 +88,9 @@ export default function AdminRevenuePage() {
 
       <div className="rounded-lg border bg-card p-6">
         <h2 className="font-semibold mb-1">Évolution MRR — 2025</h2>
-        <p className="text-sm text-muted-foreground mb-6">Revenu mensuel récurrent</p>
+        <p className="text-sm text-muted-foreground mb-6">
+          Revenu mensuel récurrent
+        </p>
         <ResponsiveContainer width="100%" height={260}>
           <AreaChart data={MRR_DATA}>
             <defs>
@@ -65,10 +101,25 @@ export default function AdminRevenuePage() {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
-            <Tooltip formatter={(v) => [`${Number(v).toLocaleString()} TND`, "MRR"]}
-              contentStyle={{ borderRadius: "12px", border: "1px solid hsl(var(--border))", backgroundColor: "hsl(var(--card))" }} />
-            <Area type="monotone" dataKey="mrr" stroke="#C9A84C" strokeWidth={2} fill="url(#mrrGrad)" />
+            <YAxis
+              tick={{ fontSize: 12 }}
+              tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
+            />
+            <Tooltip
+              formatter={(v) => [`${Number(v).toLocaleString()} TND`, "MRR"]}
+              contentStyle={{
+                borderRadius: "12px",
+                border: "1px solid hsl(var(--border))",
+                backgroundColor: "hsl(var(--card))",
+              }}
+            />
+            <Area
+              type="monotone"
+              dataKey="mrr"
+              stroke="#C9A84C"
+              strokeWidth={2}
+              fill="url(#mrrGrad)"
+            />
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -79,9 +130,18 @@ export default function AdminRevenuePage() {
           <BarChart data={PLAN_REVENUE}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis dataKey="plan" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
-            <Tooltip formatter={(v) => [`${Number(v).toLocaleString()} TND`, "MRR"]}
-              contentStyle={{ borderRadius: "12px", border: "1px solid hsl(var(--border))", backgroundColor: "hsl(var(--card))" }} />
+            <YAxis
+              tick={{ fontSize: 12 }}
+              tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
+            />
+            <Tooltip
+              formatter={(v) => [`${Number(v).toLocaleString()} TND`, "MRR"]}
+              contentStyle={{
+                borderRadius: "12px",
+                border: "1px solid hsl(var(--border))",
+                backgroundColor: "hsl(var(--card))",
+              }}
+            />
             <Bar dataKey="mrr" fill="#C9A84C" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>

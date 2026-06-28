@@ -23,7 +23,7 @@ import {
 import { useAuth } from "@/lib/auth-context";
 
 const NAV = [
-  { label: "Vue d'ensemble", href: "/admin", icon: LayoutDashboard },
+  { label: "Vue d'ensemble", href: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Prestataires", href: "/admin/vendors", icon: Store },
   { label: "Utilisateurs", href: "/admin/users", icon: Users },
   { label: "Catégories", href: "/admin/categories", icon: Tag },
@@ -61,8 +61,7 @@ export function AdminSidebar({ onClose }: Props) {
       </div>
       <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
         {NAV.map(({ label, href, icon: Icon }) => {
-          const active =
-            href === "/admin" ? pathname === href : pathname.startsWith(href);
+          const active = pathname.startsWith(href);
           return (
             <Link
               key={href}

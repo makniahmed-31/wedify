@@ -3,9 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 const AUTH_ROUTES = ["/login", "/register"];
 
 function roleHome(role: string | undefined) {
-  if (role === "ADMIN") return "/admin";
-  if (role === "VENDOR") return "/vendor/dashboard";
-  return "/user/dashboard";
+  return role ? `/${role.toLowerCase()}/dashboard` : "/login";
 }
 
 export function proxy(request: NextRequest) {

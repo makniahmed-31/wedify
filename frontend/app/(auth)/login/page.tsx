@@ -16,11 +16,7 @@ export default function LoginPage() {
   const [method, setMethod] = useState<Method>("email");
 
   useEffect(() => {
-    if (loggedIn) {
-      if (role === "ADMIN") router.replace("/admin");
-      else if (role === "VENDOR") router.replace("/vendor/dashboard");
-      else router.replace("/user/dashboard");
-    }
+    if (loggedIn && role) router.replace(`/${role.toLowerCase()}/dashboard`);
   }, [loggedIn, role, router]);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -47,10 +43,8 @@ export default function LoginPage() {
       const data = await res.json();
       login(data.accessToken, data.refreshToken);
       try {
-        const r = JSON.parse(atob(data.accessToken.split(".")[1])).role;
-        if (r === "ADMIN") router.replace("/admin");
-        else if (r === "VENDOR") router.replace("/vendor/dashboard");
-        else router.replace("/user/dashboard");
+        const r: string = JSON.parse(atob(data.accessToken.split(".")[1])).role;
+        router.replace(`/${r.toLowerCase()}/dashboard`);
       } catch {
         router.replace("/user/dashboard");
       }
@@ -302,10 +296,8 @@ function RegisterForm({ onLogin }: { onLogin: () => void }) {
       if (!res.ok) throw new Error("Registration failed");
       const data = await res.json();
       login(data.accessToken, data.refreshToken);
-      const r = (() => { try { return JSON.parse(atob(data.accessToken.split(".")[1])).role; } catch { return null; } })();
-      if (r === "ADMIN") router.replace("/admin");
-      else if (r === "VENDOR") router.replace("/vendor/dashboard");
-      else router.replace("/user/dashboard");
+      const r: string = (() => { try { return JSON.parse(atob(data.accessToken.split(".")[1])).role; } catch { return "USER"; } })();
+      router.replace(`/${r.toLowerCase()}/dashboard`);
     } catch {
       setLoading(false);
     }

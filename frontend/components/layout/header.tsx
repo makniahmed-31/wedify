@@ -20,8 +20,7 @@ export function Header() {
   const profileRef = useRef<HTMLDivElement>(null);
   const { t, locale, setLocale } = useI18n();
   const { loggedIn, role, logout } = useAuth();
-  const dashboardHref =
-    role === "ADMIN" ? "/admin" : role === "VENDOR" ? "/vendor/dashboard" : "/user/dashboard";
+  const dashboardHref = role ? `/${role.toLowerCase()}/dashboard` : "/login";
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

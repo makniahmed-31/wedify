@@ -52,7 +52,6 @@ export default function AdminVendorsPage() {
   const [filterStatus, setFilterStatus] = useState<Status | "ALL">("ALL");
   const [filterPlan, setFilterPlan] = useState<Plan | "ALL">("ALL");
 
-
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -117,7 +116,7 @@ export default function AdminVendorsPage() {
   const pending = vendors.filter((v) => v.status === "PENDING");
 
   return (
-    <div className="space-y-6 max-w-7xl">
+    <div className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold">Prestataires</h1>

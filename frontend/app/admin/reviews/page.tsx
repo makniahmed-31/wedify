@@ -133,7 +133,7 @@ export default function AdminReviewsPage() {
   const flagged = reviews.filter((r) => r.status === "FLAGGED").length;
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 ">
       <div>
         <h1 className="text-2xl font-bold">Modération des avis</h1>
         <p className="text-muted-foreground mt-1">
