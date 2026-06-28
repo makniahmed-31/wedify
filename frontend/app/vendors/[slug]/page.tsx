@@ -11,81 +11,93 @@ import {
   Clock,
   Shield,
   Crown,
-  Check,
   ChevronLeft,
   Calendar,
 } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-import {
-  getVendorBySlug,
-  getReviewsByVendor,
-  MOCK_VENDORS,
-} from "@/lib/mock-data";
-import { CURRENCY_SYMBOL } from "@/lib/constants";
+import { CATEGORIES, CITIES, CURRENCY_SYMBOL } from "@/lib/constants";
+
+const BACKEND = process.env.BACKEND_INTERNAL_URL ?? "http://localhost:4001";
+const DEFAULT_COVER =
+  "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200&q=80";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
+async function fetchVendor(slug: string) {
+  try {
+    const res = await fetch(`${BACKEND}/api/v1/vendors/slug/${slug}`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
-  return MOCK_VENDORS.map((v) => ({ slug: v.slug }));
+  try {
+    const res = await fetch(`${BACKEND}/api/v1/vendors?limit=500`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return (json.data ?? [])
+      .filter((v: any) => v.slug)
+      .map((v: any) => ({ slug: v.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const vendor = getVendorBySlug(slug);
-  if (!vendor) return {};
-
+  const v = await fetchVendor(slug);
+  if (!v) return {};
   return {
-    title:
-      vendor.seo?.metaTitle ??
-      `${vendor.businessName} — ${vendor.category.name} in ${vendor.city.name}`,
-    description:
-      vendor.seo?.metaDescription ?? vendor.description.substring(0, 160),
-    keywords: vendor.seo?.keywords ?? [
-      vendor.businessName,
-      vendor.category.name,
-      vendor.city.name,
-      "Tunisia",
-    ],
+    title: `${v.businessName} — ${v.category ?? ""} à ${v.city ?? "Tunisie"}`,
+    description: v.description?.substring(0, 160) ?? "",
     openGraph: {
-      title: vendor.businessName,
-      description: vendor.tagline ?? vendor.description.substring(0, 120),
-      images: [{ url: vendor.coverImage, width: 1200, height: 630 }],
-      type: "website",
+      title: v.businessName,
+      description: v.tagline ?? v.description?.substring(0, 120) ?? "",
+      images: v.coverImage ? [{ url: v.coverImage }] : [],
     },
   };
 }
 
 export default async function VendorPage({ params }: Props) {
   const { slug } = await params;
-  const vendor = getVendorBySlug(slug);
-  if (!vendor) notFound();
+  const v = await fetchVendor(slug);
+  if (!v) notFound();
 
-  const reviews = getReviewsByVendor(vendor.id);
+  const cat = CATEGORIES.find((c) => c.slug === v.categorySlug);
+  const city = CITIES.find((c) => c.slug === v.citySlug);
 
   const schemaOrg = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    name: vendor.businessName,
-    description: vendor.description,
-    image: vendor.coverImage,
-    telephone: vendor.phone,
-    email: vendor.email,
+    name: v.businessName,
+    description: v.description,
+    image: v.coverImage,
+    telephone: v.phone,
+    email: v.email,
     address: {
       "@type": "PostalAddress",
-      addressLocality: vendor.city.name,
+      addressLocality: v.city ?? city?.name,
       addressCountry: "TN",
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: vendor.rating,
-      reviewCount: vendor.reviewCount,
-    },
-    priceRange: vendor.minPrice
-      ? `${vendor.minPrice.toLocaleString()} – ${vendor.maxPrice?.toLocaleString()} ${CURRENCY_SYMBOL}`
-      : "Contact for pricing",
+    ...(v.rating > 0 && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: v.rating,
+        reviewCount: v.reviewCount,
+      },
+    }),
   };
 
   return (
@@ -96,11 +108,11 @@ export default async function VendorPage({ params }: Props) {
       />
       <Header />
       <main className="flex-1">
-        {/* Hero / Cover */}
+        {/* Hero */}
         <div className="relative h-72 md:h-96 overflow-hidden">
           <Image
-            src={vendor.coverImage}
-            alt={vendor.businessName}
+            src={v.coverImage || DEFAULT_COVER}
+            alt={v.businessName}
             fill
             className="object-cover"
             priority
@@ -108,31 +120,33 @@ export default async function VendorPage({ params }: Props) {
           <div className="absolute inset-0 gradient-hero" />
           <div className="absolute inset-0 flex items-end">
             <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 pb-8">
-              <Link
-                href={`/${vendor.category.slug}`}
-                className="inline-flex items-center gap-1.5 text-white/70 text-sm mb-3 hover:text-white"
-              >
-                <ChevronLeft className="h-4 w-4" /> {vendor.category.name}
-              </Link>
+              {cat && (
+                <Link
+                  href={`/${cat.slug}`}
+                  className="inline-flex items-center gap-1.5 text-white/70 text-sm mb-3 hover:text-white"
+                >
+                  <ChevronLeft className="h-4 w-4" /> {cat.name}
+                </Link>
+              )}
               <div className="flex items-end justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    {vendor.isVerified && (
+                    {v.isVerified && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-0.5 text-xs text-green-300">
-                        <Shield className="h-3 w-3" /> Verified
+                        <Shield className="h-3 w-3" /> Vérifié
                       </span>
                     )}
-                    {vendor.plan === "GOLD" && (
+                    {v.plan === "PREMIUM" && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-primary/20 px-2 py-0.5 text-xs text-primary">
                         <Crown className="h-3 w-3" /> Premium
                       </span>
                     )}
                   </div>
                   <h1 className="text-3xl md:text-4xl font-bold text-white">
-                    {vendor.businessName}
+                    {v.businessName}
                   </h1>
-                  {vendor.tagline && (
-                    <p className="text-white/80 mt-1">{vendor.tagline}</p>
+                  {v.tagline && (
+                    <p className="text-white/80 mt-1">{v.tagline}</p>
                   )}
                 </div>
               </div>
@@ -143,276 +157,90 @@ export default async function VendorPage({ params }: Props) {
         {/* Main content */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left: main content */}
+            {/* Left */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Quick stats */}
+              {/* Stats */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="rounded-md border bg-card p-4 text-center">
                   <div className="flex items-center justify-center gap-1 text-xl font-bold">
                     <Star className="h-5 w-5 fill-primary text-primary" />
-                    {vendor.rating.toFixed(1)}
+                    {v.rating > 0 ? v.rating.toFixed(1) : "—"}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {vendor.reviewCount} reviews
+                    {v.reviewCount} avis
                   </p>
                 </div>
                 <div className="rounded-md border bg-card p-4 text-center">
                   <div className="text-xl font-bold">
-                    {vendor.yearsInBusiness ?? "N/A"}
+                    {v.yearsInBusiness > 0 ? v.yearsInBusiness : "—"}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Years in business
+                    Ans d&apos;activité
                   </p>
                 </div>
                 <div className="rounded-md border bg-card p-4 text-center">
-                  <div className="text-sm font-bold text-green-600 flex items-center justify-center gap-1">
-                    <Clock className="h-4 w-4" />
+                  <div className="flex items-center justify-center">
+                    <Clock className="h-4 w-4 text-green-600" />
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {vendor.responseTime ?? "Quick response"}
+                    {v.responseTime ?? "Répond rapidement"}
                   </p>
                 </div>
                 <div className="rounded-md border bg-card p-4 text-center">
-                  <div className="text-xl font-bold">
-                    {vendor.languages.length}
+                  <div className="text-xl font-bold capitalize">
+                    {v.plan?.toLowerCase()}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Languages spoken
+                    Abonnement
                   </p>
                 </div>
               </div>
 
               {/* About */}
-              <section>
-                <h2 className="text-xl font-bold mb-3">
-                  About {vendor.businessName}
-                </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  {vendor.description}
-                </p>
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {vendor.languages.map((lang) => (
-                    <span
-                      key={lang}
-                      className="rounded-full border px-3 py-1 text-xs"
-                    >
-                      {lang}
-                    </span>
-                  ))}
-                </div>
-              </section>
-
-              {/* Gallery */}
-              {vendor.gallery.length > 0 && (
+              {v.description && (
                 <section>
-                  <h2 className="text-xl font-bold mb-3">Gallery</h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {vendor.gallery.map((img, i) => (
-                      <div
-                        key={i}
-                        className={`relative overflow-hidden rounded-md ${i === 0 ? "row-span-2 col-span-2 sm:col-span-1" : ""}`}
-                        style={{ aspectRatio: i === 0 ? "1" : "4/3" }}
-                      >
-                        <Image
-                          src={img}
-                          alt={`${vendor.businessName} photo ${i + 1}`}
-                          fill
-                          className="object-cover hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 768px) 50vw, 33vw"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Services */}
-              {vendor.services.length > 0 && (
-                <section>
-                  <h2 className="text-xl font-bold mb-3">Services</h2>
-                  <div className="space-y-3">
-                    {vendor.services
-                      .filter((s) => s.isActive)
-                      .map((service) => (
-                        <div
-                          key={service.id}
-                          className="rounded-md border bg-card p-4 flex items-center justify-between gap-4"
-                        >
-                          <div>
-                            <h3 className="font-semibold">{service.name}</h3>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {service.description}
-                            </p>
-                            {service.duration && (
-                              <p className="text-xs text-muted-foreground mt-1">
-                                Duration: {service.duration}
-                              </p>
-                            )}
-                          </div>
-                          <div className="text-right shrink-0">
-                            <p className="font-bold">
-                              {service.price.toLocaleString()} {CURRENCY_SYMBOL}
-                            </p>
-                            <p className="text-xs text-muted-foreground capitalize">
-                              {service.priceUnit
-                                .replace(/_/g, " ")
-                                .toLowerCase()}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Packages */}
-              {vendor.packages.length > 0 && (
-                <section>
-                  <h2 className="text-xl font-bold mb-3">Packages</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {vendor.packages
-                      .filter((p) => p.isActive)
-                      .map((pkg) => (
-                        <div
-                          key={pkg.id}
-                          className={`rounded-lg border p-5 relative ${pkg.isPopular ? "border-primary ring-1 ring-primary/30 shadow-gold" : ""}`}
-                        >
-                          {pkg.isPopular && (
-                            <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full gradient-gold px-3 py-0.5 text-xs font-semibold text-white">
-                              Most Popular
-                            </span>
-                          )}
-                          <h3 className="font-bold mb-1">{pkg.name}</h3>
-                          <p className="text-sm text-muted-foreground mb-3">
-                            {pkg.description}
-                          </p>
-                          <p className="text-2xl font-bold mb-4">
-                            {pkg.price.toLocaleString()} {CURRENCY_SYMBOL}
-                          </p>
-                          <ul className="space-y-2 mb-4">
-                            {pkg.features.map((f) => (
-                              <li
-                                key={f}
-                                className="flex items-start gap-2 text-sm"
-                              >
-                                <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                {f}
-                              </li>
-                            ))}
-                          </ul>
-                          <Link
-                            href={`/vendors/${vendor.slug}/book?package=${pkg.id}`}
-                            className="block text-center rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
-                          >
-                            Book this package
-                          </Link>
-                        </div>
-                      ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Reviews */}
-              <section>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold">
-                    Reviews ({reviews.length})
+                  <h2 className="text-xl font-bold mb-3">
+                    À propos de {v.businessName}
                   </h2>
-                  <div className="flex items-center gap-1.5">
-                    <Star className="h-5 w-5 fill-primary text-primary" />
-                    <span className="font-bold">
-                      {vendor.rating.toFixed(1)}
-                    </span>
-                    <span className="text-muted-foreground text-sm">/ 5</span>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  {reviews.map((review) => (
-                    <div
-                      key={review.id}
-                      className="rounded-md border bg-card p-5"
-                    >
-                      <div className="flex items-start justify-between gap-4 mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-sm">
-                            {review.customer.name[0]}
-                          </div>
-                          <div>
-                            <p className="font-medium text-sm">
-                              {review.customer.name}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(review.createdAt).toLocaleDateString(
-                                "en-US",
-                                { month: "long", year: "numeric" },
-                              )}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex gap-0.5">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-4 w-4 ${i < review.rating ? "fill-primary text-primary" : "text-muted"}`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                      {review.title && (
-                        <p className="font-semibold text-sm mb-1">
-                          {review.title}
-                        </p>
-                      )}
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {review.body}
-                      </p>
-                      {review.vendorReply && (
-                        <div className="mt-3 rounded-sm bg-muted p-3">
-                          <p className="text-xs font-semibold mb-1">
-                            Response from {vendor.businessName}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {review.vendorReply}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {v.description}
+                  </p>
+                </section>
+              )}
             </div>
 
-            {/* Right: Contact / Booking sidebar */}
+            {/* Right: Contact */}
             <div className="space-y-4">
-              {/* Price summary */}
               <div className="rounded-lg border bg-card p-5 sticky top-20">
                 <div className="text-center mb-4">
-                  {vendor.minPrice ? (
+                  {v.minPrice > 0 ? (
                     <>
                       <p className="text-sm text-muted-foreground">
-                        Starting from
+                        À partir de
                       </p>
                       <p className="text-3xl font-bold">
-                        {vendor.minPrice.toLocaleString()}{" "}
+                        {Number(v.minPrice).toLocaleString()}{" "}
                         <span className="text-lg">{CURRENCY_SYMBOL}</span>
                       </p>
                     </>
                   ) : (
-                    <p className="text-lg font-semibold">Contact for pricing</p>
+                    <p className="text-lg font-semibold">
+                      Contactez pour un devis
+                    </p>
                   )}
                 </div>
 
                 <Link
-                  href={`/vendors/${vendor.slug}/book`}
+                  href={`/vendors/${v.slug}/book`}
                   className="flex items-center justify-center gap-2 w-full rounded-full gradient-gold py-3 text-sm font-semibold text-white shadow-gold hover:opacity-90 transition-opacity mb-3"
                 >
                   <Calendar className="h-4 w-4" />
-                  Request a Quote
+                  Demander un devis
                 </Link>
 
-                {vendor.whatsapp && (
+                {v.whatsapp && (
                   <a
-                    href={`https://wa.me/${vendor.whatsapp.replace(/\D/g, "")}`}
+                    href={`https://wa.me/${v.whatsapp.replace(/\D/g, "")}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 w-full rounded-full border border-green-600 py-3 text-sm font-semibold text-green-600 hover:bg-green-50 transition-colors mb-3"
@@ -423,48 +251,33 @@ export default async function VendorPage({ params }: Props) {
                 )}
 
                 <div className="space-y-3 pt-3 border-t">
-                  <div className="flex items-center gap-3 text-sm">
-                    <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
-                    {vendor.city.name}
-                    {vendor.address ? `, ${vendor.address}` : ""}
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <a
-                      href={`tel:${vendor.phone}`}
-                      className="hover:text-primary"
-                    >
-                      {vendor.phone}
-                    </a>
-                  </div>
-                  {vendor.website && (
+                  {(v.city || city) && (
+                    <div className="flex items-center gap-3 text-sm">
+                      <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                      {v.city ?? city?.name}
+                    </div>
+                  )}
+                  {v.phone && (
+                    <div className="flex items-center gap-3 text-sm">
+                      <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <a href={`tel:${v.phone}`} className="hover:text-primary">
+                        {v.phone}
+                      </a>
+                    </div>
+                  )}
+                  {v.website && (
                     <div className="flex items-center gap-3 text-sm">
                       <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
                       <a
-                        href={vendor.website}
+                        href={v.website}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:text-primary truncate"
                       >
-                        {vendor.website.replace(/https?:\/\//, "")}
+                        {v.website.replace(/https?:\/\//, "")}
                       </a>
                     </div>
                   )}
-                </div>
-              </div>
-
-              {/* Languages */}
-              <div className="rounded-lg border bg-card p-4">
-                <h3 className="font-semibold text-sm mb-2">Languages</h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {vendor.languages.map((lang) => (
-                    <span
-                      key={lang}
-                      className="rounded-full border px-2.5 py-0.5 text-xs"
-                    >
-                      {lang}
-                    </span>
-                  ))}
                 </div>
               </div>
             </div>

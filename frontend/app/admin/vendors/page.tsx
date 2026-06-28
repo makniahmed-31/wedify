@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 type Status = "ACTIVE" | "PENDING" | "SUSPENDED";
-type Plan = "BASIC" | "PRO" | "PREMIUM";
+type Plan = "BRONZE" | "SILVER" | "GOLD";
 
 interface Vendor {
   id: string;
@@ -39,9 +39,9 @@ const STATUS_LABELS: Record<Status, string> = {
   SUSPENDED: "Suspendu",
 };
 const PLAN_STYLES: Record<Plan, string> = {
-  PREMIUM: "bg-primary/10 text-primary",
-  PRO: "bg-blue-500/10 text-blue-600",
-  BASIC: "bg-muted text-muted-foreground",
+  GOLD: "bg-primary/10 text-primary",
+  SILVER: "bg-blue-500/10 text-blue-600",
+  BRONZE: "bg-muted text-muted-foreground",
 };
 
 export default function AdminVendorsPage() {
@@ -64,7 +64,7 @@ export default function AdminVendorsPage() {
         name: v.name ?? "",
         category: v.category ?? "",
         city: v.city ?? "",
-        plan: (v.plan ?? "BASIC") as Plan,
+        plan: (v.plan ?? "BRONZE") as Plan,
         status: (v.status ?? "PENDING") as Status,
         joined: v.joined
           ? new Date(v.joined).toLocaleDateString("fr-FR", {
@@ -180,9 +180,9 @@ export default function AdminVendorsPage() {
             className="px-4 py-2 rounded-md border bg-card text-sm outline-none appearance-none focus:ring-2 focus:ring-primary/30"
           >
             <option value="ALL">Tous les plans</option>
-            <option value="PREMIUM">Premium</option>
-            <option value="PRO">Pro</option>
-            <option value="BASIC">Basic</option>
+            <option value="GOLD">Gold</option>
+            <option value="SILVER">Silver</option>
+            <option value="BRONZE">Bronze</option>
           </select>
           <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
         </div>
@@ -277,8 +277,8 @@ export default function AdminVendorsPage() {
                       <span
                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${PLAN_STYLES[v.plan]}`}
                       >
-                        {v.plan === "PREMIUM" && <Crown className="h-3 w-3" />}
-                        {v.plan === "PRO" && <Gem className="h-3 w-3" />}
+                        {v.plan === "GOLD" && <Crown className="h-3 w-3" />}
+                        {v.plan === "SILVER" && <Gem className="h-3 w-3" />}
                         {v.plan}
                       </span>
                     </td>

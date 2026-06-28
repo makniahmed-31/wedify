@@ -32,6 +32,13 @@ export class VendorsController {
   }
 
   @Public()
+  @Get('slug/:slug')
+  @ApiOperation({ summary: 'Get vendor by slug' })
+  findBySlug(@Param('slug') slug: string) {
+    return this.vendorsService.findBySlug(slug);
+  }
+
+  @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get vendor public profile' })
   findOne(@Param('id') id: string) {

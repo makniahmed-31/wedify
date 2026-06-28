@@ -45,7 +45,7 @@ const INITIAL_REQUESTS: SubRequest[] = [
     toPlan: "SILVER",
     requestedAt: "Il y a 2h",
     status: "PENDING",
-    monthlyRevenue: 79,
+    monthlyRevenue: 50,
   },
   {
     id: "r2",
@@ -55,7 +55,7 @@ const INITIAL_REQUESTS: SubRequest[] = [
     toPlan: "GOLD",
     requestedAt: "Il y a 4h",
     status: "PENDING",
-    monthlyRevenue: 149,
+    monthlyRevenue: 75,
   },
   {
     id: "r3",
@@ -65,7 +65,7 @@ const INITIAL_REQUESTS: SubRequest[] = [
     toPlan: "BRONZE",
     requestedAt: "Il y a 6h",
     status: "PENDING",
-    monthlyRevenue: 29,
+    monthlyRevenue: 25,
   },
   {
     id: "r4",
@@ -75,7 +75,7 @@ const INITIAL_REQUESTS: SubRequest[] = [
     toPlan: "SILVER",
     requestedAt: "Hier",
     status: "APPROVED",
-    monthlyRevenue: 79,
+    monthlyRevenue: 50,
   },
   {
     id: "r5",
@@ -85,7 +85,7 @@ const INITIAL_REQUESTS: SubRequest[] = [
     toPlan: "GOLD",
     requestedAt: "Hier",
     status: "REJECTED",
-    monthlyRevenue: 149,
+    monthlyRevenue: 75,
   },
 ];
 
@@ -96,7 +96,7 @@ const ACTIVE_SUBS: ActiveSub[] = [
     plan: "GOLD",
     since: "1 jan. 2026",
     nextBilling: "1 fév. 2026",
-    amount: 149,
+    amount: 75,
     status: "ACTIVE",
   },
   {
@@ -105,7 +105,7 @@ const ACTIVE_SUBS: ActiveSub[] = [
     plan: "GOLD",
     since: "5 jan. 2026",
     nextBilling: "5 fév. 2026",
-    amount: 149,
+    amount: 75,
     status: "ACTIVE",
   },
   {
@@ -114,7 +114,7 @@ const ACTIVE_SUBS: ActiveSub[] = [
     plan: "SILVER",
     since: "10 jan. 2026",
     nextBilling: "10 fév. 2026",
-    amount: 79,
+    amount: 50,
     status: "ACTIVE",
   },
   {
@@ -123,7 +123,7 @@ const ACTIVE_SUBS: ActiveSub[] = [
     plan: "SILVER",
     since: "3 jan. 2026",
     nextBilling: "3 fév. 2026",
-    amount: 79,
+    amount: 50,
     status: "ACTIVE",
   },
   {
@@ -132,7 +132,7 @@ const ACTIVE_SUBS: ActiveSub[] = [
     plan: "BRONZE",
     since: "8 jan. 2026",
     nextBilling: "8 fév. 2026",
-    amount: 29,
+    amount: 25,
     status: "ACTIVE",
   },
 ];
@@ -288,9 +288,9 @@ export default function AdminSubscriptionsPage() {
                     ["BRONZE", "SILVER", "GOLD"].indexOf(r.toPlan) >
                     ["BRONZE", "SILVER", "GOLD"].indexOf(r.fromPlan);
                   const prices: Record<Plan, number> = {
-                    BRONZE: 29,
-                    SILVER: 79,
-                    GOLD: 149,
+                    BRONZE: 25,
+                    SILVER: 50,
+                    GOLD: 75,
                   };
                   const diff = prices[r.toPlan] - prices[r.fromPlan];
                   return (

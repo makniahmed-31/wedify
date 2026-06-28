@@ -71,12 +71,19 @@ export class VendorsService {
     throw new Error('Not implemented');
   }
 
+  async findBySlug(slug: string) {
+    const vendor = await this.repo.findOne({ where: { slug } });
+    if (!vendor) throw new NotFoundException('Vendor not found');
+    return this.toPublic(vendor);
+  }
+
   toPublic(v: Vendor) {
     return {
       id: v.id,
       slug: v.slug,
       businessName: v.businessName,
       tagline: v.tagline,
+      description: v.description,
       category: v.category,
       categorySlug: v.categorySlug,
       city: v.city,
@@ -98,6 +105,7 @@ export class VendorsService {
       website: v.website,
       yearsInBusiness: v.yearsInBusiness,
       createdAt: v.createdAt,
+      updatedAt: v.updatedAt,
     };
   }
 

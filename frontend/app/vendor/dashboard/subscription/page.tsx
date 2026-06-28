@@ -7,14 +7,19 @@ import { SUBSCRIPTION_PLANS } from "@/lib/constants";
 type PlanName = "BRONZE" | "SILVER" | "GOLD";
 
 const PLAN_PRICES: Record<PlanName, number> = {
-  BRONZE: 29,
-  SILVER: 79,
-  GOLD: 149,
+  BRONZE: 25,
+  SILVER: 50,
+  GOLD: 75,
+};
+const PLAN_ANNUAL: Record<PlanName, number> = {
+  BRONZE: 250,
+  SILVER: 500,
+  GOLD: 750,
 };
 const PLAN_LABELS: Record<PlanName, string> = {
-  BRONZE: "Basic",
-  SILVER: "Pro",
-  GOLD: "Premium",
+  BRONZE: "Bronze",
+  SILVER: "Silver",
+  GOLD: "Gold",
 };
 
 export default function SubscriptionPage() {
@@ -69,7 +74,7 @@ export default function SubscriptionPage() {
           <div>
             <p className="text-sm text-muted-foreground">Plan actuel</p>
             <p className="text-xl font-bold mt-0.5">
-              {PLAN_LABELS[currentPlan]} — {PLAN_PRICES[currentPlan]} TND/mois
+              {PLAN_LABELS[currentPlan]} — {PLAN_PRICES[currentPlan]} DT/mois ou {PLAN_ANNUAL[currentPlan]} DT/an
             </p>
             <p className="text-sm text-muted-foreground mt-1">
               Prochaine facturation : 18 janvier 2026
@@ -88,7 +93,7 @@ export default function SubscriptionPage() {
           <div className="flex-1">
             <p className="text-sm font-semibold text-amber-900">
               {isDowngrade(confirming) ? "Rétrograder" : "Passer"} vers le plan{" "}
-              {PLAN_LABELS[confirming]} ({PLAN_PRICES[confirming]} TND/mois) ?
+              {PLAN_LABELS[confirming]} ({PLAN_PRICES[confirming]} DT/mois) ?
             </p>
             <p className="text-xs text-amber-700 mt-0.5">
               {isDowngrade(confirming)
@@ -154,10 +159,10 @@ export default function SubscriptionPage() {
                   </span>
                   <span className="text-muted-foreground text-sm">
                     {" "}
-                    TND/mois
+                    DT/mois
                   </span>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    ou {plan.priceAnnual} TND/an (économisez 17%)
+                    ou {plan.priceAnnual} DT/an (2 mois offerts)
                   </p>
                 </div>
 
@@ -219,8 +224,8 @@ export default function SubscriptionPage() {
             {["18 déc. 2025", "18 nov. 2025", "18 oct. 2025"].map((date) => (
               <tr key={date} className="border-b last:border-0">
                 <td className="py-3 text-muted-foreground">{date}</td>
-                <td className="py-3">Pro</td>
-                <td className="py-3 text-right font-medium">79 TND</td>
+                <td className="py-3">{PLAN_LABELS[currentPlan]}</td>
+                <td className="py-3 text-right font-medium">{PLAN_PRICES[currentPlan]} DT</td>
                 <td className="py-3 pl-4">
                   <button className="text-primary text-xs hover:underline">
                     Télécharger

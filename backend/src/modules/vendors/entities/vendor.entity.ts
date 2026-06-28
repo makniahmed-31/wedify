@@ -35,7 +35,7 @@ export class Vendor {
   @Column({ name: 'cover_image', nullable: true })
   coverImage: string;
 
-  @Column({ default: 'BASIC' })
+  @Column({ default: 'BRONZE' })
   plan: string;
 
   @Column({ default: 'PENDING' })
