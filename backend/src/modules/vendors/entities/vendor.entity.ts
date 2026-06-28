@@ -53,6 +53,24 @@ export class Vendor {
   @Column({ nullable: true })
   whatsapp: string;
 
+  @Column({ nullable: true })
+  facebook: string;
+
+  @Column({ nullable: true })
+  instagram: string;
+
+  @Column({ nullable: true })
+  youtube: string;
+
+  @Column({ nullable: true })
+  tiktok: string;
+
+  @Column({ name: 'video_url', nullable: true })
+  videoUrl: string;
+
+  @Column({ type: 'json', nullable: true })
+  gallery: string[];
+
   @Column({ name: 'is_verified', default: false })
   isVerified: boolean;
 
