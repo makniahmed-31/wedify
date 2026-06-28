@@ -4,7 +4,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   turbopack: {
-    root: path.resolve(__dirname),
+    // Workspace root — needed so Turbopack can resolve packages hoisted to
+    // the monorepo's root node_modules (next, scheduler, tailwind native bindings).
+    root: path.resolve(__dirname, ".."),
   },
   images: {
     remotePatterns: [

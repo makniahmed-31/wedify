@@ -4,7 +4,7 @@ set -e
 REPO=/var/www/wedify/repo
 PROD_FRONTEND=/var/www/wedify/frontend
 PROD_BACKEND=/var/www/wedify/backend
-FRONTEND_BINS=$REPO/frontend/node_modules/.bin
+FRONTEND_BINS=$REPO/node_modules/.bin
 
 # Load server-side environment — never commit this file to git
 ENV_FILE=/var/www/wedify/.env
