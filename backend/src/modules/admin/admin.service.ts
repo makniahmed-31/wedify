@@ -1,7 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Vendor } from "../vendors/entities/vendor.entity";
+import { PrismaService } from "../../prisma/prisma.service";
 import {
   AdminVendorActionDto,
   AdminStatsDto,
@@ -393,20 +391,17 @@ const SEED_VENDORS = [
 
 @Injectable()
 export class AdminService {
-  constructor(
-    @InjectRepository(Vendor)
-    private readonly vendorRepo: Repository<Vendor>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async getDashboardStats(): Promise<AdminStatsDto> {
-    const totalVendors = await this.vendorRepo.count();
-    const activeVendors = await this.vendorRepo.count({
-      where: { status: "ACTIVE" },
-    });
-    const pendingVendors = await this.vendorRepo.count({
-      where: { status: "PENDING" },
-    });
-    const all = await this.vendorRepo.find({ select: ["plan", "status"] });
+    const [totalVendors, activeVendors, pendingVendors, all] =
+      await Promise.all([
+        this.prisma.vendor.count(),
+        this.prisma.vendor.count({ where: { status: "ACTIVE" } }),
+        this.prisma.vendor.count({ where: { status: "PENDING" } }),
+        this.prisma.vendor.findMany({ select: { plan: true, status: true } }),
+      ]);
+
     const mrr = all
       .filter((v) => v.status === "ACTIVE")
       .reduce((sum, v) => sum + (PLAN_REVENUE[v.plan] ?? 0), 0);
@@ -425,25 +420,28 @@ export class AdminService {
   }
 
   async listVendors(query: AdminQueryDto) {
-    const qb = this.vendorRepo.createQueryBuilder("v");
-
-    if (query.status)
-      qb.andWhere("v.status = :status", { status: query.status });
-    if (query.plan) qb.andWhere("v.plan = :plan", { plan: query.plan });
+    const where: any = {};
+    if (query.status) where.status = query.status;
+    if (query.plan) where.plan = query.plan;
     if (query.search) {
-      qb.andWhere("(v.businessName ILIKE :s OR v.city ILIKE :s)", {
-        s: `%${query.search}%`,
-      });
+      where.OR = [
+        { businessName: { contains: query.search, mode: "insensitive" } },
+        { city: { contains: query.search, mode: "insensitive" } },
+      ];
     }
 
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 100;
 
-    const [vendors, total] = await qb
-      .orderBy("v.createdAt", "DESC")
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
+    const [vendors, total] = await Promise.all([
+      this.prisma.vendor.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.vendor.count({ where }),
+    ]);
 
     return {
       data: vendors.map((v) => ({
@@ -466,14 +464,16 @@ export class AdminService {
     vendorId: string,
     dto: AdminVendorActionDto,
   ): Promise<void> {
-    await this.vendorRepo.update(vendorId, { status: dto.status });
+    await this.prisma.vendor.update({
+      where: { id: vendorId },
+      data: { status: dto.status },
+    });
   }
 
   async seed(): Promise<{ inserted: number }> {
-    await this.vendorRepo.clear();
-    const vendorEntities = SEED_VENDORS.map((v) => this.vendorRepo.create(v));
-    await this.vendorRepo.save(vendorEntities);
-    return { inserted: vendorEntities.length };
+    await this.prisma.vendor.deleteMany({});
+    await this.prisma.vendor.createMany({ data: SEED_VENDORS as any });
+    return { inserted: SEED_VENDORS.length };
   }
 
   async listUsers(_query: AdminQueryDto) {

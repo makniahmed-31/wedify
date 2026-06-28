@@ -15,8 +15,8 @@
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
-    "db:migrate": "cd frontend && npx prisma migrate deploy",
-    "db:studio": "cd frontend && npx prisma studio"
+    "db:migrate": "cd backend && npx prisma migrate deploy",
+    "db:studio": "cd backend && npx prisma studio"
   },
   "devDependencies": {
     "concurrently": "^9.0.0",

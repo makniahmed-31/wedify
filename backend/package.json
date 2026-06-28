@@ -4,7 +4,10 @@
   "description": "Wedify wedding SaaS marketplace backend",
   "private": true,
   "scripts": {
-    "build": "nest build",
+    "build": "prisma generate && nest build",
+    "postinstall": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:studio": "prisma studio",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -25,7 +28,8 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.1.0",
     "@nestjs/throttler": "^5.0.0",
-    "@nestjs/typeorm": "^10.0.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
@@ -35,12 +39,12 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "pg": "^8.11.0",
+    "prisma": "^7.8.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "stripe": "^13.0.0",
     "swagger-ui-express": "^5.0.0",
-    "twilio": "^4.18.0",
-    "typeorm": "^0.3.17"
+    "twilio": "^4.18.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { ConfigModule } from "@nestjs/config";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { ThrottlerModule } from "@nestjs/throttler";
+import { PrismaModule } from "./prisma/prisma.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { UsersModule } from "./modules/users/users.module";
 import { VendorsModule } from "./modules/vendors/vendors.module";
@@ -21,23 +21,10 @@ import { BlogModule } from "./modules/blog/blog.module";
 @Module({
   controllers: [AppController],
   imports: [
-    // Config
     ConfigModule.forRoot({ isGlobal: true }),
-
-    // Database
-    TypeOrmModule.forRoot({
-      type: "postgres",
-      url: process.env.DATABASE_URL,
-      entities: [__dirname + "/**/*.entity{.ts,.js}"],
-      synchronize: process.env.NODE_ENV !== "production",
-      logging: false,
-      ssl: false,
-    }),
-
-    // Rate limiting: 100 requests per 60 seconds globally
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
+    PrismaModule,
 
-    // Feature modules
     AuthModule,
     UsersModule,
     VendorsModule,

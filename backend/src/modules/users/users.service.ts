@@ -1,53 +1,51 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, DeepPartial } from "typeorm";
-import { User } from "./entities/user.entity";
+import { PrismaService } from "../../prisma/prisma.service";
+import { User } from "@prisma/client";
 import { UserResponseDto } from "./dto/user.dto";
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User) private readonly userRepo: Repository<User>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(
     page: number,
     limit: number,
   ): Promise<{ data: UserResponseDto[]; total: number }> {
-    const [data, total] = await this.userRepo.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { createdAt: "DESC" },
-    });
+    const [data, total] = await Promise.all([
+      this.prisma.user.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      this.prisma.user.count(),
+    ]);
     return { data: data.map(this.toDto), total };
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.userRepo.findOne({ where: { id } });
+    const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException("User not found");
     return user;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.userRepo.findOne({ where: { email } });
+    return this.prisma.user.findUnique({ where: { email } });
   }
 
   async findByGoogleId(googleId: string): Promise<User | null> {
-    return this.userRepo.findOne({ where: { googleId } });
+    return this.prisma.user.findFirst({ where: { googleId } });
   }
 
-  async create(data: DeepPartial<User>): Promise<User> {
-    const user = this.userRepo.create(data);
-    return this.userRepo.save(user);
+  async create(data: Partial<User>): Promise<User> {
+    return this.prisma.user.create({ data: data as any });
   }
 
-  async update(id: string, data: DeepPartial<User>): Promise<User> {
-    await this.userRepo.update(id, data as any);
-    return this.findOne(id);
+  async update(id: string, data: Partial<User>): Promise<User> {
+    return this.prisma.user.update({ where: { id }, data: data as any });
   }
 
   async remove(id: string): Promise<void> {
-    await this.userRepo.delete(id);
+    await this.prisma.user.delete({ where: { id } });
   }
 
   async getProfile(userId: string): Promise<UserResponseDto> {
@@ -57,7 +55,7 @@ export class UsersService {
 
   async updateProfile(
     userId: string,
-    data: DeepPartial<User>,
+    data: Partial<User>,
   ): Promise<UserResponseDto> {
     const user = await this.update(userId, data);
     return this.toDto(user);
@@ -69,8 +67,8 @@ export class UsersService {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      phone: user.phone,
-      role: user.role,
+      phone: user.phone ?? undefined,
+      role: user.role as any,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

@@ -1,17 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Vendor } from "../vendors/entities/vendor.entity";
+import { PrismaService } from "../../prisma/prisma.service";
 import { AnalyticsQueryDto } from "./dto/analytics.dto";
 
 @Injectable()
 export class AnalyticsService {
-  constructor(
-    @InjectRepository(Vendor) private readonly vendorRepo: Repository<Vendor>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async getVendorAnalytics(userId: string, query: AnalyticsQueryDto) {
-    const vendor = await this.vendorRepo.findOne({ where: { userId } });
+    const vendor = await this.prisma.vendor.findFirst({ where: { userId } });
     if (!vendor) return null;
 
     return {
@@ -41,23 +37,19 @@ export class AnalyticsService {
   }
 
   async getPlatformStats(_query: AnalyticsQueryDto) {
-    const totalVendors = await this.vendorRepo.count({
-      where: { status: "ACTIVE" },
-    });
-    const pendingVendors = await this.vendorRepo.count({
-      where: { status: "PENDING" },
-    });
-
-    const cityResult = await this.vendorRepo
-      .createQueryBuilder("v")
-      .select("COUNT(DISTINCT v.citySlug)", "count")
-      .where("v.status = :s", { s: "ACTIVE" })
-      .getRawOne();
+    const [totalVendors, pendingVendors, cityGroups] = await Promise.all([
+      this.prisma.vendor.count({ where: { status: "ACTIVE" } }),
+      this.prisma.vendor.count({ where: { status: "PENDING" } }),
+      this.prisma.vendor.groupBy({
+        by: ["citySlug"],
+        where: { status: "ACTIVE" },
+      }),
+    ]);
 
     return {
       totalVendors,
       pendingVendors,
-      totalCities: parseInt(cityResult?.count ?? "0", 10),
+      totalCities: cityGroups.length,
       totalBookings: 0,
       totalUsers: 0,
     };
@@ -68,13 +60,14 @@ export class AnalyticsService {
   }
 
   async getTopVendors(category?: string, limit = 10) {
-    const qb = this.vendorRepo
-      .createQueryBuilder("v")
-      .where("v.status = :s", { s: "ACTIVE" })
-      .orderBy("v.rankScore", "DESC")
-      .take(limit);
-    if (category) qb.andWhere("v.categorySlug = :cat", { cat: category });
-    const vendors = await qb.getMany();
+    const vendors = await this.prisma.vendor.findMany({
+      where: {
+        status: "ACTIVE",
+        ...(category ? { categorySlug: category } : {}),
+      },
+      orderBy: { rankScore: "desc" },
+      take: limit,
+    });
     return vendors.map((v) => ({
       id: v.id,
       businessName: v.businessName,

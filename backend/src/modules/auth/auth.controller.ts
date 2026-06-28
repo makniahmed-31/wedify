@@ -18,7 +18,7 @@ import { AuthService } from "./auth.service";
 import { RegisterDto, LoginDto, RefreshTokenDto } from "./dto/auth.dto";
 import { Public } from "../../common/decorators/public.decorator";
 import { CurrentUser } from "../../common/decorators/current-user.decorator";
-import { User } from "../users/entities/user.entity";
+import { User } from "@prisma/client";
 
 @ApiTags("auth")
 @Controller("auth")

@@ -1,31 +1,34 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Vendor } from "../vendors/entities/vendor.entity";
+import { PrismaService } from "../../prisma/prisma.service";
+import { Vendor } from "@prisma/client";
 
 @Injectable()
 export class MarketplaceService {
-  constructor(
-    @InjectRepository(Vendor) private readonly vendorRepo: Repository<Vendor>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async getHomepageData() {
     const [featured, newest, categoryStats, cityStats] = await Promise.all([
       this.getFeaturedVendors(8),
-      this.vendorRepo.find({
+      this.prisma.vendor.findMany({
         where: { status: "ACTIVE" },
-        order: { createdAt: "DESC" },
+        orderBy: { createdAt: "desc" },
         take: 5,
       }),
       this.getCategoryStats(),
       this.getCitiesWithMostVendors(12),
     ]);
 
-    const totalVendors = await this.vendorRepo.count({
+    const totalVendors = await this.prisma.vendor.count({
       where: { status: "ACTIVE" },
     });
 
-    return { featured, newest, categoryStats, cityStats, totalVendors };
+    return {
+      featured,
+      newest: newest.map(this.toPublic),
+      categoryStats,
+      cityStats,
+      totalVendors,
+    };
   }
 
   async getRankings(query: {
@@ -34,82 +37,76 @@ export class MarketplaceService {
     page?: number;
     limit?: number;
   }) {
-    const qb = this.vendorRepo
-      .createQueryBuilder("v")
-      .where("v.status = :s", { s: "ACTIVE" });
-    if (query.category)
-      qb.andWhere("v.categorySlug = :cat", { cat: query.category });
-    if (query.city) qb.andWhere("v.citySlug = :city", { city: query.city });
+    const where: any = { status: "ACTIVE" };
+    if (query.category) where.categorySlug = query.category;
+    if (query.city) where.citySlug = query.city;
+
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 20;
-    const [vendors, total] = await qb
-      .orderBy("v.rankScore", "DESC")
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
+
+    const [vendors, total] = await Promise.all([
+      this.prisma.vendor.findMany({
+        where,
+        orderBy: { rankScore: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.vendor.count({ where }),
+    ]);
     return { data: vendors.map(this.toPublic), total, page, limit };
   }
 
   async getCategoryPage(category: string, city?: string) {
-    const qb = this.vendorRepo
-      .createQueryBuilder("v")
-      .where("v.status = :s", { s: "ACTIVE" })
-      .andWhere("v.categorySlug = :cat", { cat: category });
-    if (city) qb.andWhere("v.citySlug = :city", { city });
-    qb.orderBy("v.rankScore", "DESC");
-    const vendors = await qb.getMany();
+    const where: any = { status: "ACTIVE", categorySlug: category };
+    if (city) where.citySlug = city;
+
+    const vendors = await this.prisma.vendor.findMany({
+      where,
+      orderBy: { rankScore: "desc" },
+    });
     return { data: vendors.map(this.toPublic), total: vendors.length };
   }
 
   async getFeaturedVendors(limit = 8) {
-    const vendors = await this.vendorRepo
-      .createQueryBuilder("v")
-      .where("v.status = :s", { s: "ACTIVE" })
-      .andWhere("(v.isFeatured = true OR v.plan = :plan)", { plan: "PREMIUM" })
-      .orderBy("v.rankScore", "DESC")
-      .take(limit)
-      .getMany();
+    const vendors = await this.prisma.vendor.findMany({
+      where: {
+        status: "ACTIVE",
+        OR: [{ isFeatured: true }, { plan: "PREMIUM" }],
+      },
+      orderBy: { rankScore: "desc" },
+      take: limit,
+    });
     return vendors.map(this.toPublic);
   }
 
   async getCitiesWithMostVendors(limit = 12) {
-    const result = await this.vendorRepo
-      .createQueryBuilder("v")
-      .select("v.city", "city")
-      .addSelect("v.citySlug", "citySlug")
-      .addSelect("COUNT(v.id)", "vendorCount")
-      .where("v.status = :s", { s: "ACTIVE" })
-      .andWhere("v.city IS NOT NULL")
-      .groupBy("v.city")
-      .addGroupBy("v.citySlug")
-      .orderBy("COUNT(v.id)", "DESC")
-      .limit(limit)
-      .getRawMany();
+    const groups = await this.prisma.vendor.groupBy({
+      by: ["city", "citySlug"],
+      where: { status: "ACTIVE", city: { not: null } },
+      _count: { id: true },
+      orderBy: { _count: { id: "desc" } },
+      take: limit,
+    });
 
-    return result.map((r) => ({
-      name: r.city,
-      slug: r.citySlug,
-      vendorCount: parseInt(r.vendorCount, 10),
+    return groups.map((g) => ({
+      name: g.city,
+      slug: g.citySlug,
+      vendorCount: g._count.id,
     }));
   }
 
   private async getCategoryStats() {
-    const result = await this.vendorRepo
-      .createQueryBuilder("v")
-      .select("v.category", "category")
-      .addSelect("v.categorySlug", "categorySlug")
-      .addSelect("COUNT(v.id)", "vendorCount")
-      .where("v.status = :s", { s: "ACTIVE" })
-      .andWhere("v.category IS NOT NULL")
-      .groupBy("v.category")
-      .addGroupBy("v.categorySlug")
-      .orderBy("COUNT(v.id)", "DESC")
-      .getRawMany();
+    const groups = await this.prisma.vendor.groupBy({
+      by: ["category", "categorySlug"],
+      where: { status: "ACTIVE", category: { not: null } },
+      _count: { id: true },
+      orderBy: { _count: { id: "desc" } },
+    });
 
-    return result.map((r) => ({
-      name: r.category,
-      slug: r.categorySlug,
-      vendorCount: parseInt(r.vendorCount, 10),
+    return groups.map((g) => ({
+      name: g.category,
+      slug: g.categorySlug,
+      vendorCount: g._count.id,
     }));
   }
 
@@ -130,8 +127,8 @@ export class MarketplaceService {
       isVerified: v.isVerified,
       isFeatured: v.isFeatured,
       rankScore: v.rankScore,
-      minPrice: Number(v.minPrice) || 0,
-      maxPrice: Number(v.maxPrice) || 0,
+      minPrice: v.minPrice ? Number(v.minPrice) : 0,
+      maxPrice: v.maxPrice ? Number(v.maxPrice) : 0,
     };
   }
 }

@@ -14,7 +14,7 @@ import {
   UserRole,
 } from "./dto/auth.dto";
 import { UsersService } from "../users/users.service";
-import { User } from "../users/entities/user.entity";
+import { User } from "@prisma/client";
 
 @Injectable()
 export class AuthService {

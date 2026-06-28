@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Vendor } from "./entities/vendor.entity";
+import { PrismaService } from "../../prisma/prisma.service";
+import { Vendor } from "@prisma/client";
 import {
   CreateVendorProfileDto,
   UpdateVendorProfileDto,
@@ -12,65 +11,68 @@ import {
 
 @Injectable()
 export class VendorsService {
-  constructor(
-    @InjectRepository(Vendor)
-    private readonly repo: Repository<Vendor>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async createProfile(
     userId: string,
     dto: CreateVendorProfileDto,
   ): Promise<VendorResponseDto> {
-    const vendor = this.repo.create({
-      userId,
-      businessName: dto.businessName,
-      category: dto.category as string,
-      description: dto.description,
-      city: dto.city,
-      website: dto.website,
-      startingPrice: dto.startingPrice,
-      status: "PENDING",
-      plan: "BASIC",
+    const vendor = await this.prisma.vendor.create({
+      data: {
+        userId,
+        businessName: dto.businessName,
+        category: dto.category as string,
+        description: dto.description,
+        city: dto.city,
+        website: dto.website,
+        startingPrice: dto.startingPrice,
+        status: "PENDING",
+        plan: "BASIC",
+      },
     });
-    const saved = await this.repo.save(vendor);
-    return this.toDto(saved, userId);
+    return this.toDto(vendor, userId);
   }
 
   async getMyProfile(userId: string) {
-    const vendor = await this.repo.findOne({ where: { userId } });
+    const vendor = await this.prisma.vendor.findFirst({ where: { userId } });
     if (!vendor) throw new NotFoundException("Vendor profile not found");
     return this.toPublic(vendor);
   }
 
   async updateProfile(userId: string, dto: UpdateVendorProfileDto) {
-    const vendor = await this.repo.findOne({ where: { userId } });
+    const vendor = await this.prisma.vendor.findFirst({ where: { userId } });
     if (!vendor) throw new NotFoundException("Vendor profile not found");
-    const fields: Partial<typeof vendor> = {};
-    if (dto.businessName !== undefined) fields.businessName = dto.businessName;
-    if (dto.tagline !== undefined) fields.tagline = dto.tagline;
-    if (dto.description !== undefined) fields.description = dto.description;
-    if (dto.category !== undefined) fields.category = dto.category;
-    if (dto.city !== undefined) fields.city = dto.city;
-    if (dto.website !== undefined) fields.website = dto.website;
-    if (dto.phone !== undefined) fields.phone = dto.phone;
-    if (dto.whatsapp !== undefined) fields.whatsapp = dto.whatsapp;
-    if (dto.email !== undefined) fields.email = dto.email;
-    if (dto.facebook !== undefined) fields.facebook = dto.facebook;
-    if (dto.instagram !== undefined) fields.instagram = dto.instagram;
-    if (dto.youtube !== undefined) fields.youtube = dto.youtube;
-    if (dto.tiktok !== undefined) fields.tiktok = dto.tiktok;
-    if (dto.videoUrl !== undefined) fields.videoUrl = dto.videoUrl;
-    if (dto.gallery !== undefined) fields.gallery = dto.gallery;
-    if (dto.minPrice !== undefined) fields.minPrice = dto.minPrice;
-    if (dto.maxPrice !== undefined) fields.maxPrice = dto.maxPrice;
+
+    const data: Partial<Vendor> = {};
+    if (dto.businessName !== undefined) data.businessName = dto.businessName;
+    if (dto.tagline !== undefined) data.tagline = dto.tagline;
+    if (dto.description !== undefined) data.description = dto.description;
+    if (dto.category !== undefined) data.category = dto.category;
+    if (dto.city !== undefined) data.city = dto.city;
+    if (dto.website !== undefined) data.website = dto.website;
+    if (dto.phone !== undefined) data.phone = dto.phone;
+    if (dto.whatsapp !== undefined) data.whatsapp = dto.whatsapp;
+    if (dto.email !== undefined) data.email = dto.email;
+    if (dto.facebook !== undefined) data.facebook = dto.facebook;
+    if (dto.instagram !== undefined) data.instagram = dto.instagram;
+    if (dto.youtube !== undefined) data.youtube = dto.youtube;
+    if (dto.tiktok !== undefined) data.tiktok = dto.tiktok;
+    if (dto.videoUrl !== undefined) data.videoUrl = dto.videoUrl;
+    if (dto.gallery !== undefined) data.gallery = dto.gallery as any;
+    if (dto.minPrice !== undefined) data.minPrice = dto.minPrice as any;
+    if (dto.maxPrice !== undefined) data.maxPrice = dto.maxPrice as any;
     if (dto.yearsInBusiness !== undefined)
-      fields.yearsInBusiness = dto.yearsInBusiness;
-    await this.repo.update(vendor.id, fields);
-    return this.toPublic({ ...vendor, ...fields });
+      data.yearsInBusiness = dto.yearsInBusiness;
+
+    const updated = await this.prisma.vendor.update({
+      where: { id: vendor.id },
+      data,
+    });
+    return this.toPublic(updated);
   }
 
   async findById(vendorId: string): Promise<VendorResponseDto> {
-    const vendor = await this.repo.findOne({
+    const vendor = await this.prisma.vendor.findFirst({
       where: { id: vendorId, status: "ACTIVE" },
     });
     if (!vendor) throw new NotFoundException("Vendor not found");
@@ -82,21 +84,21 @@ export class VendorsService {
     page: number,
     limit: number,
   ) {
-    const qb = this.repo
-      .createQueryBuilder("v")
-      .where("v.status = :status", { status: "ACTIVE" });
-    if (filters.category)
-      qb.andWhere("v.categorySlug = :cat", { cat: filters.category });
-    if (filters.city) qb.andWhere("v.citySlug = :city", { city: filters.city });
-    if (filters.minPrice)
-      qb.andWhere("v.minPrice >= :min", { min: filters.minPrice });
-    if (filters.maxPrice)
-      qb.andWhere("v.maxPrice <= :max", { max: filters.maxPrice });
-    qb.orderBy("v.rankScore", "DESC");
-    const [data, total] = await qb
-      .skip((+page - 1) * +limit)
-      .take(+limit)
-      .getManyAndCount();
+    const where: any = { status: "ACTIVE" };
+    if (filters.category) where.categorySlug = filters.category;
+    if (filters.city) where.citySlug = filters.city;
+    if (filters.minPrice) where.minPrice = { gte: filters.minPrice };
+    if (filters.maxPrice) where.maxPrice = { lte: filters.maxPrice };
+
+    const [data, total] = await Promise.all([
+      this.prisma.vendor.findMany({
+        where,
+        orderBy: { rankScore: "desc" },
+        skip: (+page - 1) * +limit,
+        take: +limit,
+      }),
+      this.prisma.vendor.count({ where }),
+    ]);
     return {
       data: data.map((v) => this.toPublic(v)),
       total,
@@ -109,10 +111,15 @@ export class VendorsService {
     vendorId: string,
     status: string,
   ): Promise<VendorResponseDto> {
-    const vendor = await this.repo.findOne({ where: { id: vendorId } });
+    const vendor = await this.prisma.vendor.findUnique({
+      where: { id: vendorId },
+    });
     if (!vendor) throw new NotFoundException("Vendor not found");
-    await this.repo.update(vendorId, { status });
-    return this.toDto({ ...vendor, status });
+    const updated = await this.prisma.vendor.update({
+      where: { id: vendorId },
+      data: { status },
+    });
+    return this.toDto(updated);
   }
 
   async uploadMedia(_vendorId: string, _userId: string, _files: unknown[]) {
@@ -124,7 +131,7 @@ export class VendorsService {
   }
 
   async findBySlug(slug: string) {
-    const vendor = await this.repo.findOne({ where: { slug } });
+    const vendor = await this.prisma.vendor.findFirst({ where: { slug } });
     if (!vendor) throw new NotFoundException("Vendor not found");
     return this.toPublic(vendor);
   }
@@ -157,8 +164,8 @@ export class VendorsService {
       isVerified: v.isVerified,
       isFeatured: v.isFeatured,
       rankScore: v.rankScore,
-      minPrice: Number(v.minPrice) || 0,
-      maxPrice: Number(v.maxPrice) || 0,
+      minPrice: v.minPrice ? Number(v.minPrice) : 0,
+      maxPrice: v.maxPrice ? Number(v.maxPrice) : 0,
       responseTime: v.responseTime,
       phone: v.phone,
       whatsapp: v.whatsapp,
@@ -169,7 +176,7 @@ export class VendorsService {
       youtube: v.youtube,
       tiktok: v.tiktok,
       videoUrl: v.videoUrl,
-      gallery: v.gallery ?? [],
+      gallery: (v.gallery as string[]) ?? [],
       yearsInBusiness: v.yearsInBusiness,
       createdAt: v.createdAt,
       updatedAt: v.updatedAt,
