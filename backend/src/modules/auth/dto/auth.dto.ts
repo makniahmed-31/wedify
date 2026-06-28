@@ -25,7 +25,7 @@ export class RegisterDto {
   @IsString()
   lastName: string;
 
-  @ApiPropertyOptional({ enum: UserRole, default: UserRole.COUPLE })
+  @ApiPropertyOptional({ enum: UserRole, default: UserRole.USER })
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
