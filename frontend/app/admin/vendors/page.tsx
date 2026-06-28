@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 type Status = "ACTIVE" | "PENDING" | "SUSPENDED";
-type Plan = "BRONZE" | "SILVER" | "GOLD";
+type Plan = "BASIC" | "PRO" | "PREMIUM";
 
 interface Vendor {
   id: string;
@@ -38,9 +38,9 @@ const STATUS_LABELS: Record<Status, string> = {
   SUSPENDED: "Suspendu",
 };
 const PLAN_STYLES: Record<Plan, string> = {
-  GOLD: "bg-primary/10 text-primary",
-  SILVER: "bg-blue-500/10 text-blue-600",
-  BRONZE: "bg-muted text-muted-foreground",
+  PREMIUM: "bg-primary/10 text-primary",
+  PRO: "bg-blue-500/10 text-blue-600",
+  BASIC: "bg-muted text-muted-foreground",
 };
 
 export default function AdminVendorsPage() {
@@ -51,11 +51,15 @@ export default function AdminVendorsPage() {
   const [filterStatus, setFilterStatus] = useState<Status | "ALL">("ALL");
   const [filterPlan, setFilterPlan] = useState<Plan | "ALL">("ALL");
 
+
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/vendors");
+      const token = localStorage.getItem("accessToken");
+      const res = await fetch("/api/v1/admin/vendors", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       if (!res.ok) throw new Error("Erreur serveur");
       const json = await res.json();
       const mapped: Vendor[] = (json.data ?? []).map((v: any) => ({
@@ -63,7 +67,7 @@ export default function AdminVendorsPage() {
         name: v.name ?? "",
         category: v.category ?? "",
         city: v.city ?? "",
-        plan: (v.plan ?? "BRONZE") as Plan,
+        plan: (v.plan ?? "BASIC") as Plan,
         status: (v.status ?? "PENDING") as Status,
         joined: v.joined
           ? new Date(v.joined).toLocaleDateString("fr-FR", {
@@ -89,9 +93,13 @@ export default function AdminVendorsPage() {
   async function updateStatus(id: string, status: Status) {
     const prev = vendors.find((v) => v.id === id)?.status;
     setVendors((v) => v.map((x) => (x.id === id ? { ...x, status } : x)));
-    const res = await fetch(`/api/admin/vendors/${id}`, {
+    const token = localStorage.getItem("accessToken");
+    const res = await fetch(`/api/v1/admin/vendors/${id}/action`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
       body: JSON.stringify({ status }),
     });
     if (!res.ok && prev) {
@@ -179,9 +187,9 @@ export default function AdminVendorsPage() {
             className="px-4 py-2 rounded-md border bg-card text-sm outline-none appearance-none focus:ring-2 focus:ring-primary/30"
           >
             <option value="ALL">Tous les plans</option>
-            <option value="GOLD">Premium</option>
-            <option value="SILVER">Pro</option>
-            <option value="BRONZE">Basic</option>
+            <option value="PREMIUM">Premium</option>
+            <option value="PRO">Pro</option>
+            <option value="BASIC">Basic</option>
           </select>
           <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
         </div>
@@ -276,8 +284,8 @@ export default function AdminVendorsPage() {
                       <span
                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${PLAN_STYLES[v.plan]}`}
                       >
-                        {v.plan === "GOLD" && <Crown className="h-3 w-3" />}
-                        {v.plan === "SILVER" && <Gem className="h-3 w-3" />}
+                        {v.plan === "PREMIUM" && <Crown className="h-3 w-3" />}
+                        {v.plan === "PRO" && <Gem className="h-3 w-3" />}
                         {v.plan}
                       </span>
                     </td>
