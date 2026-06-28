@@ -23,7 +23,7 @@
 
 ## Priority 2 — Architecture (Fix This Sprint)
 
-- [x] **Chose Docker Compose over PM2** — `deploy.sh` rewritten to use `docker compose build` + `docker compose up -d`. PM2 commands removed. Fixed: added `PORT: 3001` to backend service (was missing, health check would fail), added `BACKEND_INTERNAL_URL: http://backend:3001` to frontend service (required by `next.config.ts` API rewrites)
+- [x] **Chose PM2 over Docker Compose for this shared server** — server runs casadimoda + rentigo + wedify behind system nginx; Docker nginx would conflict on port 80/443. Docker removed from server (freed 377 MB). `deploy.sh` cleaned up: sources secrets from `/var/www/wedify/.env` (created on server, chmod 600), single standalone layout (workspace-nested path always). `docker-compose.yml` kept in repo for future dedicated-server migration. Real ports: backend=4001, frontend=4000 — matched in deploy.sh smoke test
 - [ ] **Fix the dual ORM problem** — backend uses TypeORM, frontend uses Prisma — both point to the same DB. Single source of truth is broken. Fix: move Prisma to backend, use it for everything, remove TypeORM
 - [ ] **Move Prisma schema to `backend/prisma/`** — schema and migrations belong with the service that owns the DB, not the frontend
 - [ ] **Create `packages/shared/`** — TypeScript types, enums (`UserRole`, `BookingStatus`, etc.), and Zod schemas are duplicated between frontend and backend. A shared package enforces a contract and prevents drift
