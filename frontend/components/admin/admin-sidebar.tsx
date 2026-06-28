@@ -20,6 +20,7 @@ import {
   X,
   ShieldCheck,
 } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 const NAV = [
   { label: "Vue d'ensemble", href: "/admin", icon: LayoutDashboard },
@@ -42,6 +43,7 @@ interface Props {
 
 export function AdminSidebar({ onClose }: Props) {
   const pathname = usePathname();
+  const { logout } = useAuth();
   return (
     <aside className="flex w-64 shrink-0 flex-col bg-gray-950 text-gray-100 min-h-screen h-full">
       <div className="flex h-16 items-center gap-2 px-5 border-b border-white/10 shrink-0">
@@ -88,10 +90,7 @@ export function AdminSidebar({ onClose }: Props) {
           <Heart className="h-4 w-4" /> Voir le site
         </Link>
         <button
-          onClick={() => {
-            document.cookie = "wedify_admin_auth=; path=/; max-age=0";
-            window.location.href = "/admin/login";
-          }}
+          onClick={() => { onClose?.(); logout(); }}
           className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-gray-400 hover:bg-red-500/10 hover:text-red-400"
         >
           <LogOut className="h-4 w-4" /> Se déconnecter

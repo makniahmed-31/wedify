@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { apiFetch } from "@/lib/api";
 import {
   Search,
   Filter,
@@ -56,10 +57,7 @@ export default function AdminVendorsPage() {
     setLoading(true);
     setError("");
     try {
-      const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/v1/admin/vendors", {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const res = await apiFetch("/api/v1/admin/vendors");
       if (!res.ok) throw new Error("Erreur serveur");
       const json = await res.json();
       const mapped: Vendor[] = (json.data ?? []).map((v: any) => ({
@@ -93,13 +91,9 @@ export default function AdminVendorsPage() {
   async function updateStatus(id: string, status: Status) {
     const prev = vendors.find((v) => v.id === id)?.status;
     setVendors((v) => v.map((x) => (x.id === id ? { ...x, status } : x)));
-    const token = localStorage.getItem("accessToken");
-    const res = await fetch(`/api/v1/admin/vendors/${id}/action`, {
+    const res = await apiFetch(`/api/v1/admin/vendors/${id}/action`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
     if (!res.ok && prev) {
