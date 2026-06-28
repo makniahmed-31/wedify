@@ -6,6 +6,8 @@ import {
   CreateVendorProfileDto,
   UpdateVendorProfileDto,
   VendorResponseDto,
+  VendorCategory,
+  VendorStatus,
 } from "./dto/vendor.dto";
 
 @Injectable()
@@ -179,8 +181,8 @@ export class VendorsService {
       id: vendor.id,
       userId,
       businessName: vendor.businessName,
-      category: vendor.category as string,
-      status: vendor.status as string,
+      category: vendor.category as VendorCategory,
+      status: vendor.status as VendorStatus,
       averageRating: vendor.averageRating,
       reviewCount: vendor.reviewCount,
       createdAt: vendor.createdAt,
