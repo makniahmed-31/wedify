@@ -2,7 +2,7 @@ import { IsEmail, IsString, MinLength, IsOptional, IsEnum } from 'class-validato
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum UserRole {
-  COUPLE = 'COUPLE',
+  USER = 'USER',
   VENDOR = 'VENDOR',
   ADMIN = 'ADMIN',
 }

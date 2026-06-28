@@ -21,7 +21,7 @@ export class User {
   @Column({ nullable: true })
   phone: string;
 
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.COUPLE })
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   role: UserRole;
 
   @Column({ name: 'password_hash', nullable: true })

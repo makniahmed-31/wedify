@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
-type UserRole = "COUPLE" | "VENDOR" | "ADMIN";
+type UserRole = "USER" | "VENDOR" | "ADMIN";
 
 interface AuthContextValue {
   loggedIn: boolean;

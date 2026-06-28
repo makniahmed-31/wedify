@@ -24,7 +24,7 @@ export class AuthService {
       firstName: dto.firstName,
       lastName: dto.lastName,
       passwordHash,
-      role: dto.role ?? UserRole.COUPLE,
+      role: dto.role ?? UserRole.USER,
       isEmailVerified: false,
     });
 
@@ -79,7 +79,7 @@ export class AuthService {
       } else {
         user = await this.usersService.create({
           ...profile,
-          role: UserRole.COUPLE,
+          role: UserRole.USER,
           isEmailVerified: true,
         });
       }
