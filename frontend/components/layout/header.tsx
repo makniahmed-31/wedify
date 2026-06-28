@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import {
   Menu,
@@ -20,6 +21,8 @@ export function Header() {
   const profileRef = useRef<HTMLDivElement>(null);
   const { t, locale, setLocale } = useI18n();
   const { loggedIn, role, logout } = useAuth();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const dashboardHref = role ? `/${role.toLowerCase()}/dashboard` : "/login";
 
   useEffect(() => {
@@ -37,12 +40,24 @@ export function Header() {
 
   const navLinks: [string, string][] = [
     [t("nav.home"), "/"],
-    [t("nav.vendors"), "/vendors"],
-    [t("nav.promotions"), "/promotions"],
+    [t("nav.vendors"), "/search"],
+    [t("nav.promotions"), "/search?sort=NEWEST"],
     [t("nav.blog"), "/blog"],
     [t("nav.cities"), "/villes"],
     [t("nav.contact"), "/contact"],
   ];
+
+  function isActive(href: string) {
+    if (href === "/") return pathname === "/";
+    const [path, qs] = href.split("?");
+    if (path !== pathname) return false;
+    if (!qs) return !searchParams.get("sort");
+    const params = new URLSearchParams(qs);
+    for (const [k, v] of params.entries()) {
+      if (searchParams.get(k) !== v) return false;
+    }
+    return true;
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white/95 backdrop-blur-md shadow-sm">
@@ -74,11 +89,11 @@ export function Header() {
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-7">
-            {navLinks.map(([label, href], i) => (
+            {navLinks.map(([label, href]) => (
               <Link
                 key={href}
                 href={href}
-                className={`text-sm font-medium transition-colors ${i === 0 ? "text-foreground border-b-2 border-primary pb-0.5" : "text-foreground/70 hover:text-foreground"}`}
+                className={`text-sm font-medium transition-colors ${isActive(href) ? "text-foreground border-b-2 border-primary pb-0.5" : "text-foreground/70 hover:text-foreground"}`}
               >
                 {label}
               </Link>
