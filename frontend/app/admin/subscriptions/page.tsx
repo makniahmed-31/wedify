@@ -11,7 +11,8 @@ import {
   TrendingDown,
   CreditCard,
 } from "lucide-react";
-import type { SubRequest, ActiveSub } from "@/types";
+import type { SubRequest, ActiveSub, SubRequestStatus } from "@/types";
+import type { SubscriptionPlan } from "@/types/vendor";
 
 const INITIAL_REQUESTS: SubRequest[] = [
   {
@@ -114,28 +115,28 @@ const ACTIVE_SUBS: ActiveSub[] = [
   },
 ];
 
-const PLAN_ICONS: Record<Plan, React.ReactNode> = {
+const PLAN_ICONS: Record<SubscriptionPlan, React.ReactNode> = {
   GOLD: <Crown className="h-3.5 w-3.5" />,
   SILVER: <Gem className="h-3.5 w-3.5" />,
   BRONZE: null,
 };
-const PLAN_STYLES: Record<Plan, string> = {
+const PLAN_STYLES: Record<SubscriptionPlan, string> = {
   GOLD: "bg-primary/10 text-primary",
   SILVER: "bg-blue-500/10 text-blue-600",
   BRONZE: "bg-muted text-muted-foreground",
 };
-const REQ_STYLES: Record<ReqStatus, string> = {
+const REQ_STYLES: Record<SubRequestStatus, string> = {
   PENDING: "bg-yellow-500/10 text-yellow-600",
   APPROVED: "bg-green-500/10 text-green-600",
   REJECTED: "bg-red-500/10 text-red-500",
 };
-const REQ_LABELS: Record<ReqStatus, string> = {
+const REQ_LABELS: Record<SubRequestStatus, string> = {
   PENDING: "En attente",
   APPROVED: "Approuvée",
   REJECTED: "Rejetée",
 };
 
-function PlanBadge({ plan }: { plan: Plan }) {
+function PlanBadge({ plan }: { plan: SubscriptionPlan }) {
   return (
     <span
       className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${PLAN_STYLES[plan]}`}
@@ -261,7 +262,7 @@ export default function AdminSubscriptionsPage() {
               </thead>
               <tbody>
                 {requests.map((r) => {
-                  const prices: Record<Plan, number> = {
+                  const prices: Record<SubscriptionPlan, number> = {
                     BRONZE: 25,
                     SILVER: 50,
                     GOLD: 75,
@@ -334,7 +335,7 @@ export default function AdminSubscriptionsPage() {
           </div>
           <div className="md:hidden divide-y">
             {requests.map((r) => {
-              const prices: Record<Plan, number> = { BRONZE: 25, SILVER: 50, GOLD: 75 };
+              const prices: Record<SubscriptionPlan, number> = { BRONZE: 25, SILVER: 50, GOLD: 75 };
               const diff = prices[r.toPlan] - prices[r.fromPlan];
               return (
                 <div key={r.id} className="p-4 space-y-3">
