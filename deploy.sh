@@ -22,13 +22,11 @@ cd "$REPO"
 git pull
 
 echo "==> Installing dependencies..."
-# NODE_ENV=production skips devDependencies; force include them for build tools.
-# Also install in each workspace locally — Turbopack can't resolve packages
-# hoisted to the root node_modules (native bindings, peer deps).
+# Drop lock files so npm re-resolves platform-native optional deps (e.g.
+# @tailwindcss/oxide-linux-x64-gnu) that Windows-generated locks omit.
+# NODE_ENV=production would skip devDeps, so force development mode.
+rm -f "$REPO/package-lock.json" "$REPO/frontend/package-lock.json" "$REPO/backend/package-lock.json"
 NODE_ENV=development npm install --silent
-cd "$REPO/backend" && NODE_ENV=development npm install --silent
-cd "$REPO/frontend" && NODE_ENV=development npm install --silent
-cd "$REPO"
 
 # ─── Backend ─────────────────────────────────────────────────────────────────
 
