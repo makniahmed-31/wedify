@@ -1,4 +1,6 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   TrendingUp,
@@ -11,8 +13,7 @@ import {
   Crown,
   Zap,
 } from "lucide-react";
-
-export const metadata: Metadata = { title: "Dashboard Overview" };
+import { apiFetch } from "@/lib/api";
 
 const STATS = [
   {
@@ -77,24 +78,38 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 export default function DashboardPage() {
+  const [vendor, setVendor] = useState<{ businessName: string; slug: string } | null>(null);
+
+  useEffect(() => {
+    apiFetch("/api/v1/vendors/profile/me")
+      .then((r) => r.json())
+      .then((d) => setVendor({ businessName: d.businessName, slug: d.slug }))
+      .catch(() => {});
+  }, []);
+
+  const name = vendor?.businessName ?? "…";
+  const slug = vendor?.slug ?? "";
+
   return (
     <div className="space-y-8 max-w-6xl">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">
-            Good morning, Elegance Hall! 👋
+            Bonjour, {name} ! 👋
           </h1>
           <p className="text-muted-foreground mt-1">
             Here&apos;s what&apos;s happening with your business today.
           </p>
         </div>
-        <Link
-          href={`/vendors/elegance-hall-tunis`}
-          className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium hover:bg-muted"
-        >
-          View Profile <ArrowRight className="h-4 w-4" />
-        </Link>
+        {slug && (
+          <Link
+            href={`/vendors/${slug}`}
+            className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium hover:bg-muted"
+          >
+            View Profile <ArrowRight className="h-4 w-4" />
+          </Link>
+        )}
       </div>
 
       {/* Plan upgrade banner */}
@@ -109,7 +124,7 @@ export default function DashboardPage() {
           </div>
         </div>
         <Link
-          href="/dashboard/subscription"
+          href="/vendor/dashboard/subscription"
           className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-primary shrink-0 hover:shadow-lg transition-shadow"
         >
           Upgrade Now
