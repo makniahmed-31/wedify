@@ -79,7 +79,7 @@ export default function AdminContentPage() {
         <div>
           <h1 className="text-2xl font-bold">Contenu & Blog</h1>
           <p className="text-muted-foreground mt-1">
-            {articles.length} articles au total
+            {ARTICLES.length} articles au total
           </p>
         </div>
         <button className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">
