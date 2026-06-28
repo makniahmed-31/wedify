@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   TrendingUp,
@@ -13,7 +11,9 @@ import {
   Crown,
   Zap,
 } from "lucide-react";
-import { apiFetch } from "@/lib/api";
+import { serverFetch } from "@/lib/server-auth";
+
+export const metadata: Metadata = { title: "Dashboard" };
 
 const STATS = [
   {
@@ -77,18 +77,18 @@ const STATUS_STYLES: Record<string, string> = {
   COMPLETED: "bg-blue-500/10 text-blue-600",
 };
 
-export default function DashboardPage() {
-  const [vendor, setVendor] = useState<{ businessName: string; slug: string } | null>(null);
+export default async function DashboardPage() {
+  let name = "votre entreprise";
+  let slug = "";
 
-  useEffect(() => {
-    apiFetch("/api/v1/vendors/profile/me")
-      .then((r) => r.json())
-      .then((d) => setVendor({ businessName: d.businessName, slug: d.slug }))
-      .catch(() => {});
-  }, []);
-
-  const name = vendor?.businessName ?? "…";
-  const slug = vendor?.slug ?? "";
+  try {
+    const res = await serverFetch("/api/v1/vendors/profile/me");
+    if (res.ok) {
+      const vendor = await res.json();
+      name = vendor.businessName ?? name;
+      slug = vendor.slug ?? "";
+    }
+  } catch {}
 
   return (
     <div className="space-y-8 max-w-6xl">
@@ -106,8 +106,9 @@ export default function DashboardPage() {
           <Link
             href={`/vendors/${slug}`}
             className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium hover:bg-muted"
+            target="_blank"
           >
-            View Profile <ArrowRight className="h-4 w-4" />
+            Voir le profil <ArrowRight className="h-4 w-4" />
           </Link>
         )}
       </div>

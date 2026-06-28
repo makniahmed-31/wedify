@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const r = parseRole(token);
       setLoggedIn(true);
       setRole(r);
-      syncCookie(true, r);
+      syncCookie(true, r, token);
     }
   }, []);
 
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const r = parseRole(accessToken);
     setLoggedIn(true);
     setRole(r);
-    syncCookie(true, r);
+    syncCookie(true, r, accessToken);
   }, []);
 
   const logout = useCallback(() => {
@@ -72,11 +72,15 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-function syncCookie(loggedIn: boolean, role?: UserRole | null) {
+function syncCookie(loggedIn: boolean, role?: UserRole | null, token?: string) {
   if (loggedIn) {
     const value = role ?? "USER";
     document.cookie = `wedify_auth=${value}; path=/; max-age=86400; SameSite=Lax`;
+    if (token) {
+      document.cookie = `wedify_token=${token}; path=/; max-age=86400; SameSite=Lax`;
+    }
   } else {
     document.cookie = "wedify_auth=; path=/; max-age=0";
+    document.cookie = "wedify_token=; path=/; max-age=0";
   }
 }

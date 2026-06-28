@@ -11,6 +11,7 @@ async function refreshTokens(): Promise<string | null> {
     const data = await res.json();
     localStorage.setItem("accessToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
+    document.cookie = `wedify_token=${data.accessToken}; path=/; max-age=86400; SameSite=Lax`;
     return data.accessToken;
   } catch {
     return null;
