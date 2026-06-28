@@ -101,82 +101,130 @@ export default function AdminContentPage() {
       </div>
 
       <div className="rounded-lg border bg-card overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b bg-muted/30">
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                Titre
-              </th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                Statut
-              </th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                Vues
-              </th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                Modifié
-              </th>
-              <th className="px-4 py-3 text-right font-medium text-muted-foreground">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((a) => (
-              <tr
-                key={a.id}
-                className="border-b last:border-0 hover:bg-muted/20 transition-colors"
-              >
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <div>
-                      <p className="font-medium">{a.title}</p>
-                      <p className="text-xs text-muted-foreground font-mono">
-                        {a.slug}
-                      </p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[a.status]}`}
-                  >
-                    {STATUS_LABELS[a.status]}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Eye className="h-3.5 w-3.5" />
-                    {a.views.toLocaleString()}
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Clock className="h-3.5 w-3.5" />
-                    {new Date(a.updatedAt).toLocaleDateString("fr-FR")}
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-1.5">
-                    <button
-                      className="p-1.5 rounded-sm hover:bg-muted transition-colors"
-                      title="Voir"
-                    >
-                      <Globe className="h-4 w-4 text-muted-foreground" />
-                    </button>
-                    <button
-                      className="p-1.5 rounded-sm hover:bg-muted transition-colors"
-                      title="Modifier"
-                    >
-                      <Pencil className="h-4 w-4 text-muted-foreground" />
-                    </button>
-                  </div>
-                </td>
+        <div className="hidden md:block">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-muted/30">
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                  Titre
+                </th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                  Statut
+                </th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                  Vues
+                </th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                  Modifié
+                </th>
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((a) => (
+                <tr
+                  key={a.id}
+                  className="border-b last:border-0 hover:bg-muted/20 transition-colors"
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <div>
+                        <p className="font-medium">{a.title}</p>
+                        <p className="text-xs text-muted-foreground font-mono">
+                          {a.slug}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[a.status]}`}
+                    >
+                      {STATUS_LABELS[a.status]}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Eye className="h-3.5 w-3.5" />
+                      {a.views.toLocaleString()}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock className="h-3.5 w-3.5" />
+                      {new Date(a.updatedAt).toLocaleDateString("fr-FR")}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        className="p-1.5 rounded-sm hover:bg-muted transition-colors"
+                        title="Voir"
+                      >
+                        <Globe className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                      <button
+                        className="p-1.5 rounded-sm hover:bg-muted transition-colors"
+                        title="Modifier"
+                      >
+                        <Pencil className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="md:hidden divide-y">
+          {filtered.map((a) => (
+            <div key={a.id} className="p-4 space-y-2">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start gap-2 min-w-0">
+                  <FileText className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm leading-snug">{a.title}</p>
+                    <p className="text-xs text-muted-foreground font-mono truncate">
+                      {a.slug}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-1 shrink-0">
+                  <button
+                    className="p-1.5 rounded-sm hover:bg-muted transition-colors"
+                    title="Voir"
+                  >
+                    <Globe className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                  <button
+                    className="p-1.5 rounded-sm hover:bg-muted transition-colors"
+                    title="Modifier"
+                  >
+                    <Pencil className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span
+                  className={`rounded-full px-2.5 py-0.5 font-semibold ${STATUS_STYLES[a.status]}`}
+                >
+                  {STATUS_LABELS[a.status]}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Eye className="h-3.5 w-3.5" />
+                  {a.views.toLocaleString()}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5" />
+                  {new Date(a.updatedAt).toLocaleDateString("fr-FR")}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -82,66 +82,106 @@ export default function AdminCategoriesPage() {
       </div>
 
       <div className="rounded-lg border bg-card overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b bg-muted/30">
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                Catégorie
-              </th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                Slug
-              </th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                Prestataires
-              </th>
-              <th className="px-4 py-3 text-right font-medium text-muted-foreground">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map((cat) => (
-              <tr
-                key={cat.id}
-                className="border-b last:border-0 hover:bg-muted/20 transition-colors"
-              >
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">{cat.icon}</span>
-                    <span className="font-medium">{cat.label}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-muted-foreground font-mono text-xs">
-                  {cat.slug}
-                </td>
-                <td className="px-4 py-3">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-                    <Tag className="h-3 w-3" /> {cat.count}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-1.5">
-                    <button
-                      className="p-1.5 rounded-sm hover:bg-muted transition-colors"
-                      title="Modifier"
-                    >
-                      <Pencil className="h-4 w-4 text-muted-foreground" />
-                    </button>
-                    <button
-                      onClick={() =>
-                        setCategories((c) => c.filter((x) => x.id !== cat.id))
-                      }
-                      className="p-1.5 rounded-sm hover:bg-red-50 transition-colors"
-                      title="Supprimer"
-                    >
-                      <Trash2 className="h-4 w-4 text-red-400" />
-                    </button>
-                  </div>
-                </td>
+        <div className="hidden md:block">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-muted/30">
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                  Catégorie
+                </th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                  Slug
+                </th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                  Prestataires
+                </th>
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {categories.map((cat) => (
+                <tr
+                  key={cat.id}
+                  className="border-b last:border-0 hover:bg-muted/20 transition-colors"
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">{cat.icon}</span>
+                      <span className="font-medium">{cat.label}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground font-mono text-xs">
+                    {cat.slug}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                      <Tag className="h-3 w-3" /> {cat.count}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        className="p-1.5 rounded-sm hover:bg-muted transition-colors"
+                        title="Modifier"
+                      >
+                        <Pencil className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                      <button
+                        onClick={() =>
+                          setCategories((c) => c.filter((x) => x.id !== cat.id))
+                        }
+                        className="p-1.5 rounded-sm hover:bg-red-50 transition-colors"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-400" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="md:hidden divide-y">
+          {categories.map((cat) => (
+            <div
+              key={cat.id}
+              className="flex items-center justify-between gap-3 p-4"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="text-xl shrink-0">{cat.icon}</span>
+                <div className="min-w-0">
+                  <p className="font-medium text-sm truncate">{cat.label}</p>
+                  <p className="text-xs text-muted-foreground font-mono truncate">
+                    {cat.slug}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                  <Tag className="h-3 w-3" /> {cat.count}
+                </span>
+                <button
+                  className="p-1.5 rounded-sm hover:bg-muted transition-colors"
+                  title="Modifier"
+                >
+                  <Pencil className="h-4 w-4 text-muted-foreground" />
+                </button>
+                <button
+                  onClick={() =>
+                    setCategories((c) => c.filter((x) => x.id !== cat.id))
+                  }
+                  className="p-1.5 rounded-sm hover:bg-red-50 transition-colors"
+                  title="Supprimer"
+                >
+                  <Trash2 className="h-4 w-4 text-red-400" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

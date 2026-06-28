@@ -233,47 +233,126 @@ export default function AdminVendorsPage() {
             <Loader2 className="h-6 w-6 animate-spin mr-2" /> Chargement...
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-muted/30">
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Prestataire
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Catégorie
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Ville
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Plan
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Statut
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Inscrit le
-                  </th>
-                  <th className="px-4 py-3 text-right font-medium text-muted-foreground">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((v) => (
-                  <tr
-                    key={v.id}
-                    className="border-b last:border-0 hover:bg-muted/20 transition-colors"
-                  >
-                    <td className="px-4 py-3 font-medium">{v.name}</td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {v.category}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {v.city}
-                    </td>
-                    <td className="px-4 py-3">
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/30">
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                      Prestataire
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                      Catégorie
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                      Ville
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                      Plan
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                      Statut
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                      Inscrit le
+                    </th>
+                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((v) => (
+                    <tr
+                      key={v.id}
+                      className="border-b last:border-0 hover:bg-muted/20 transition-colors"
+                    >
+                      <td className="px-4 py-3 font-medium">{v.name}</td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {v.category}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {v.city}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${PLAN_STYLES[v.plan]}`}
+                        >
+                          {v.plan === "GOLD" && <Crown className="h-3 w-3" />}
+                          {v.plan === "SILVER" && <Gem className="h-3 w-3" />}
+                          {v.plan}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[v.status]}`}
+                        >
+                          {STATUS_LABELS[v.status]}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {v.joined}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            className="p-1.5 rounded-sm hover:bg-muted transition-colors"
+                            title="Voir le profil"
+                          >
+                            <Eye className="h-4 w-4 text-muted-foreground" />
+                          </button>
+                          {v.status === "PENDING" && (
+                            <button
+                              onClick={() => updateStatus(v.id, "ACTIVE")}
+                              className="rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-500/20 transition-colors"
+                            >
+                              Approuver
+                            </button>
+                          )}
+                          {v.status === "ACTIVE" && (
+                            <button
+                              onClick={() => updateStatus(v.id, "SUSPENDED")}
+                              className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-500 hover:bg-red-500/20 transition-colors"
+                            >
+                              Suspendre
+                            </button>
+                          )}
+                          {v.status === "SUSPENDED" && (
+                            <button
+                              onClick={() => updateStatus(v.id, "ACTIVE")}
+                              className="rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-500/20 transition-colors"
+                            >
+                              Réactiver
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filtered.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="px-4 py-12 text-center text-muted-foreground text-sm"
+                      >
+                        Aucun prestataire trouvé.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="md:hidden divide-y">
+              {filtered.map((v) => (
+                <div key={v.id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-medium text-sm">{v.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {v.category} · {v.city}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 justify-end">
                       <span
                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${PLAN_STYLES[v.plan]}`}
                       >
@@ -281,66 +360,57 @@ export default function AdminVendorsPage() {
                         {v.plan === "SILVER" && <Gem className="h-3 w-3" />}
                         {v.plan}
                       </span>
-                    </td>
-                    <td className="px-4 py-3">
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[v.status]}`}
                       >
                         {STATUS_LABELS[v.status]}
                       </span>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {v.joined}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1.5">
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs text-muted-foreground">{v.joined}</p>
+                    <div className="flex gap-1.5">
+                      <button
+                        className="p-1.5 rounded-sm hover:bg-muted transition-colors"
+                        title="Voir le profil"
+                      >
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                      {v.status === "PENDING" && (
                         <button
-                          className="p-1.5 rounded-sm hover:bg-muted transition-colors"
-                          title="Voir le profil"
+                          onClick={() => updateStatus(v.id, "ACTIVE")}
+                          className="rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-500/20 transition-colors"
                         >
-                          <Eye className="h-4 w-4 text-muted-foreground" />
+                          Approuver
                         </button>
-                        {v.status === "PENDING" && (
-                          <button
-                            onClick={() => updateStatus(v.id, "ACTIVE")}
-                            className="rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-500/20 transition-colors"
-                          >
-                            Approuver
-                          </button>
-                        )}
-                        {v.status === "ACTIVE" && (
-                          <button
-                            onClick={() => updateStatus(v.id, "SUSPENDED")}
-                            className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-500 hover:bg-red-500/20 transition-colors"
-                          >
-                            Suspendre
-                          </button>
-                        )}
-                        {v.status === "SUSPENDED" && (
-                          <button
-                            onClick={() => updateStatus(v.id, "ACTIVE")}
-                            className="rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-500/20 transition-colors"
-                          >
-                            Réactiver
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {filtered.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="px-4 py-12 text-center text-muted-foreground text-sm"
-                    >
-                      Aucun prestataire trouvé.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                      )}
+                      {v.status === "ACTIVE" && (
+                        <button
+                          onClick={() => updateStatus(v.id, "SUSPENDED")}
+                          className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-500 hover:bg-red-500/20 transition-colors"
+                        >
+                          Suspendre
+                        </button>
+                      )}
+                      {v.status === "SUSPENDED" && (
+                        <button
+                          onClick={() => updateStatus(v.id, "ACTIVE")}
+                          className="rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-semibold text-green-600 hover:bg-green-500/20 transition-colors"
+                        >
+                          Réactiver
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {filtered.length === 0 && (
+                <p className="px-4 py-12 text-center text-muted-foreground text-sm">
+                  Aucun prestataire trouvé.
+                </p>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

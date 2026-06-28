@@ -219,82 +219,68 @@ export default function AdminOverviewPage() {
             View all
           </Link>
         </div>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b">
-              <th className="pb-2 text-left font-medium text-muted-foreground">
-                Business
-              </th>
-              <th className="pb-2 text-left font-medium text-muted-foreground">
-                Category
-              </th>
-              <th className="pb-2 text-left font-medium text-muted-foreground">
-                City
-              </th>
-              <th className="pb-2 text-left font-medium text-muted-foreground">
-                Plan
-              </th>
-              <th className="pb-2 text-left font-medium text-muted-foreground">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {[
-              {
-                name: "Le Jardin Royal",
-                cat: "Wedding Venues",
-                city: "Sousse",
-                plan: "PRO",
-                status: "ACTIVE",
-              },
-              {
-                name: "Photo Elite",
-                cat: "Photographers",
-                city: "Tunis",
-                plan: "BASIC",
-                status: "PENDING",
-              },
-              {
-                name: "Cake Paradise",
-                cat: "Sweets",
-                city: "Sfax",
-                plan: "PRO",
-                status: "ACTIVE",
-              },
-              {
-                name: "DJ Maestro",
-                cat: "DJs",
-                city: "Nabeul",
-                plan: "BASIC",
-                status: "ACTIVE",
-              },
-            ].map((v) => (
-              <tr
-                key={v.name}
-                className="border-b last:border-0 hover:bg-muted/20"
-              >
-                <td className="py-3 font-medium">{v.name}</td>
-                <td className="py-3 text-muted-foreground">{v.cat}</td>
-                <td className="py-3 text-muted-foreground">{v.city}</td>
-                <td className="py-3">
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${v.plan === "PRO" ? "bg-blue-500/10 text-blue-600" : "bg-muted text-muted-foreground"}`}
-                  >
-                    {v.plan}
-                  </span>
-                </td>
-                <td className="py-3">
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${v.status === "ACTIVE" ? "bg-green-500/10 text-green-600" : "bg-yellow-500/10 text-yellow-600"}`}
-                  >
-                    {v.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {(() => {
+          const rows = [
+            { name: "Le Jardin Royal", cat: "Wedding Venues", city: "Sousse", plan: "PRO", status: "ACTIVE" },
+            { name: "Photo Elite", cat: "Photographers", city: "Tunis", plan: "BASIC", status: "PENDING" },
+            { name: "Cake Paradise", cat: "Sweets", city: "Sfax", plan: "PRO", status: "ACTIVE" },
+            { name: "DJ Maestro", cat: "DJs", city: "Nabeul", plan: "BASIC", status: "ACTIVE" },
+          ];
+          return (
+            <>
+              <div className="hidden md:block">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="pb-2 text-left font-medium text-muted-foreground">Business</th>
+                      <th className="pb-2 text-left font-medium text-muted-foreground">Category</th>
+                      <th className="pb-2 text-left font-medium text-muted-foreground">City</th>
+                      <th className="pb-2 text-left font-medium text-muted-foreground">Plan</th>
+                      <th className="pb-2 text-left font-medium text-muted-foreground">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((v) => (
+                      <tr key={v.name} className="border-b last:border-0 hover:bg-muted/20">
+                        <td className="py-3 font-medium">{v.name}</td>
+                        <td className="py-3 text-muted-foreground">{v.cat}</td>
+                        <td className="py-3 text-muted-foreground">{v.city}</td>
+                        <td className="py-3">
+                          <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${v.plan === "PRO" ? "bg-blue-500/10 text-blue-600" : "bg-muted text-muted-foreground"}`}>
+                            {v.plan}
+                          </span>
+                        </td>
+                        <td className="py-3">
+                          <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${v.status === "ACTIVE" ? "bg-green-500/10 text-green-600" : "bg-yellow-500/10 text-yellow-600"}`}>
+                            {v.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="md:hidden divide-y -mx-6">
+                {rows.map((v) => (
+                  <div key={v.name} className="flex items-center justify-between gap-3 px-6 py-3">
+                    <div>
+                      <p className="text-sm font-medium">{v.name}</p>
+                      <p className="text-xs text-muted-foreground">{v.cat} · {v.city}</p>
+                    </div>
+                    <div className="flex gap-1.5 shrink-0">
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${v.plan === "PRO" ? "bg-blue-500/10 text-blue-600" : "bg-muted text-muted-foreground"}`}>
+                        {v.plan}
+                      </span>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${v.status === "ACTIVE" ? "bg-green-500/10 text-green-600" : "bg-yellow-500/10 text-yellow-600"}`}>
+                        {v.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          );
+        })()}
       </div>
     </div>
   );

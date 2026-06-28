@@ -204,40 +204,63 @@ export default function SubscriptionPage() {
       {/* Billing history */}
       <div className="rounded-lg border bg-card p-6">
         <h2 className="font-semibold mb-4">Historique de facturation</h2>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b">
-              <th className="pb-2 text-left font-medium text-muted-foreground">
-                Date
-              </th>
-              <th className="pb-2 text-left font-medium text-muted-foreground">
-                Plan
-              </th>
-              <th className="pb-2 text-right font-medium text-muted-foreground">
-                Montant
-              </th>
-              <th className="pb-2 text-left font-medium text-muted-foreground pl-4">
-                Facture
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {["18 déc. 2025", "18 nov. 2025", "18 oct. 2025"].map((date) => (
-              <tr key={date} className="border-b last:border-0">
-                <td className="py-3 text-muted-foreground">{date}</td>
-                <td className="py-3">{PLAN_LABELS[currentPlan]}</td>
-                <td className="py-3 text-right font-medium">
-                  {PLAN_PRICES[currentPlan]} DT
-                </td>
-                <td className="py-3 pl-4">
-                  <button className="text-primary text-xs hover:underline">
-                    Télécharger
-                  </button>
-                </td>
+        <div className="hidden md:block">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b">
+                <th className="pb-2 text-left font-medium text-muted-foreground">
+                  Date
+                </th>
+                <th className="pb-2 text-left font-medium text-muted-foreground">
+                  Plan
+                </th>
+                <th className="pb-2 text-right font-medium text-muted-foreground">
+                  Montant
+                </th>
+                <th className="pb-2 text-left font-medium text-muted-foreground pl-4">
+                  Facture
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {["18 déc. 2025", "18 nov. 2025", "18 oct. 2025"].map((date) => (
+                <tr key={date} className="border-b last:border-0">
+                  <td className="py-3 text-muted-foreground">{date}</td>
+                  <td className="py-3">{PLAN_LABELS[currentPlan]}</td>
+                  <td className="py-3 text-right font-medium">
+                    {PLAN_PRICES[currentPlan]} DT
+                  </td>
+                  <td className="py-3 pl-4">
+                    <button className="text-primary text-xs hover:underline">
+                      Télécharger
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="md:hidden space-y-3">
+          {["18 déc. 2025", "18 nov. 2025", "18 oct. 2025"].map((date) => (
+            <div
+              key={date}
+              className="flex items-center justify-between gap-3 rounded-md border p-4"
+            >
+              <div>
+                <p className="text-sm font-medium">{PLAN_LABELS[currentPlan]}</p>
+                <p className="text-xs text-muted-foreground">{date}</p>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <span className="text-sm font-semibold">
+                  {PLAN_PRICES[currentPlan]} DT
+                </span>
+                <button className="text-primary text-xs hover:underline">
+                  Télécharger
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

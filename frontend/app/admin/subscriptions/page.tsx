@@ -258,7 +258,7 @@ export default function AdminSubscriptionsPage() {
       {/* Requests tab */}
       {tab === "requests" && (
         <div className="rounded-lg border bg-card overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/30">
@@ -284,9 +284,6 @@ export default function AdminSubscriptionsPage() {
               </thead>
               <tbody>
                 {requests.map((r) => {
-                  const isUpgrade =
-                    ["BRONZE", "SILVER", "GOLD"].indexOf(r.toPlan) >
-                    ["BRONZE", "SILVER", "GOLD"].indexOf(r.fromPlan);
                   const prices: Record<Plan, number> = {
                     BRONZE: 25,
                     SILVER: 50,
@@ -358,13 +355,63 @@ export default function AdminSubscriptionsPage() {
               </tbody>
             </table>
           </div>
+          <div className="md:hidden divide-y">
+            {requests.map((r) => {
+              const prices: Record<Plan, number> = { BRONZE: 25, SILVER: 50, GOLD: 75 };
+              const diff = prices[r.toPlan] - prices[r.fromPlan];
+              return (
+                <div key={r.id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-medium text-sm">{r.vendor}</p>
+                      <p className="text-xs text-muted-foreground">{r.city} · {r.requestedAt}</p>
+                    </div>
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold shrink-0 ${REQ_STYLES[r.status]}`}
+                    >
+                      {REQ_LABELS[r.status]}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <PlanBadge plan={r.fromPlan} />
+                      <span className="text-muted-foreground text-xs">→</span>
+                      <PlanBadge plan={r.toPlan} />
+                      <span
+                        className={`flex items-center gap-0.5 text-xs font-semibold ${diff >= 0 ? "text-green-600" : "text-red-500"}`}
+                      >
+                        {diff >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                        {diff >= 0 ? "+" : ""}{diff} TND
+                      </span>
+                    </div>
+                    {r.status === "PENDING" && (
+                      <div className="flex gap-1.5 shrink-0">
+                        <button
+                          onClick={() => handleRequest(r.id, "APPROVED")}
+                          className="flex items-center gap-1 rounded-full bg-green-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-600 transition-colors"
+                        >
+                          <CheckCircle2 className="h-3 w-3" /> Valider
+                        </button>
+                        <button
+                          onClick={() => handleRequest(r.id, "REJECTED")}
+                          className="flex items-center gap-1 rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-50 transition-colors"
+                        >
+                          <XCircle className="h-3 w-3" /> Rejeter
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
       {/* Active subscriptions tab */}
       {tab === "active" && (
         <div className="rounded-lg border bg-card overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/30">
@@ -425,6 +472,40 @@ export default function AdminSubscriptionsPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="md:hidden divide-y">
+            {subs.map((s) => (
+              <div
+                key={s.id}
+                className="flex items-center justify-between gap-3 p-4"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium text-sm truncate">{s.vendor}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <PlanBadge plan={s.plan} />
+                    <span className="text-xs text-muted-foreground">
+                      {s.since}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Prochaine : {s.nextBilling}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  <span className="text-sm font-semibold">{s.amount} TND</span>
+                  {s.status === "ACTIVE" ? (
+                    <button
+                      onClick={() => cancelSub(s.id)}
+                      className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-500 hover:bg-red-50 transition-colors"
+                    >
+                      Annuler
+                    </button>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">Annulé</span>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

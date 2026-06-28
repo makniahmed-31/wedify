@@ -186,51 +186,82 @@ export default function DashboardPage() {
           </Link>
         </div>
         <div className="rounded-lg border bg-card overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                  Couple
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                  Date
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-right font-medium text-muted-foreground">
-                  Amount
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {RECENT_BOOKINGS.map((b) => (
-                <tr
-                  key={b.id}
-                  className="border-b last:border-0 hover:bg-muted/30 transition-colors"
-                >
-                  <td className="px-4 py-3 font-medium">{b.name}</td>
-                  <td className="px-4 py-3 text-muted-foreground">
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/50">
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    Couple
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    Date
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-right font-medium text-muted-foreground">
+                    Amount
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {RECENT_BOOKINGS.map((b) => (
+                  <tr
+                    key={b.id}
+                    className="border-b last:border-0 hover:bg-muted/30 transition-colors"
+                  >
+                    <td className="px-4 py-3 font-medium">{b.name}</td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {new Date(b.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[b.status]}`}
+                      >
+                        {b.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right font-semibold">
+                      {b.amount.toLocaleString()} د.ت
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="md:hidden divide-y">
+            {RECENT_BOOKINGS.map((b) => (
+              <div
+                key={b.id}
+                className="flex items-center justify-between gap-3 p-4"
+              >
+                <div>
+                  <p className="text-sm font-medium">{b.name}</p>
+                  <p className="text-xs text-muted-foreground">
                     {new Date(b.date).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
                     })}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[b.status]}`}
-                    >
-                      {b.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right font-semibold">
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[b.status]}`}
+                  >
+                    {b.status}
+                  </span>
+                  <span className="text-sm font-semibold">
                     {b.amount.toLocaleString()} د.ت
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

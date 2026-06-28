@@ -91,7 +91,7 @@ export default function BookingsPage() {
 
       {/* Bookings table */}
       <div className="rounded-lg border bg-card overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/50">
@@ -167,6 +167,55 @@ export default function BookingsPage() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="md:hidden divide-y">
+          {BOOKINGS.map((b) => (
+            <div key={b.id} className="p-4 space-y-2">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-medium text-sm">{b.name}</p>
+                  <p className="text-xs text-muted-foreground">{b.phone}</p>
+                </div>
+                <span
+                  className={`rounded-full border px-2.5 py-0.5 text-xs font-medium shrink-0 ${STATUS_STYLES[b.status]}`}
+                >
+                  {b.status}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                <div className="space-y-0.5">
+                  <p>
+                    {new Date(b.date).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </p>
+                  <p>{b.service}</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-sm font-semibold text-foreground">
+                    {b.amount > 0 ? `${b.amount.toLocaleString()} د.ت` : "—"}
+                  </span>
+                  {b.status === "PENDING" && (
+                    <div className="flex gap-1">
+                      <button className="rounded-sm bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600 hover:bg-green-500/20">
+                        Confirm
+                      </button>
+                      <button className="rounded-sm bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-500 hover:bg-red-500/20">
+                        Decline
+                      </button>
+                    </div>
+                  )}
+                  {(b.status === "CONFIRMED" || b.status === "COMPLETED") && (
+                    <button className="rounded-sm bg-muted px-2.5 py-1 text-xs font-medium hover:bg-muted/80">
+                      View
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

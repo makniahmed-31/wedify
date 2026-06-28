@@ -96,86 +96,133 @@ export default function AdminUsersPage() {
             <Loader2 className="h-6 w-6 animate-spin mr-2" /> Chargement...
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-muted/30">
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Utilisateur
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Email
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Rôle
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Vérifié
-                  </th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                    Inscrit le
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((u) => (
-                  <tr
-                    key={u.id}
-                    className="border-b last:border-0 hover:bg-muted/20 transition-colors"
-                  >
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                          {u.role === "ADMIN" ? (
-                            <Shield className="h-4 w-4 text-red-500" />
-                          ) : u.role === "VENDOR" ? (
-                            <Crown className="h-4 w-4 text-blue-500" />
-                          ) : (
-                            <User className="h-4 w-4 text-muted-foreground" />
-                          )}
-                        </div>
-                        <span className="font-medium">
-                          {u.firstName} {u.lastName}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {u.email}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${ROLE_STYLES[u.role] ?? "bg-muted text-muted-foreground"}`}
-                      >
-                        {ROLE_LABELS[u.role] ?? u.role}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`text-xs font-medium ${u.isEmailVerified ? "text-green-600" : "text-yellow-600"}`}
-                      >
-                        {u.isEmailVerified ? "✓ Oui" : "✗ Non"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {u.createdAt
-                        ? new Date(u.createdAt).toLocaleDateString("fr-FR")
-                        : "—"}
-                    </td>
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/30">
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                      Utilisateur
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                      Email
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                      Rôle
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                      Vérifié
+                    </th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                      Inscrit le
+                    </th>
                   </tr>
-                ))}
-                {filtered.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="px-4 py-12 text-center text-muted-foreground text-sm"
+                </thead>
+                <tbody>
+                  {filtered.map((u) => (
+                    <tr
+                      key={u.id}
+                      className="border-b last:border-0 hover:bg-muted/20 transition-colors"
                     >
-                      Aucun utilisateur trouvé.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
+                            {u.role === "ADMIN" ? (
+                              <Shield className="h-4 w-4 text-red-500" />
+                            ) : u.role === "VENDOR" ? (
+                              <Crown className="h-4 w-4 text-blue-500" />
+                            ) : (
+                              <User className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </div>
+                          <span className="font-medium">
+                            {u.firstName} {u.lastName}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {u.email}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${ROLE_STYLES[u.role] ?? "bg-muted text-muted-foreground"}`}
+                        >
+                          {ROLE_LABELS[u.role] ?? u.role}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`text-xs font-medium ${u.isEmailVerified ? "text-green-600" : "text-yellow-600"}`}
+                        >
+                          {u.isEmailVerified ? "✓ Oui" : "✗ Non"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {u.createdAt
+                          ? new Date(u.createdAt).toLocaleDateString("fr-FR")
+                          : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                  {filtered.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="px-4 py-12 text-center text-muted-foreground text-sm"
+                      >
+                        Aucun utilisateur trouvé.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="md:hidden divide-y">
+              {filtered.map((u) => (
+                <div
+                  key={u.id}
+                  className="flex items-center justify-between gap-3 p-4"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center shrink-0">
+                      {u.role === "ADMIN" ? (
+                        <Shield className="h-4 w-4 text-red-500" />
+                      ) : u.role === "VENDOR" ? (
+                        <Crown className="h-4 w-4 text-blue-500" />
+                      ) : (
+                        <User className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm">
+                        {u.firstName} {u.lastName}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {u.email}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${ROLE_STYLES[u.role] ?? "bg-muted text-muted-foreground"}`}
+                    >
+                      {ROLE_LABELS[u.role] ?? u.role}
+                    </span>
+                    <span
+                      className={`text-xs font-medium ${u.isEmailVerified ? "text-green-600" : "text-yellow-600"}`}
+                    >
+                      {u.isEmailVerified ? "✓ Vérifié" : "✗ Non vérifié"}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              {filtered.length === 0 && (
+                <p className="px-4 py-12 text-center text-muted-foreground text-sm">
+                  Aucun utilisateur trouvé.
+                </p>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
