@@ -47,7 +47,7 @@ export default function SubscriptionPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 ">
       {/* Toast */}
       {toast && (
         <div className="flex items-center gap-3 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">

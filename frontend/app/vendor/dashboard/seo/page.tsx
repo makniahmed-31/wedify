@@ -67,7 +67,7 @@ export default function SEOPage() {
   const errors = SEO_CHECKS.filter((c) => c.status === "error").length;
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 ">
       <div>
         <h1 className="text-2xl font-bold">SEO Settings</h1>
         <p className="text-muted-foreground mt-1">

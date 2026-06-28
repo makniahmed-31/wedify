@@ -16,7 +16,11 @@ export default function LoginPage() {
   const [method, setMethod] = useState<Method>("email");
 
   useEffect(() => {
-    if (loggedIn) router.replace(role === "ADMIN" ? "/admin" : "/dashboard");
+    if (loggedIn) {
+      if (role === "ADMIN") router.replace("/admin");
+      else if (role === "VENDOR") router.replace("/vendor/dashboard");
+      else router.replace("/user/dashboard");
+    }
   }, [loggedIn, role, router]);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,7 +46,14 @@ export default function LoginPage() {
       if (!res.ok) throw new Error("Invalid credentials");
       const data = await res.json();
       login(data.accessToken, data.refreshToken);
-      router.replace("/dashboard");
+      try {
+        const r = JSON.parse(atob(data.accessToken.split(".")[1])).role;
+        if (r === "ADMIN") router.replace("/admin");
+        else if (r === "VENDOR") router.replace("/vendor/dashboard");
+        else router.replace("/user/dashboard");
+      } catch {
+        router.replace("/user/dashboard");
+      }
     } catch {
       setLoading(false);
     }
@@ -292,7 +303,9 @@ function RegisterForm({ onLogin }: { onLogin: () => void }) {
       const data = await res.json();
       login(data.accessToken, data.refreshToken);
       const r = (() => { try { return JSON.parse(atob(data.accessToken.split(".")[1])).role; } catch { return null; } })();
-      router.replace(r === "ADMIN" ? "/admin" : "/dashboard");
+      if (r === "ADMIN") router.replace("/admin");
+      else if (r === "VENDOR") router.replace("/vendor/dashboard");
+      else router.replace("/user/dashboard");
     } catch {
       setLoading(false);
     }

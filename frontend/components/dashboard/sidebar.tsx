@@ -26,20 +26,20 @@ import {
 import { useAuth } from "@/lib/auth-context";
 
 const NAV = [
-  { label: "Aperçu", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Profil", href: "/dashboard/profile", icon: User },
-  { label: "Services", href: "/dashboard/services", icon: Briefcase },
-  { label: "Forfaits", href: "/dashboard/packages", icon: Package },
-  { label: "Réservations", href: "/dashboard/bookings", icon: CalendarDays },
-  { label: "Prospects", href: "/dashboard/leads", icon: Inbox },
-  { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },
-  { label: "Avis clients", href: "/dashboard/reviews", icon: Star },
-  { label: "Médiathèque", href: "/dashboard/media", icon: Image },
-  { label: "Statistiques", href: "/dashboard/analytics", icon: BarChart3 },
-  { label: "SEO", href: "/dashboard/seo", icon: Search },
-  { label: "Abonnement", href: "/dashboard/subscription", icon: CreditCard },
-  { label: "Thème", href: "/dashboard/theme", icon: Palette },
-  { label: "Paramètres", href: "/dashboard/settings", icon: Settings },
+  { label: "Aperçu", href: "/vendor/dashboard", icon: LayoutDashboard },
+  { label: "Profil", href: "/vendor/dashboard/profile", icon: User },
+  { label: "Services", href: "/vendor/dashboard/services", icon: Briefcase },
+  { label: "Forfaits", href: "/vendor/dashboard/packages", icon: Package },
+  { label: "Réservations", href: "/vendor/dashboard/bookings", icon: CalendarDays },
+  { label: "Prospects", href: "/vendor/dashboard/leads", icon: Inbox },
+  { label: "Messages", href: "/vendor/dashboard/messages", icon: MessageSquare },
+  { label: "Avis clients", href: "/vendor/dashboard/reviews", icon: Star },
+  { label: "Médiathèque", href: "/vendor/dashboard/media", icon: Image },
+  { label: "Statistiques", href: "/vendor/dashboard/analytics", icon: BarChart3 },
+  { label: "SEO", href: "/vendor/dashboard/seo", icon: Search },
+  { label: "Abonnement", href: "/vendor/dashboard/subscription", icon: CreditCard },
+  { label: "Thème", href: "/vendor/dashboard/theme", icon: Palette },
+  { label: "Paramètres", href: "/vendor/dashboard/settings", icon: Settings },
 ];
 
 interface Props {
@@ -74,7 +74,7 @@ export function DashboardSidebar({ onClose }: Props) {
       <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
         {NAV.map(({ label, href, icon: Icon }) => {
           const active =
-            href === "/dashboard"
+            href === "/vendor/dashboard"
               ? pathname === href
               : pathname.startsWith(href);
           return (
@@ -100,7 +100,7 @@ export function DashboardSidebar({ onClose }: Props) {
       {/* Bottom */}
       <div className="border-t border-sidebar-border p-3 space-y-0.5 shrink-0">
         <Link
-          href="/dashboard/notifications"
+          href="/vendor/dashboard/notifications"
           onClick={onClose}
           className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
         >

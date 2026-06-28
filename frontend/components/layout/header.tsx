@@ -19,7 +19,9 @@ export function Header() {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const { t, locale, setLocale } = useI18n();
-  const { loggedIn, logout } = useAuth();
+  const { loggedIn, role, logout } = useAuth();
+  const dashboardHref =
+    role === "ADMIN" ? "/admin" : role === "VENDOR" ? "/vendor/dashboard" : "/user/dashboard";
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -107,21 +109,23 @@ export function Header() {
                 {profileOpen && (
                   <div className="absolute right-0 mt-2 w-44 rounded-lg border border-border bg-white shadow-lg py-1 z-50">
                     <Link
-                      href="/dashboard"
+                      href={dashboardHref}
                       onClick={() => setProfileOpen(false)}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
                     >
                       <LayoutDashboard className="h-4 w-4" />
                       Mon espace
                     </Link>
-                    <Link
-                      href="/dashboard/profile"
-                      onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
-                    >
-                      <User className="h-4 w-4" />
-                      Mon profil
-                    </Link>
+                    {role !== "ADMIN" && (
+                      <Link
+                        href="/dashboard/profile"
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+                      >
+                        <User className="h-4 w-4" />
+                        Mon profil
+                      </Link>
+                    )}
                     <div className="border-t border-border my-1" />
                     <button
                       onClick={logout}
@@ -193,7 +197,7 @@ export function Header() {
             {loggedIn ? (
               <>
                 <Link
-                  href="/dashboard"
+                  href={dashboardHref}
                   className="flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium"
                   onClick={() => setMobileOpen(false)}
                 >

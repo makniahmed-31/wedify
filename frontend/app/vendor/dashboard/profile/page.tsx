@@ -21,7 +21,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="space-y-8 max-w-3xl">
+    <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold">Business Profile</h1>
         <p className="text-muted-foreground mt-1">

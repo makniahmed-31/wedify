@@ -74,7 +74,7 @@ export function useAuth() {
 
 function syncCookie(loggedIn: boolean, role?: UserRole | null) {
   if (loggedIn) {
-    const value = role === "ADMIN" ? "ADMIN" : "1";
+    const value = role ?? "USER";
     document.cookie = `wedify_auth=${value}; path=/; max-age=86400; SameSite=Lax`;
   } else {
     document.cookie = "wedify_auth=; path=/; max-age=0";
