@@ -49,14 +49,15 @@ cd "$REPO"
 echo "==> Staging frontend..."
 STANDALONE="$REPO/frontend/.next/standalone"
 
-# Production uses workspace-nested layout: standalone/frontend/server.js
-mkdir -p "$STANDALONE/frontend/.next"
-cp -r "$REPO/frontend/.next/static" "$STANDALONE/frontend/.next/static" 2>/dev/null || true
-cp -r "$REPO/frontend/public" "$STANDALONE/frontend/public" 2>/dev/null || true
+# Copy static assets into standalone before staging
+mkdir -p "$STANDALONE/.next"
+cp -r "$REPO/frontend/.next/static" "$STANDALONE/.next/static" 2>/dev/null || true
+cp -r "$REPO/frontend/public" "$STANDALONE/public" 2>/dev/null || true
+
 rm -rf "$PROD_FRONTEND/.next/standalone"
 cp -r "$STANDALONE" "$PROD_FRONTEND/.next/standalone"
 
-echo "==> Syncing static files..."
+echo "==> Syncing static files to nginx path..."
 rm -rf "$PROD_FRONTEND/.next/static"
 cp -r "$REPO/frontend/.next/static" "$PROD_FRONTEND/.next/static"
 
